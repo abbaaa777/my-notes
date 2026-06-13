@@ -1,0 +1,21 @@
+# Word temporary files
+~$*.doc*
+~$*.dot*
+~WRL*.tmp
+*.tmp
+
+# System junk files (Windows)
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# System junk files (macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor temp files
+*~
+*.swp
+*.swo
