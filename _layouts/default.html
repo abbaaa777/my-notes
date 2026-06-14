@@ -1733,6 +1733,31 @@
             var flash = document.getElementById('shatter-flash');
             var isMobile = window.matchMedia('(max-width: 768px)').matches;
 
+            // --- 兜底保护：无论发生什么，3秒后强制显示页面 ---
+            var safetyTimer = setTimeout(function() {
+                if (overlay && overlay.parentNode) {
+                    overlay.classList.add('fade-out');
+                    if (container) container.classList.add('entrance-start');
+                    setTimeout(function() {
+                        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    }, 400);
+                }
+            }, 3000);
+
+            function revealPage() {
+                if (revealed) return;
+                revealed = true;
+                clearTimeout(safetyTimer);
+                overlay.classList.add('fade-out');
+                if (container) container.classList.add('entrance-start');
+                setTimeout(function() {
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                }, 400);
+            }
+
+            var revealed = false;
+            try {
+
             // --- 碎片配置 ---
             var shapes = [
                 'polygon(50% 0%, 0% 100%, 100% 100%)',          // 三角形
@@ -1837,14 +1862,7 @@
                 // 闪光
                 flash.classList.add('burst');
                 // 淡出 overlay + 首页入场
-                setTimeout(function() {
-                    overlay.classList.add('fade-out');
-                    if (container) container.classList.add('entrance-start');
-                    // 清理 DOM
-                    setTimeout(function() {
-                        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                    }, 400);
-                }, 200);
+                setTimeout(function() { revealPage(); }, 200);
             }, burstAt);
 
             // --- 点击跳过 ---
@@ -1858,12 +1876,13 @@
                     setTimeout(function() { el.classList.add('scatter'); }, i * 6);
                 });
                 flash.classList.add('burst');
-                overlay.classList.add('fade-out');
-                if (container) container.classList.add('entrance-start');
-                setTimeout(function() {
-                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                }, 350);
+                revealPage();
             });
+
+            } catch(e) {
+                // JS 错误兜底：直接显示页面
+                revealPage();
+            }
         })();
 
         // ========================================
