@@ -1,353 +1,53 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="abbaaa777">
-    <meta name="copyright" content="Copyright © 2024-2025 abbaaa777. All rights reserved.">
-    <meta name="robots" content="index, follow, noarchive">
-    <meta property="og:title" content="我的笔记 · My Notes">
-    <meta property="og:description" content="读书 · 思考 · 诗文 — 个人笔记与诗歌创作集">
-    <meta property="og:type" content="website">
-    <title>我的笔记 · My Notes</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+---
+layout: default
+title: 我的笔记
+is_home: true
+---
 
-        body {
-            font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Songti SC", Georgia, serif;
-            background: #fdf6ec;
-            color: #3d3226;
-            min-height: 100vh;
-            line-height: 1.8;
-        }
+<div class="section">
+    <h2 class="section-title"><span class="icon">📚</span>课程笔记</h2>
+    <ul class="card-list">
+        <li>
+            <a href="{{ site.baseurl }}/notes/中国史学史.html">
+                中国史学史
+                <span class="desc">中国史学的发展脉络与经典研读</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ site.baseurl }}/notes/西方哲学史.html">
+                西方哲学史
+                <span class="desc">从古希腊到现代的哲学思想之旅</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ site.baseurl }}/notes/文学理论.html">
+                文学理论
+                <span class="desc">文学批评与理论的核心概念</span>
+            </a>
+        </li>
+    </ul>
+</div>
 
-        /* 顶部装饰 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #c9a96e, #8b5e3c, #c9a96e);
-            z-index: 10;
-        }
-
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 60px 24px 80px;
-        }
-
-        /* 头部 */
-        header {
-            text-align: center;
-            padding: 60px 0 40px;
-            border-bottom: 1px solid #e0d5c1;
-            margin-bottom: 50px;
-        }
-
-        header h1 {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: #5c3d2e;
-            letter-spacing: 0.08em;
-            margin-bottom: 12px;
-        }
-
-        header p {
-            font-size: 1.05rem;
-            color: #8b7355;
-            letter-spacing: 0.04em;
-        }
-
-        .header-decoration {
-            display: inline-block;
-            width: 50px;
-            height: 1px;
-            background: #c9a96e;
-            margin: 16px 0;
-        }
-
-        /* 分类 */
-        .section {
-            margin-bottom: 48px;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            color: #5c3d2e;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #d4c5a9;
-            letter-spacing: 0.06em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title .icon {
-            font-size: 1.3rem;
-        }
-
-        /* 卡片列表 */
-        .card-list {
-            list-style: none;
-            display: grid;
-            gap: 12px;
-        }
-
-        .card-list li a {
-            display: block;
-            padding: 18px 22px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #5c3d2e;
-            font-size: 1.02rem;
-            transition: all 0.25s ease;
-            letter-spacing: 0.03em;
-        }
-
-        .card-list li a:hover {
-            background: #fff;
-            border-color: #c9a96e;
-            box-shadow: 0 2px 12px rgba(139, 94, 60, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .card-list li a .desc {
-            display: block;
-            font-size: 0.85rem;
-            color: #9b8b7a;
-            margin-top: 4px;
-            letter-spacing: 0.02em;
-        }
-
-        /* 页脚 */
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid #e0d5c1;
-            font-size: 0.85rem;
-            color: #b0a090;
-            letter-spacing: 0.04em;
-        }
-
-        footer .copyright-line {
-            font-size: 0.9rem;
-            color: #6b5a4a;
-            margin-bottom: 6px;
-        }
-
-        footer .license-line {
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-
-        footer .license-line a {
-            color: #8b7355;
-        }
-
-        footer .repo-line {
-            font-size: 0.78rem;
-        }
-
-        footer a {
-            color: #8b7355;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            color: #5c3d2e;
-            text-decoration: underline;
-        }
-
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 16px 60px;
-            }
-            header {
-                padding: 40px 0 30px;
-            }
-            header h1 {
-                font-size: 1.8rem;
-            }
-            .card-list li a {
-                padding: 14px 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>📖 我的笔记</h1>
-            <div class="header-decoration"></div>
-            <p>读书 · 思考 · 诗文</p>
-        </header>
-
-        <div class="section">
-            <h2 class="section-title"><span class="icon">📚</span>课程笔记</h2>
-            <ul class="card-list">
-                <li>
-                    <a href="notes/中国史学史.md">
-                        中国史学史
-                        <span class="desc">中国史学的发展脉络与经典研读</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="notes/西方哲学史.md">
-                        西方哲学史
-                        <span class="desc">从古希腊到现代的哲学思想之旅</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="notes/文学理论.md">
-                        文学理论
-                        <span class="desc">文学批评与理论的核心概念</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title"><span class="icon">🎋</span>个人诗集</h2>
-            <ul class="card-list">
-                <li>
-                    <a href="notes/古代诗歌.md">
-                        古代诗歌
-                        <span class="desc">古风雅韵，传统诗词创作</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="notes/现代诗歌.md">
-                        现代诗歌
-                        <span class="desc">现代诗篇，按风格分类整理</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="notes/诗家理论.md">
-                        诗家理论
-                        <span class="desc">基于19首诗的思想观念与诗学理论总结</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <footer>
-            <p class="copyright-line">
-                © 2024–2025 <strong>abbaaa777</strong> · 保留所有权利
-            </p>
-            <p class="license-line">
-                本作品采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a> 国际许可协议
-            </p>
-            <p class="repo-line">
-                <a href="https://github.com/abbaaa777/my-notes">GitHub 仓库</a>
-            </p>
-        </footer>
-    </div>
-
-    <!-- 著作权保护：禁用右键菜单、禁止文字选择、禁止拖拽图片 -->
-    <script>
-    (function() {
-        'use strict';
-
-        // 禁止右键菜单
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showProtectTip();
-            return false;
-        });
-
-        // 禁止文字选择（鼠标拖动）
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // 禁止 Ctrl+C / Ctrl+Shift+I / F12 等快捷键（仅提示，不强制阻止）
-        document.addEventListener('keydown', function(e) {
-            // F12 开发者工具
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault();
-                showProtectTip();
-                return false;
-            }
-            // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C（开发者工具快捷键）
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' ||
-                                             e.key === 'J' || e.key === 'j' ||
-                                             e.key === 'C' || e.key === 'c')) {
-                e.preventDefault();
-                showProtectTip();
-                return false;
-            }
-            // Ctrl+U（查看源代码）
-            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-                e.preventDefault();
-                showProtectTip();
-                return false;
-            }
-        });
-
-        // 禁止拖拽（防止拖图片/文字到地址栏等）
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // 提示浮层
-        var tipTimer = null;
-        function showProtectTip() {
-            // 移除已有提示
-            var old = document.getElementById('protect-tip');
-            if (old) { old.remove(); }
-
-            var tip = document.createElement('div');
-            tip.id = 'protect-tip';
-            tip.textContent = '⛔ 内容受著作权保护，未经授权禁止复制';
-            tip.style.cssText = [
-                'position: fixed',
-                'bottom: 30px',
-                'left: 50%',
-                'transform: translateX(-50%)',
-                'background: #5c3d2e',
-                'color: #fdf6ec',
-                'padding: 10px 24px',
-                'border-radius: 6px',
-                'font-size: 0.9rem',
-                'font-family: inherit',
-                'letter-spacing: 0.04em',
-                'z-index: 99999',
-                'opacity: 0',
-                'transition: opacity 0.3s ease',
-                'pointer-events: none',
-                'box-shadow: 0 4px 16px rgba(0,0,0,0.2)'
-            ].join(';');
-            document.body.appendChild(tip);
-
-            // 淡入
-            requestAnimationFrame(function() {
-                tip.style.opacity = '1';
-            });
-
-            // 2秒后淡出
-            clearTimeout(tipTimer);
-            tipTimer = setTimeout(function() {
-                tip.style.opacity = '0';
-                setTimeout(function() {
-                    if (tip.parentNode) { tip.remove(); }
-                }, 300);
-            }, 2000);
-        }
-    })();
-    </script>
-</body>
-</html>
+<div class="section">
+    <h2 class="section-title"><span class="icon">🎋</span>个人诗集</h2>
+    <ul class="card-list">
+        <li>
+            <a href="{{ site.baseurl }}/notes/古代诗歌.html">
+                古代诗歌
+                <span class="desc">古风雅韵，传统诗词创作</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ site.baseurl }}/notes/现代诗歌.html">
+                现代诗歌
+                <span class="desc">现代诗篇，按风格分类整理</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ site.baseurl }}/notes/诗家理论.html">
+                诗家理论
+                <span class="desc">基于19首诗的思想观念与诗学理论总结</span>
+            </a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="abbaaa777">
+    <meta name="copyright" content="Copyright © 2024-2025 abbaaa777. All rights reserved.">
+    <meta name="robots" content="index, follow, noarchive">
+    {% if page.title %}
+    <meta property="og:title" content="{{ page.title }} · 我的笔记">
+    {% else %}
+    <meta property="og:title" content="我的笔记 · My Notes">
+    {% endif %}
+    <meta property="og:description" content="读书 · 思考 · 诗文 — 个人笔记与诗歌创作集">
+    <meta property="og:type" content="website">
+    <title>{% if page.title %}{{ page.title }} · 我的笔记{% else %}我的笔记 · My Notes{% endif %}</title>
+    <style>
+        /* ========================================
+           基础重置
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ========================================
+           页面基调
+           ======================================== */
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Songti SC", Georgia, serif;
+            background: #fdf6ec;
+            color: #3d3226;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        /* 顶部金色装饰条 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c9a96e, #8b5e3c, #c9a96e);
+            z-index: 10;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* ========================================
+           页头
+           ======================================== */
+        header {
+            text-align: center;
+            padding: 60px 0 40px;
+            border-bottom: 1px solid #e0d5c1;
+            margin-bottom: 50px;
+        }
+
+        header .site-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #5c3d2e;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        header .site-title a {
+            color: #5c3d2e;
+            text-decoration: none;
+        }
+
+        header .site-title a:hover {
+            color: #8b5e3c;
+        }
+
+        header .page-subtitle {
+            font-size: 1.05rem;
+            color: #8b7355;
+            letter-spacing: 0.06em;
+            margin-top: 6px;
+        }
+
+        header .header-decoration {
+            display: inline-block;
+            width: 50px;
+            height: 1px;
+            background: #c9a96e;
+            margin: 16px 0 4px;
+        }
+
+        header .tagline {
+            font-size: 1.05rem;
+            color: #8b7355;
+            letter-spacing: 0.04em;
+        }
+
+        header .back-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #b0a090;
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            transition: color 0.2s;
+        }
+
+        header .back-link:hover {
+            color: #5c3d2e;
+        }
+
+        /* ========================================
+           首页卡片
+           ======================================== */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #5c3d2e;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #d4c5a9;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.3rem;
+        }
+
+        .card-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .card-list li a {
+            display: block;
+            padding: 18px 22px;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #5c3d2e;
+            font-size: 1.02rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.03em;
+        }
+
+        .card-list li a:hover {
+            background: #fff;
+            border-color: #c9a96e;
+            box-shadow: 0 2px 12px rgba(139, 94, 60, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .card-list li a .desc {
+            display: block;
+            font-size: 0.85rem;
+            color: #9b8b7a;
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        /* ========================================
+           正文排版（笔记 / 诗歌页面）
+           ======================================== */
+        .content {
+            font-size: 1.05rem;
+        }
+
+        .content h1 {
+            font-size: 2rem;
+            color: #5c3d2e;
+            margin-bottom: 0.6em;
+            margin-top: 0.4em;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .content h2 {
+            font-size: 1.5rem;
+            color: #5c3d2e;
+            margin: 1.8em 0 0.6em;
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid #e0d5c1;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+        }
+
+        .content h3 {
+            font-size: 1.2rem;
+            color: #6b5a4a;
+            margin: 1.4em 0 0.5em;
+            letter-spacing: 0.03em;
+            font-weight: 600;
+        }
+
+        .content p {
+            margin-bottom: 1em;
+            text-indent: 0;
+        }
+
+        .content strong {
+            color: #8b5e3c;
+            font-weight: 700;
+        }
+
+        .content blockquote {
+            margin: 1.5em 0;
+            padding: 14px 20px;
+            border-left: 3px solid #c9a96e;
+            background: #fffef9;
+            color: #6b5a4a;
+            font-style: italic;
+            letter-spacing: 0.03em;
+        }
+
+        .content blockquote:first-child {
+            /* 版权声明块的样式——更轻盈 */
+            border-left-color: #d4c5a9;
+            background: transparent;
+            font-style: normal;
+            font-size: 0.9rem;
+            color: #b0a090;
+            margin-bottom: 2em;
+        }
+
+        .content ul,
+        .content ol {
+            margin: 0.8em 0 1.2em;
+            padding-left: 1.8em;
+        }
+
+        .content li {
+            margin-bottom: 0.4em;
+        }
+
+        .content hr {
+            margin: 2em 0;
+            border: none;
+            border-top: 1px dashed #d4c5a9;
+        }
+
+        .content a {
+            color: #8b5e3c;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .content a:hover {
+            color: #5c3d2e;
+        }
+
+        .content code {
+            font-family: "SF Mono", "Fira Code", monospace;
+            background: #f0e8d8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #5c3d2e;
+        }
+
+        .content pre {
+            background: #f0e8d8;
+            padding: 16px 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1.2em 0;
+        }
+
+        .content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 诗歌专属：行间距更宽松 */
+        .content.poetry p {
+            line-height: 2.2;
+            letter-spacing: 0.04em;
+        }
+
+        /* ========================================
+           页脚
+           ======================================== */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e0d5c1;
+            font-size: 0.85rem;
+            color: #b0a090;
+            letter-spacing: 0.04em;
+        }
+
+        footer .copyright-line {
+            font-size: 0.9rem;
+            color: #6b5a4a;
+            margin-bottom: 6px;
+        }
+
+        footer .license-line {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        footer .license-line a {
+            color: #8b7355;
+        }
+
+        footer .repo-line {
+            font-size: 0.78rem;
+        }
+
+        footer a {
+            color: #8b7355;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #5c3d2e;
+            text-decoration: underline;
+        }
+
+        /* ========================================
+           响应式
+           ======================================== */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 16px 60px;
+            }
+            header {
+                padding: 40px 0 30px;
+            }
+            header .site-title {
+                font-size: 1.3rem;
+            }
+            .card-list li a {
+                padding: 14px 16px;
+            }
+            .content h1 {
+                font-size: 1.6rem;
+            }
+            .content h2 {
+                font-size: 1.25rem;
+            }
+            .content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="site-title">
+                <a href="{{ site.baseurl }}/">📖 我的笔记</a>
+            </div>
+            {% if page.is_home %}
+            <div class="header-decoration"></div>
+            <p class="tagline">读书 · 思考 · 诗文</p>
+            {% else %}
+            <p class="page-subtitle">{{ page.title }}</p>
+            <a class="back-link" href="{{ site.baseurl }}/">← 返回首页</a>
+            {% endif %}
+        </header>
+
+        <main class="content">
+            {{ content }}
+        </main>
+
+        <footer>
+            <p class="copyright-line">
+                © 2024–2025 <strong>abbaaa777</strong> · 保留所有权利
+            </p>
+            <p class="license-line">
+                本作品采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a> 国际许可协议
+            </p>
+            <p class="repo-line">
+                <a href="https://github.com/abbaaa777/my-notes">GitHub 仓库</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- 著作权保护：禁用右键菜单、禁止文字选择、禁止拖拽 -->
+    <script>
+    (function() {
+        'use strict';
+
+        // 禁止右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showProtectTip();
+            return false;
+        });
+
+        // 禁止文字选择（鼠标拖动）
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 拦截开发者工具快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' ||
+                                             e.key === 'J' || e.key === 'j' ||
+                                             e.key === 'C' || e.key === 'c')) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+        });
+
+        // 禁止拖拽
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 提示浮层
+        var tipTimer = null;
+        function showProtectTip() {
+            var old = document.getElementById('protect-tip');
+            if (old) { old.remove(); }
+
+            var tip = document.createElement('div');
+            tip.id = 'protect-tip';
+            tip.textContent = '⛔ 内容受著作权保护，未经授权禁止复制';
+            tip.style.cssText = [
+                'position: fixed',
+                'bottom: 30px',
+                'left: 50%',
+                'transform: translateX(-50%)',
+                'background: #5c3d2e',
+                'color: #fdf6ec',
+                'padding: 10px 24px',
+                'border-radius: 6px',
+                'font-size: 0.9rem',
+                'font-family: inherit',
+                'letter-spacing: 0.04em',
+                'z-index: 99999',
+                'opacity: 0',
+                'transition: opacity 0.3s ease',
+                'pointer-events: none',
+                'box-shadow: 0 4px 16px rgba(0,0,0,0.2)'
+            ].join(';');
+            document.body.appendChild(tip);
+
+            requestAnimationFrame(function() {
+                tip.style.opacity = '1';
+            });
+
+            clearTimeout(tipTimer);
+            tipTimer = setTimeout(function() {
+                tip.style.opacity = '0';
+                setTimeout(function() {
+                    if (tip.parentNode) { tip.remove(); }
+                }, 300);
+            }, 2000);
+        }
+    })();
+    </script>
+</body>
+</html>

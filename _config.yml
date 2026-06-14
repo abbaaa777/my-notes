@@ -1,0 +1,16 @@
+# Jekyll 配置文件
+title: 我的笔记
+author: abbaaa777
+description: 读书 · 思考 · 诗文 — 个人笔记与诗歌创作集
+lang: zh-CN
+baseurl: "/my-notes"
+url: "https://abbaaa777.github.io"
+
+# 构建设置
+markdown: kramdown
+permalink: pretty
+
+# 排除不需要处理的文件
+exclude:
+  - .gitignore
+  - README.md
