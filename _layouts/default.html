@@ -33,13 +33,13 @@
            ======================================== */
         body {
             font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Songti SC", Georgia, serif;
-            background: #fdf6ec;
-            color: #3d3226;
+            background: #f3f5f9;
+            color: #1e293b;
             min-height: 100vh;
             line-height: 1.8;
         }
 
-        /* 顶部金色装饰条 */
+        /* 顶部装饰条 */
         body::before {
             content: '';
             position: fixed;
@@ -47,7 +47,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #c9a96e, #8b5e3c, #c9a96e);
+            background: linear-gradient(90deg, #5b8cb8, #3d6a94, #2c5f8a, #3d6a94, #5b8cb8);
             z-index: 10;
         }
 
@@ -55,6 +55,25 @@
             max-width: 720px;
             margin: 0 auto;
             padding: 60px 24px 80px;
+            animation: page-in 0.5s ease-out both;
+        }
+
+        @keyframes page-in {
+            0% { opacity: 0; transform: translateY(14px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 极淡背景纹理 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, #4a7dab 2px, #4a7dab 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, #4a7dab 2px, #4a7dab 4px);
         }
 
         /* ========================================
@@ -67,29 +86,29 @@
 
         header.home-header {
             padding: 60px 0 40px;
-            border-bottom: 1px solid #e0d5c1;
+            border-bottom: 1px solid #dce3eb;
         }
 
         header .site-title {
             font-size: 1.6rem;
             font-weight: 700;
-            color: #5c3d2e;
+            color: #1a314f;
             letter-spacing: 0.08em;
             margin-bottom: 8px;
         }
 
         header .site-title a {
-            color: #5c3d2e;
+            color: #1a314f;
             text-decoration: none;
         }
 
         header .site-title a:hover {
-            color: #8b5e3c;
+            color: #3d6a94;
         }
 
         header .page-subtitle {
             font-size: 1.05rem;
-            color: #8b7355;
+            color: #5a6d85;
             letter-spacing: 0.06em;
             margin-top: 6px;
         }
@@ -98,13 +117,13 @@
             display: inline-block;
             width: 50px;
             height: 1px;
-            background: #c9a96e;
+            background: #4a7dab;
             margin: 16px 0 4px;
         }
 
         header .tagline {
             font-size: 1.05rem;
-            color: #8b7355;
+            color: #5a6d85;
             letter-spacing: 0.04em;
         }
 
@@ -112,14 +131,14 @@
             display: inline-block;
             margin-top: 8px;
             font-size: 0.85rem;
-            color: #b0a090;
+            color: #7a8b9e;
             text-decoration: none;
             letter-spacing: 0.03em;
             transition: color 0.2s;
         }
 
         header .back-link:hover {
-            color: #5c3d2e;
+            color: #1a314f;
         }
 
         /* ========================================
@@ -130,15 +149,17 @@
         }
 
         .section-title {
-            font-size: 1.3rem;
-            color: #5c3d2e;
+            font-size: 1.15rem;
+            color: #475569;
             margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #d4c5a9;
+            padding-bottom: 0;
+            border-bottom: none;
             letter-spacing: 0.06em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
         }
 
         .section-title .icon {
@@ -154,27 +175,27 @@
         .card-list li a {
             display: block;
             padding: 18px 22px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
-            border-radius: 6px;
+            background: #fafbfd;
+            border: none;
+            border-radius: 8px;
             text-decoration: none;
-            color: #5c3d2e;
+            color: #1a314f;
             font-size: 1.02rem;
-            transition: all 0.25s ease;
+            transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
             letter-spacing: 0.03em;
+            box-shadow: 0 1px 4px rgba(58, 90, 130, 0.06);
         }
 
         .card-list li a:hover {
             background: #fff;
-            border-color: #c9a96e;
-            box-shadow: 0 2px 12px rgba(139, 94, 60, 0.1);
-            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(74, 125, 171, 0.16);
+            transform: translateY(-3px);
         }
 
         .card-list li a .desc {
             display: block;
             font-size: 0.85rem;
-            color: #9b8b7a;
+            color: #7a8b9e;
             margin-top: 4px;
             letter-spacing: 0.02em;
         }
@@ -188,7 +209,7 @@
 
         .content h1 {
             font-size: 2.2rem;
-            color: #5c3d2e;
+            color: #1a314f;
             margin-bottom: 0.6em;
             margin-top: 0.4em;
             letter-spacing: 0.05em;
@@ -199,17 +220,17 @@
 
         .content h2 {
             font-size: 1.5rem;
-            color: #5c3d2e;
+            color: #1a314f;
             margin: 1.8em 0 0.6em;
             padding-bottom: 0.4em;
-            border-bottom: 1px solid #e0d5c1;
+            border-bottom: 1px solid #dce3eb;
             letter-spacing: 0.05em;
             font-weight: 600;
         }
 
         .content h3 {
             font-size: 1.2rem;
-            color: #6b5a4a;
+            color: #475569;
             margin: 1.4em 0 0.5em;
             letter-spacing: 0.03em;
             font-weight: 600;
@@ -222,27 +243,29 @@
         }
 
         .content strong {
-            color: #8b5e3c;
+            color: #3d6a94;
             font-weight: 700;
         }
 
         .content blockquote {
             margin: 1.5em 0;
-            padding: 14px 20px;
-            border-left: 3px solid #c9a96e;
-            background: #fffef9;
-            color: #6b5a4a;
+            padding: 16px 22px;
+            border-left: 4px solid #4a7dab;
+            background: #fafbfd;
+            color: #475569;
             font-style: italic;
             letter-spacing: 0.03em;
+            border-radius: 0 6px 6px 0;
+            box-shadow: 0 2px 8px rgba(58, 90, 130, 0.06);
         }
 
         .content blockquote:first-child {
             /* 版权声明块的样式——更轻盈 */
-            border-left-color: #d4c5a9;
+            border-left-color: #c0d0e0;
             background: transparent;
             font-style: normal;
             font-size: 0.9rem;
-            color: #b0a090;
+            color: #7a8b9e;
             margin-bottom: 2em;
         }
 
@@ -259,30 +282,37 @@
         .content hr {
             margin: 2em 0;
             border: none;
-            border-top: 1px dashed #d4c5a9;
+            text-align: center;
+            overflow: visible;
+        }
+        .content hr::after {
+            content: '·  ·  ·';
+            color: #c0d0e0;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
         }
 
         .content a {
-            color: #8b5e3c;
+            color: #3d6a94;
             text-decoration: underline;
             text-underline-offset: 3px;
         }
 
         .content a:hover {
-            color: #5c3d2e;
+            color: #1a314f;
         }
 
         .content code {
             font-family: "SF Mono", "Fira Code", monospace;
-            background: #f0e8d8;
+            background: #e8edf3;
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 0.9em;
-            color: #5c3d2e;
+            color: #1a314f;
         }
 
         .content pre {
-            background: #f0e8d8;
+            background: #e8edf3;
             padding: 16px 20px;
             border-radius: 6px;
             overflow-x: auto;
@@ -305,9 +335,13 @@
         }
 
         .content.poetry h2 {
-            color: #4a2e1e;
+            color: #1a314f;
             font-size: 1.55rem;
             letter-spacing: 0.06em;
+            border-bottom: none;
+            padding-bottom: 0;
+            padding-left: 16px;
+            border-left: 4px solid #4a7dab;
         }
 
         /*
@@ -328,15 +362,15 @@
             text-align: center;
             margin-top: 60px;
             padding-top: 30px;
-            border-top: 1px solid #e0d5c1;
+            border-top: 1px solid #dce3eb;
             font-size: 0.85rem;
-            color: #b0a090;
+            color: #7a8b9e;
             letter-spacing: 0.04em;
         }
 
         footer .copyright-line {
             font-size: 0.75rem;
-            color: #9b8b7a;
+            color: #7a8b9e;
             margin-bottom: 4px;
         }
 
@@ -346,7 +380,7 @@
         }
 
         footer .license-line a {
-            color: #8b7355;
+            color: #5a6d85;
         }
 
         footer .repo-line {
@@ -354,12 +388,12 @@
         }
 
         footer a {
-            color: #8b7355;
+            color: #5a6d85;
             text-decoration: none;
         }
 
         footer a:hover {
-            color: #5c3d2e;
+            color: #1a314f;
             text-decoration: underline;
         }
 
@@ -438,10 +472,24 @@
             top: 4px;
             left: 0;
             height: 3px;
-            background: linear-gradient(90deg, #c9a96e, #8b5e3c);
+            background: linear-gradient(90deg, #4a7dab, #3d6a94);
             z-index: 100;
             width: 0%;
             transition: width 0.1s linear;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* ========================================
@@ -454,12 +502,12 @@
             right: 0;
             z-index: 90;
             transform: translateY(-100%);
-            transition: transform 0.3s ease;
-            background: rgba(253, 246, 236, 0.97);
+            transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+            background: rgba(243, 245, 249, 0.97);
             -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
-            border-bottom: 1px solid #e0d5c1;
-            box-shadow: 0 2px 16px rgba(139, 94, 60, 0.08);
+            border-bottom: 1px solid #dce3eb;
+            box-shadow: 0 2px 16px rgba(58, 90, 130, 0.08);
             padding: 12px 24px;
         }
 
@@ -477,25 +525,25 @@
 
         .search-input {
             flex: 1;
-            border: 1px solid #d4c5a9;
+            border: 1px solid #c0d0e0;
             border-radius: 6px;
             padding: 10px 16px;
             font-size: 0.95rem;
             font-family: inherit;
             letter-spacing: 0.04em;
-            background: #fffef9;
-            color: #3d3226;
+            background: #fafbfd;
+            color: #1e293b;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .search-input:focus {
-            border-color: #c9a96e;
-            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+            border-color: #4a7dab;
+            box-shadow: 0 0 0 3px rgba(74, 125, 171, 0.15);
         }
 
         .search-input::placeholder {
-            color: #b0a090;
+            color: #7a8b9e;
         }
 
         .dir-btn-wrap {
@@ -506,12 +554,12 @@
         .dir-btn {
             width: 42px;
             height: 42px;
-            border-radius: 6px;
-            border: 1px solid #d4c5a9;
-            background: #fffef9;
+            border-radius: 8px;
+            border: 1px solid #c0d0e0;
+            background: #fafbfd;
             cursor: pointer;
             font-size: 1.3rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
             padding: 0;
             display: flex;
             align-items: center;
@@ -519,8 +567,9 @@
         }
 
         .dir-btn:hover {
-            border-color: #c9a96e;
-            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+            border-color: #4a7dab;
+            background: #eef3f8;
+            box-shadow: 0 0 0 3px rgba(74, 125, 171, 0.12);
         }
 
         /* ---- 搜索结果面板 ---- */
@@ -528,12 +577,12 @@
             display: none;
             max-width: 720px;
             margin: 10px auto 0;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
             border-radius: 6px;
             max-height: 360px;
             overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(139, 94, 60, 0.1);
+            box-shadow: 0 4px 20px rgba(58, 90, 130, 0.1);
         }
 
         .search-results.active {
@@ -543,7 +592,7 @@
         .search-results .result-group {
             padding: 10px 16px 4px;
             font-size: 0.78rem;
-            color: #b0a090;
+            color: #7a8b9e;
             letter-spacing: 0.05em;
             text-transform: uppercase;
         }
@@ -552,10 +601,10 @@
             display: block;
             padding: 10px 16px;
             text-decoration: none;
-            color: #5c3d2e;
+            color: #1a314f;
             font-size: 0.92rem;
             letter-spacing: 0.03em;
-            border-bottom: 1px solid #f0e8d8;
+            border-bottom: 1px solid #e8edf3;
             transition: background 0.15s;
             cursor: pointer;
         }
@@ -565,18 +614,18 @@
         }
 
         .search-results .result-item:hover {
-            background: #fdf6ec;
+            background: #f3f5f9;
         }
 
         .search-results .result-item .result-heading {
             font-size: 0.82rem;
-            color: #8b7355;
+            color: #5a6d85;
             margin-top: 2px;
         }
 
         .search-results .result-item .result-excerpt {
             font-size: 0.82rem;
-            color: #9b8b7a;
+            color: #7a8b9e;
             margin-top: 2px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -586,7 +635,7 @@
         .search-results .result-empty {
             padding: 24px 16px;
             text-align: center;
-            color: #b0a090;
+            color: #7a8b9e;
             font-size: 0.9rem;
         }
 
@@ -597,10 +646,10 @@
             top: 100%;
             right: 0;
             margin-top: 6px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
             border-radius: 6px;
-            box-shadow: 0 4px 20px rgba(139, 94, 60, 0.12);
+            box-shadow: 0 4px 20px rgba(58, 90, 130, 0.12);
             min-width: 180px;
             z-index: 91;
         }
@@ -611,7 +660,7 @@
 
         .dir-category {
             position: relative;
-            border-bottom: 1px solid #f0e8d8;
+            border-bottom: 1px solid #e8edf3;
         }
 
         .dir-category:last-child {
@@ -622,7 +671,7 @@
             display: block;
             padding: 12px 16px;
             font-size: 0.92rem;
-            color: #5c3d2e;
+            color: #1a314f;
             letter-spacing: 0.04em;
             cursor: pointer;
             transition: background 0.15s;
@@ -630,8 +679,8 @@
         }
 
         .dir-category:hover > .dir-cat-label {
-            background: #fdf6ec;
-            color: #8b5e3c;
+            background: #f3f5f9;
+            color: #3d6a94;
         }
 
         .dir-sub {
@@ -640,10 +689,10 @@
             right: 100%;
             top: 0;
             margin-right: 2px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
             border-radius: 6px;
-            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
+            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.1);
             min-width: 140px;
             z-index: 92;
         }
@@ -656,12 +705,12 @@
             display: block;
             padding: 10px 16px;
             font-size: 0.9rem;
-            color: #6b5a4a;
+            color: #475569;
             text-decoration: none;
             letter-spacing: 0.03em;
             white-space: nowrap;
             transition: background 0.15s, color 0.15s;
-            border-bottom: 1px solid #f0e8d8;
+            border-bottom: 1px solid #e8edf3;
         }
 
         .dir-sub a:last-child,
@@ -671,14 +720,14 @@
 
         .dir-sub a:hover,
         .dir-sub-sub a:hover {
-            background: #fdf6ec;
-            color: #8b5e3c;
+            background: #f3f5f9;
+            color: #3d6a94;
         }
 
         /* ---- 三级子菜单（诗名） ---- */
         .dir-sub-cat {
             position: relative;
-            border-bottom: 1px solid #f0e8d8;
+            border-bottom: 1px solid #e8edf3;
         }
         .dir-sub-cat:last-child {
             border-bottom: none;
@@ -687,7 +736,7 @@
             display: block;
             padding: 10px 16px;
             font-size: 0.9rem;
-            color: #6b5a4a;
+            color: #475569;
             text-decoration: none;
             letter-spacing: 0.03em;
             white-space: nowrap;
@@ -695,8 +744,8 @@
             cursor: pointer;
         }
         .dir-sub-cat > a:hover {
-            background: #fdf6ec;
-            color: #8b5e3c;
+            background: #f3f5f9;
+            color: #3d6a94;
         }
 
         .dir-sub-sub {
@@ -705,10 +754,10 @@
             right: 100%;
             top: 0;
             margin-right: 2px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
             border-radius: 6px;
-            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
+            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.1);
             min-width: 140px;
             z-index: 93;
             max-height: 360px;
@@ -721,16 +770,16 @@
 
         /* ---- 搜索高亮标记 ---- */
         mark.search-highlight {
-            background: #f5e6c8;
-            color: #3d3226;
+            background: #d4e2f0;
+            color: #1e293b;
             padding: 1px 3px;
             border-radius: 2px;
             animation: highlight-fade 2.5s ease forwards;
         }
 
         @keyframes highlight-fade {
-            0% { background: #e8c876; }
-            60% { background: #f5e6c8; }
+            0% { background: #a0c4e0; }
+            60% { background: #d4e2f0; }
             100% { background: transparent; }
         }
 
@@ -744,16 +793,16 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 1px solid #c9a96e;
-            background: #fffef9;
-            color: #8b5e3c;
+            border: 1px solid #4a7dab;
+            background: #fafbfd;
+            color: #3d6a94;
             font-size: 1.2rem;
             cursor: pointer;
             z-index: 99;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 8px rgba(139, 94, 60, 0.15);
+            box-shadow: 0 2px 8px rgba(58, 90, 130, 0.15);
             line-height: 1;
             padding: 0;
             display: flex;
@@ -767,10 +816,10 @@
         }
 
         .back-to-top:hover {
-            background: #c9a96e;
-            color: #fffef9;
+            background: #4a7dab;
+            color: #fafbfd;
             transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.25);
+            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.25);
         }
 
         /* ========================================
@@ -783,15 +832,15 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 1px solid #d4c5a9;
-            background: rgba(255, 254, 249, 0.92);
-            color: #8b7355;
+            border: 1px solid #c0d0e0;
+            background: rgba(250, 251, 253, 0.92);
+            color: #5a6d85;
             font-size: 1.2rem;
             cursor: pointer;
             z-index: 99;
             opacity: 0;
             transition: opacity 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 8px rgba(139, 94, 60, 0.1);
+            box-shadow: 0 2px 8px rgba(58, 90, 130, 0.1);
             line-height: 1;
             padding: 0;
             display: flex;
@@ -803,6 +852,12 @@
 
         .back-nav.visible {
             opacity: 1;
+            animation: nav-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes nav-pop-in {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .back-nav.home-hidden {
@@ -810,19 +865,19 @@
         }
 
         .back-nav:hover {
-            background: rgba(201, 169, 110, 0.15);
-            color: #5c3d2e;
+            background: rgba(74, 125, 171, 0.15);
+            color: #1a314f;
             transform: translateX(-2px);
-            box-shadow: 0 3px 12px rgba(139, 94, 60, 0.18);
+            box-shadow: 0 3px 12px rgba(58, 90, 130, 0.18);
         }
 
         /* ========================================
            长文目录（TOC）
            ======================================== */
         .toc-card {
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
-            border-left: 3px solid #c9a96e;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
+            border-left: 3px solid #4a7dab;
             border-radius: 6px;
             padding: 20px 24px;
             margin: 0 0 2em 0;
@@ -831,7 +886,7 @@
         .toc-card .toc-title {
             font-size: 0.95rem;
             font-weight: 600;
-            color: #5c3d2e;
+            color: #1a314f;
             letter-spacing: 0.05em;
             margin-bottom: 12px;
         }
@@ -861,20 +916,20 @@
         }
 
         .toc-card a {
-            color: #6b5a4a;
+            color: #475569;
             text-decoration: none;
             transition: color 0.2s;
             letter-spacing: 0.03em;
         }
 
         .toc-card a:hover {
-            color: #8b5e3c;
+            color: #3d6a94;
             text-decoration: underline;
         }
 
         .toc-card li.toc-h2 > a {
             font-weight: 500;
-            color: #5c3d2e;
+            color: #1a314f;
         }
 
         /* ========================================
@@ -887,13 +942,13 @@
             justify-content: center;
             margin: 0 0 2em 0;
             padding: 18px 22px;
-            background: #fffef9;
-            border: 1px solid #e8ddcc;
+            background: #fafbfd;
+            border: 1px solid #dbe3ec;
             border-radius: 6px;
         }
 
         .poem-nav a {
-            color: #8b7355;
+            color: #5a6d85;
             text-decoration: none;
             font-size: 0.95rem;
             letter-spacing: 0.04em;
@@ -902,11 +957,11 @@
         }
 
         .poem-nav a:hover {
-            color: #5c3d2e;
+            color: #1a314f;
         }
 
         .poem-nav a.active {
-            color: #8b5e3c;
+            color: #3d6a94;
             font-weight: 600;
         }
     </style>
@@ -1127,8 +1182,8 @@
                 'bottom: 30px',
                 'left: 50%',
                 'transform: translateX(-50%)',
-                'background: #5c3d2e',
-                'color: #fdf6ec',
+                'background: #1a314f',
+                'color: #f3f5f9',
                 'padding: 10px 24px',
                 'border-radius: 6px',
                 'font-size: 0.9rem',
