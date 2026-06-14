@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的笔记 · My Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Songti SC", Georgia, serif;
+            background: #fdf6ec;
+            color: #3d3226;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+
+        /* 顶部装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c9a96e, #8b5e3c, #c9a96e);
+            z-index: 10;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* 头部 */
+        header {
+            text-align: center;
+            padding: 60px 0 40px;
+            border-bottom: 1px solid #e0d5c1;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #5c3d2e;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            font-size: 1.05rem;
+            color: #8b7355;
+            letter-spacing: 0.04em;
+        }
+
+        .header-decoration {
+            display: inline-block;
+            width: 50px;
+            height: 1px;
+            background: #c9a96e;
+            margin: 16px 0;
+        }
+
+        /* 分类 */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #5c3d2e;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #d4c5a9;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.3rem;
+        }
+
+        /* 卡片列表 */
+        .card-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .card-list li a {
+            display: block;
+            padding: 18px 22px;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #5c3d2e;
+            font-size: 1.02rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.03em;
+        }
+
+        .card-list li a:hover {
+            background: #fff;
+            border-color: #c9a96e;
+            box-shadow: 0 2px 12px rgba(139, 94, 60, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .card-list li a .desc {
+            display: block;
+            font-size: 0.85rem;
+            color: #9b8b7a;
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e0d5c1;
+            font-size: 0.85rem;
+            color: #b0a090;
+            letter-spacing: 0.04em;
+        }
+
+        footer a {
+            color: #8b7355;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #5c3d2e;
+            text-decoration: underline;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 16px 60px;
+            }
+            header {
+                padding: 40px 0 30px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .card-list li a {
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📖 我的笔记</h1>
+            <div class="header-decoration"></div>
+            <p>读书 · 思考 · 诗文</p>
+        </header>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">📚</span>课程笔记</h2>
+            <ul class="card-list">
+                <li>
+                    <a href="notes/中国史学史.md">
+                        中国史学史
+                        <span class="desc">中国史学的发展脉络与经典研读</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="notes/西方哲学史.md">
+                        西方哲学史
+                        <span class="desc">从古希腊到现代的哲学思想之旅</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="notes/文学理论.md">
+                        文学理论
+                        <span class="desc">文学批评与理论的核心概念</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">🎋</span>个人诗集</h2>
+            <ul class="card-list">
+                <li>
+                    <a href="notes/古代诗歌.md">
+                        古代诗歌
+                        <span class="desc">古风雅韵，传统诗词创作</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="notes/现代诗歌.md">
+                        现代诗歌
+                        <span class="desc">现代诗篇，按风格分类整理</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="notes/诗家理论.md">
+                        诗家理论
+                        <span class="desc">基于19首诗的思想观念与诗学理论总结</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>由 <a href="https://github.com/abbaaa777">abbaaa777</a> 维护 ·
+            <a href="https://github.com/abbaaa777/my-notes">GitHub 仓库</a></p>
+        </footer>
+    </div>
+</body>
+</html>
