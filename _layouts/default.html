@@ -1870,8 +1870,34 @@
                     svgEl.style.width=ch.w+'px'; svgEl.style.height=ch.h+'px';
                     svgEl.style.overflow='visible';
 
-                    // clipPath定义
+                    // clipPath定义 + 本地渐变和滤镜（避免跨SVG引用失效）
                     var defsEl = document.createElementNS('http://www.w3.org/2000/svg','defs');
+
+                    // 本地渐变
+                    var gradEl = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+                    gradEl.setAttribute('id',gradId);
+                    gradEl.setAttribute('x1','0%'); gradEl.setAttribute('y1','0%');
+                    gradEl.setAttribute('x2','100%'); gradEl.setAttribute('y2','100%');
+                    if(colorKey==='yellow'){
+                        gradEl.innerHTML = '<stop offset="0%" stop-color="rgba(255,245,175,0.95)"/><stop offset="20%" stop-color="rgba(255,235,120,0.72)"/><stop offset="45%" stop-color="rgba(255,225,90,0.55)"/><stop offset="55%" stop-color="rgba(255,240,140,0.82)"/><stop offset="80%" stop-color="rgba(245,215,75,0.65)"/><stop offset="100%" stop-color="rgba(255,238,155,0.9)"/>';
+                    } else {
+                        gradEl.innerHTML = '<stop offset="0%" stop-color="rgba(255,255,255,0.96)"/><stop offset="20%" stop-color="rgba(250,250,255,0.68)"/><stop offset="45%" stop-color="rgba(235,235,245,0.52)"/><stop offset="55%" stop-color="rgba(252,252,255,0.85)"/><stop offset="80%" stop-color="rgba(230,230,240,0.62)"/><stop offset="100%" stop-color="rgba(248,248,255,0.9)"/>';
+                    }
+                    defsEl.appendChild(gradEl);
+
+                    // 本地滤镜
+                    var filtEl = document.createElementNS('http://www.w3.org/2000/svg','filter');
+                    filtEl.setAttribute('id',filtId);
+                    filtEl.setAttribute('x','-20%'); filtEl.setAttribute('y','-20%');
+                    filtEl.setAttribute('width','140%'); filtEl.setAttribute('height','140%');
+                    if(colorKey==='yellow'){
+                        filtEl.innerHTML = '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.55)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(200,160,40,0.25)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,240,120,0.25)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,229,102,0.12)"/>';
+                    } else {
+                        filtEl.innerHTML = '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(180,180,200,0.18)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,255,255,0.3)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
+                    }
+                    defsEl.appendChild(filtEl);
+
+                    // clipPath
                     var cpEl = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
                     cpEl.setAttribute('id',cpId);
                     var cpPath = document.createElementNS('http://www.w3.org/2000/svg','path');
