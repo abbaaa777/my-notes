@@ -1419,6 +1419,7 @@
             position: relative;
             z-index: 1;
             text-align: center;
+            padding-top: 80px;
             opacity: 0;
             transform: scale(0.7);
             transition: opacity 0.7s cubic-bezier(0.22,0.61,0.36,1),
@@ -1433,7 +1434,7 @@
             display: block;
             font-family: 'ZCOOL QingKe HuangYou', 'Shippori Mincho', serif;
             font-weight: bold;
-            font-size: 4.2rem;
+            font-size: 6rem;
             line-height: 1.1;
             color: transparent;
             background: linear-gradient(180deg,
@@ -1452,7 +1453,7 @@
             display: block;
             margin-top: 10px;
             font-family: inherit;
-            font-size: 1.05rem;
+            font-size: 1.15rem;
             font-weight: 400;
             color: rgba(255,255,255,0.45);
             letter-spacing: 0.1em;
@@ -1492,8 +1493,9 @@
 
         /* 移动端 */
         @media (max-width: 768px) {
-            .home-title-main { font-size: 2.5rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
-            .home-title-sub { font-size: 0.85rem; margin-top: 6px; }
+            .home-title { padding-top: 50px; }
+            .home-title-main { font-size: 3rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
+            .home-title-sub { font-size: 0.95rem; margin-top: 6px; }
             .click-hint { font-size: 0.8rem; bottom: 16%; letter-spacing: 0.06em; }
             .keystroke-overlay { background: #060A14; }
             .music-player { top: 10px; right: 12px; height: 32px; width: 32px; }
