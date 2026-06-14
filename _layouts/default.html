@@ -1369,7 +1369,7 @@
         }
 
         /* ========================================
-           3D蛇形笔画汇聚开场动画（Serpentine Assembly）
+           笔画汇聚开场动画 — SVG逐笔渲染 + 路径弯曲入场
            ======================================== */
         .keystroke-overlay {
             position: fixed;
@@ -1386,70 +1386,33 @@
             opacity: 0;
         }
 
-        /* 笔画 / 字符切片 — 3D空间中 */
-        .stroke, .char-strip {
+        /* 独立笔画 — SVG元素 */
+        .stroke-svg {
             position: absolute;
             top: 0; left: 0;
             transform-origin: center center;
-            transform-style: preserve-3d;
             will-change: transform, opacity;
             opacity: 0;
             pointer-events: none;
-            border-radius: 4px;
+            overflow: visible;
         }
-        .char-strip {
-            border-radius: 2px;
-            background: rgba(255,255,255,0.03);
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.08), 0 2px 10px rgba(0,0,0,0.35);
-        }
-        /* 玻璃反光扫过 */
-        .stroke.glazed, .char-strip.glazed {
+
+        /* 玻璃反光扫过（用opacity模拟，避免覆盖SVG filter） */
+        .stroke-svg.glazed {
             animation: glaze-sweep 0.7s ease-out forwards;
         }
         @keyframes glaze-sweep {
-            0%   { filter: brightness(1); }
-            50%  { filter: brightness(1.4); }
-            100% { filter: brightness(1); }
+            0%   { opacity: 0.65; }
+            40%  { opacity: 1; }
+            100% { opacity: 0.82; }
         }
         /* 待命呼吸 */
-        .stroke.breathe, .char-strip.breathe {
+        .stroke-svg.breathe {
             animation: stroke-breathe 2.8s ease-in-out infinite;
         }
         @keyframes stroke-breathe {
-            0%, 100% { transform: translate3d(var(--bx), var(--by), 0) rotateZ(var(--brz)) scale(1); }
-            50%      { transform: translate3d(var(--bx), var(--by), 0) rotateZ(var(--brz)) scale(1.018); }
-        }
-
-        /* 黄色笔画 — Apple柔和树脂质感 */
-        .stroke.yellow {
-            background: linear-gradient(135deg,
-                rgba(255, 242, 160, 0.88) 0%,
-                rgba(255, 229, 102, 0.58) 35%,
-                rgba(240, 210, 70, 0.68) 100%);
-            box-shadow:
-                inset 0 1px 3px rgba(255,255,255,0.5),
-                inset 0 -1px 2px rgba(180,150,50,0.22),
-                0 3px 14px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(255,229,102,0.2);
-        }
-        /* 白色笔画 — Apple柔和树脂质感 */
-        .stroke.white {
-            background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.92) 0%,
-                rgba(248, 248, 252, 0.58) 35%,
-                rgba(228, 228, 238, 0.68) 100%);
-            box-shadow:
-                inset 0 1px 3px rgba(255,255,255,0.6),
-                inset 0 -1px 2px rgba(150,150,170,0.18),
-                0 3px 14px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(255,255,255,0.25);
-        }
-        /* 书图标 — SVG 无背景，柠檬黄线条 + 发光 */
-        .stroke.icon-el, .char-strip.icon-el {
-            border-radius: 0;
-            background: none;
-            filter: drop-shadow(0 2px 6px rgba(255,229,102,0.35))
-                    drop-shadow(0 0 2px rgba(255,229,102,0.25));
+            0%, 100% { transform: translate(var(--bx), var(--by)) rotate(var(--brz)) scale(1); }
+            50%      { transform: translate(var(--bx), var(--by)) rotate(var(--brz)) scale(1.018); }
         }
 
         /* 点击提示 */
@@ -1487,13 +1450,38 @@
         /* 移动端 */
         @media (max-width: 768px) {
             .keystroke-overlay { perspective: 800px; }
-            .stroke.yellow, .stroke.white { box-shadow: inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); }
         }
     </style>
 </head>
 <body>
     {% if page.is_home %}
     <div class="keystroke-overlay" id="keystroke-overlay">
+        <svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
+            <defs>
+                <linearGradient id="yellow-resin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(255,242,160,0.88)"/>
+                    <stop offset="35%" stop-color="rgba(255,229,102,0.58)"/>
+                    <stop offset="100%" stop-color="rgba(240,210,70,0.68)"/>
+                </linearGradient>
+                <linearGradient id="white-resin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.92)"/>
+                    <stop offset="35%" stop-color="rgba(248,248,252,0.58)"/>
+                    <stop offset="100%" stop-color="rgba(228,228,238,0.68)"/>
+                </linearGradient>
+                <filter id="yellow-resin-filter">
+                    <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(255,255,255,0.5)"/>
+                    <feDropShadow dx="0" dy="-0.5" stdDeviation="1" flood-color="rgba(180,150,50,0.22)"/>
+                    <feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="rgba(0,0,0,0.4)"/>
+                    <feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,229,102,0.2)"/>
+                </filter>
+                <filter id="white-resin-filter">
+                    <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(255,255,255,0.6)"/>
+                    <feDropShadow dx="0" dy="-0.5" stdDeviation="1" flood-color="rgba(150,150,170,0.18)"/>
+                    <feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="rgba(0,0,0,0.4)"/>
+                    <feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,255,255,0.25)"/>
+                </filter>
+            </defs>
+        </svg>
         <div class="click-hint" id="click-hint">点击进入</div>
     </div>
     {% endif %}
@@ -1727,7 +1715,7 @@
         })();
 
         // ========================================
-        // 4.2 3D蛇形笔画汇聚开场动画（Serpentine Assembly）
+        // 4.2 笔画汇聚开场动画 — SVG逐笔渲染 + 路径弯曲入场
         // ========================================
         (function initKeystroke() {
             var overlay = document.getElementById('keystroke-overlay');
@@ -1757,173 +1745,304 @@
 
             try {
 
-            // --- 字符切片方案：真实字体渲染 → 水平切片 → 独立动画 ---
-            // 布局: [图标42] [间距28] [我100] [间距22] [的90] [间距22] [笔100] [间距22] [记85]
-            var chars = [
-                { text: '我', cx: -136, cw: 100, ch: 120 },
-                { text: '的', cx: -20,  cw: 90,  ch: 120 },
-                { text: '笔', cx: 98,   cw: 100, ch: 120 },
-                { text: '记', cx: 212,  cw: 85,  ch: 120 }
-            ];
-            var iconCX = -234;
-            var stripsPerChar = isMobile ? 5 : 7;
-            var fontSize = isMobile ? 80 : 110;
+            // --- 笔画数据（HanziWriter kaishu，已归一化到100×120坐标空间） ---
+            var STROKE_DATA = {
+              '我':{count:7,strokes:[
+                "M 35.09 78.49 Q 38.03 80.65 44.80 82.71 Q 46.37 82.81 46.67 83.59 Q 46.96 84.57 45.68 85.55 Q 43.82 86.83 39.60 88.00 Q 38.13 88.59 37.05 88.40 Q 36.37 88.00 36.37 86.92 Q 36.46 83.39 20.38 74.17 Q 19.99 73.29 20.48 73.09 Q 21.65 73.09 29.21 76.04 Q 30.48 76.43 31.76 77.02 L 35.09 78.49 Z",
+                "M 58.04 68.19 Q 66.09 70.05 72.76 71.23 Q 73.93 71.13 74.72 72.60 Q 74.82 73.88 72.27 74.76 Q 68.73 76.82 61.77 74.17 Q 59.42 73.49 57.16 72.60 L 53.43 71.43 Q 51.57 71.03 49.80 70.35 Q 44.11 68.78 38.62 67.31 L 33.82 66.23 Q 32.83 66.23 18.32 63.29 Q 15.28 62.60 17.73 60.93 Q 21.56 58.28 24.40 59.36 Q 28.91 60.64 34.01 62.11 L 38.72 63.29 Q 45.88 65.44 54.22 67.31 L 58.04 68.19 Z",
+                "M 38.62 67.31 Q 38.72 70.84 39.80 73.19 Q 40.49 74.96 39.01 76.23 Q 37.15 77.80 35.09 78.49 C 32.44 79.67 30.48 79.67 31.76 77.02 Q 31.66 77.02 31.76 76.92 Q 33.91 73.39 33.82 69.37 Q 33.82 67.80 33.82 66.23 L 34.01 62.11 Q 34.11 56.13 34.01 50.83 L 33.91 46.12 Q 33.82 40.14 33.52 35.53 Q 33.42 33.76 32.44 33.17 Q 31.85 32.78 25.28 34.15 Q 24.11 34.45 24.20 33.66 Q 24.30 33.08 25.18 32.29 Q 31.07 26.60 32.93 23.07 Q 34.21 21.50 35.78 22.78 Q 39.01 26.01 39.01 34.84 Q 38.72 39.06 38.72 48.47 L 38.72 52.50 Q 38.72 57.30 38.72 63.29 L 38.62 67.31 Z",
+                "M 34.01 50.83 Q 25.67 48.08 16.55 44.94 Q 14.39 44.26 10.67 44.16 Q 9.20 44.06 9.10 42.79 Q 9.00 41.31 9.98 40.53 Q 12.43 38.76 16.16 36.90 Q 17.34 36.61 18.61 37.59 Q 24.20 42.00 33.91 46.12 L 38.72 48.47 Q 47.55 53.28 48.23 53.67 Q 49.71 54.56 49.61 55.54 Q 49.02 56.13 47.74 55.83 Q 43.33 54.26 38.72 52.50 L 34.01 50.83 Z",
+                "M 63.05 41.61 Q 68.44 29.84 78.94 21.11 Q 86.68 16.40 88.84 17.87 Q 91.00 18.85 90.41 22.78 Q 89.53 25.82 88.94 37.39 Q 89.04 39.55 88.45 39.94 Q 88.06 40.04 87.47 38.18 Q 84.82 29.84 82.96 28.37 Q 81.49 27.97 77.76 31.11 Q 70.40 37.69 66.48 44.65 L 63.93 49.85 Q 59.51 59.85 58.04 68.19 L 57.16 72.60 Q 54.41 87.12 57.26 96.24 Q 58.24 98.89 54.02 101.44 Q 50.69 103.60 48.72 103.40 Q 46.86 103.31 47.74 100.46 Q 50.10 96.24 50.49 91.83 Q 51.47 81.43 53.43 71.43 L 54.22 67.31 Q 56.96 55.24 60.79 46.51 L 63.05 41.61 Z",
+                "M 60.79 46.51 Q 55.49 41.81 45.10 36.02 Q 44.11 35.43 44.70 35.04 Q 45.39 34.64 46.67 34.84 Q 52.06 35.72 57.06 38.18 Q 60.40 39.65 63.05 41.61 L 66.48 44.65 Q 70.01 47.98 74.03 53.58 Q 75.50 55.44 77.07 57.20 Q 78.05 57.89 77.76 59.17 Q 77.37 60.34 74.62 62.70 Q 72.76 64.46 71.68 64.46 Q 70.21 64.36 70.11 62.80 Q 69.52 57.20 63.93 49.85 L 60.79 46.51 Z",
+                "M 68.15 88.10 Q 71.19 86.04 74.72 83.59 Q 76.29 82.61 77.86 82.81 Q 79.03 83.10 79.33 84.47 Q 79.43 86.04 78.15 88.98 Q 77.27 90.85 73.93 91.93 Q 65.99 93.69 64.61 92.61 Q 64.22 92.22 64.61 90.85 Q 65.01 89.87 68.15 88.10 Z"
+              ]},
+              '的':{count:8,strokes:[
+                "M 18.65 71.56 Q 32.02 91.72 34.88 94.16 Q 36.79 96.07 34.99 97.45 Q 32.97 98.83 29.69 99.46 Q 26.72 100.10 25.44 99.25 Q 24.17 98.61 25.12 97.45 Q 26.72 93.95 21.84 83.44 Q 19.29 77.72 16.43 71.46 Q 16.32 71.35 16.32 71.14 C 15.05 68.17 16.85 68.91 18.65 71.56 Z",
+                "M 15.90 71.03 Q 13.56 73.05 11.02 73.90 Q 10.27 74.21 9.74 73.68 Q 9.00 73.26 9.74 71.88 Q 14.20 62.33 13.03 41.44 Q 12.71 34.01 16.64 31.57 Q 18.23 30.93 18.65 33.80 L 18.87 37.40 Q 17.80 50.13 17.80 53.42 L 17.70 56.18 Q 17.70 62.55 17.91 67.85 C 18.02 69.34 18.02 69.34 15.90 71.03 Z",
+                "M 30.32 35.18 Q 31.60 32.95 33.72 29.34 Q 34.67 27.65 35.63 27.96 Q 37.01 28.28 37.75 30.83 Q 40.93 38.57 40.61 48.86 Q 40.72 55.33 40.82 62.65 Q 41.14 67.11 43.05 69.87 Q 44.43 71.77 43.37 72.94 Q 41.35 74.85 37.01 76.44 Q 35.31 77.40 32.34 76.12 Q 28.73 74.43 24.28 72.94 Q 21.73 72.31 18.65 71.56 L 16.32 71.14 Q 15.90 71.14 15.90 71.03 C 12.82 70.40 14.83 67.11 17.91 67.85 Q 18.55 67.96 19.08 68.06 Q 32.87 72.20 33.82 71.35 Q 37.32 65.94 34.14 40.91 Q 34.03 38.57 33.19 38.36 Q 32.76 38.25 31.28 38.68 C 28.09 39.00 28.73 37.94 30.32 35.18 Z",
+                "M 17.80 53.42 Q 21.09 52.79 30.00 54.70 Q 31.28 55.01 31.49 55.12 Q 32.23 55.86 31.81 56.61 Q 31.06 57.56 28.62 58.09 Q 26.40 58.41 20.77 56.61 Q 19.18 56.61 17.70 56.18 C 14.62 55.33 14.62 53.95 17.80 53.42 Z",
+                "M 18.65 33.80 Q 19.08 33.80 19.61 33.90 Q 23.21 34.65 30.32 35.18 C 33.50 35.39 33.82 36.87 31.28 38.68 Q 30.85 39.00 30.64 39.10 Q 30.53 39.21 29.69 39.42 Q 29.26 39.74 29.26 39.53 Q 28.52 39.84 18.87 37.40 C 15.79 36.66 15.47 33.59 18.65 33.80 Z",
+                "M 57.90 74.00 Q 65.22 85.14 68.40 91.08 Q 70.42 95.64 72.44 97.87 Q 73.39 99.14 72.75 100.73 Q 72.01 102.11 68.51 104.45 Q 65.22 106.36 62.99 106.14 Q 60.77 105.72 62.04 103.28 Q 65.01 98.19 56.21 81.22 Q 52.28 73.47 46.34 64.56 Q 45.28 63.29 45.17 62.55 Q 44.86 61.17 46.45 61.70 Q 49.31 62.33 56.74 72.41 L 57.90 74.00 Z",
+                "M 71.59 23.40 Q 69.89 23.30 60.87 27.22 Q 59.81 27.65 59.81 27.01 Q 59.71 26.58 60.87 25.52 Q 66.39 20.11 68.83 16.19 Q 70.21 13.64 71.80 13.86 Q 74.03 13.75 76.04 15.98 Q 83.47 22.34 85.38 38.04 Q 86.76 48.65 87.39 65.09 Q 87.39 68.70 89.62 71.56 Q 91.00 72.94 90.89 73.90 Q 90.79 74.85 88.67 76.23 Q 85.70 78.25 81.98 79.31 Q 79.65 80.05 72.54 77.61 Q 72.22 77.61 72.01 77.50 Q 68.72 76.55 57.90 74.00 C 54.83 73.26 54.40 73.15 56.74 72.41 Q 59.60 70.50 65.65 72.09 Q 79.12 73.79 79.76 72.94 Q 80.18 71.56 80.50 67.21 Q 81.24 40.06 75.41 27.33 Q 73.71 23.72 71.59 23.40 Z",
+                "M 53.02 51.51 Q 55.68 48.54 58.54 44.94 Q 59.92 43.24 61.83 43.13 Q 63.10 43.03 63.84 44.51 Q 64.59 46.21 63.95 49.71 Q 63.21 53.53 53.13 57.03 Q 51.43 57.77 50.58 57.45 Q 49.95 57.03 49.95 55.54 Q 50.27 54.17 53.02 51.51 Z"
+              ]},
+              '笔':{count:10,strokes:[
+                "M 27.78 89.34 Q 29.10 91.56 30.61 93.58 Q 31.62 94.89 30.11 96.30 Q 25.56 99.64 23.24 99.13 Q 22.23 99.03 22.43 97.42 Q 23.74 87.92 14.05 76.81 Q 11.63 74.29 10.51 72.67 Q 9.81 71.16 11.22 71.66 Q 16.67 72.57 24.25 83.38 Q 25.46 85.80 26.47 87.11 L 27.78 89.34 Z",
+                "M 26.47 87.11 Q 31.62 84.99 36.37 86.61 Q 45.76 88.73 46.47 89.34 Q 47.17 90.04 46.77 90.95 Q 46.06 91.96 43.03 92.57 Q 40.91 92.87 33.34 90.35 Q 30.61 89.74 27.78 89.34 C 24.75 88.93 23.64 88.23 26.47 87.11 Z",
+                "M 29.20 80.65 Q 34.04 73.99 36.47 73.68 Q 37.78 73.58 38.39 75.20 Q 38.49 76.41 37.78 78.33 Q 36.87 79.94 34.75 80.95 Q 31.32 82.77 29.80 83.08 Q 28.89 83.18 28.79 82.17 Q 28.69 81.46 29.20 80.65 Z",
+                "M 57.78 92.87 Q 59.59 96.00 61.31 98.73 Q 62.32 100.04 60.81 101.35 Q 56.46 104.38 54.04 103.78 Q 53.03 103.47 53.33 102.16 Q 55.15 94.28 46.97 83.68 Q 45.05 81.46 43.94 79.94 Q 43.23 78.33 44.75 78.93 Q 46.06 79.24 48.08 80.85 Q 53.53 85.50 56.67 90.85 L 57.78 92.87 Z",
+                "M 56.67 90.85 Q 56.77 90.85 57.07 90.65 Q 61.71 88.53 66.66 90.25 Q 79.69 93.58 80.40 94.18 Q 81.10 94.89 80.70 95.80 Q 79.99 96.81 76.96 97.42 Q 74.14 97.82 71.21 96.41 Q 68.38 95.40 65.35 94.39 Q 61.92 93.48 57.98 92.97 Q 57.88 92.97 57.78 92.87 C 54.85 92.16 54.14 92.06 56.67 90.85 Z",
+                "M 59.39 85.20 Q 58.18 85.30 57.98 84.69 Q 57.57 83.98 58.58 82.97 Q 64.34 76.01 67.98 75.50 Q 68.68 75.40 69.29 75.70 Q 69.69 76.11 70.00 77.82 Q 70.10 79.44 69.59 80.95 Q 68.08 83.68 62.22 84.69 Q 60.30 85.09 59.39 85.20 Z",
+                "M 39.09 64.49 Q 44.34 65.81 48.79 67.73 Q 53.43 69.24 57.37 69.75 Q 59.19 69.75 59.59 70.45 Q 60.00 71.46 58.89 72.67 Q 56.97 74.49 52.63 76.51 Q 51.11 77.42 49.80 77.32 Q 49.09 76.92 48.89 75.91 Q 48.28 71.36 23.95 62.58 Q 23.34 61.67 23.95 61.36 Q 25.26 61.06 35.05 63.48 L 39.09 64.49 Z",
+                "M 42.63 53.18 Q 48.99 54.50 55.55 55.71 Q 61.41 57.02 62.32 57.83 Q 63.23 58.54 62.83 59.34 Q 62.12 60.56 59.29 61.36 Q 56.46 61.97 53.43 60.86 Q 48.79 59.34 44.14 58.03 L 36.87 56.31 Q 29.80 55.10 21.93 54.50 Q 18.29 53.89 20.82 52.27 Q 24.55 49.75 30.31 50.96 Q 33.44 51.57 36.77 52.07 L 42.63 53.18 Z",
+                "M 41.32 39.25 Q 48.28 40.46 76.16 42.28 Q 78.38 42.38 78.78 43.39 Q 79.39 44.70 77.47 46.01 Q 71.71 50.05 67.57 48.94 Q 58.38 46.42 42.33 43.39 Q 41.72 43.39 41.42 43.19 L 36.67 42.28 Q 24.75 40.36 11.22 37.93 Q 9.00 37.63 10.72 35.81 Q 14.05 33.09 19.50 34.40 Q 27.38 36.92 36.67 38.44 L 41.32 39.25 Z",
+                "M 89.79 25.21 Q 87.87 30.06 86.76 38.34 Q 86.46 39.95 85.75 40.56 Q 84.84 41.17 84.44 38.94 Q 82.82 28.85 81.31 26.93 Q 77.37 22.38 60.20 21.98 Q 51.01 22.28 46.97 23.80 Q 43.54 25.41 42.73 27.84 Q 41.42 31.27 41.32 39.25 L 41.42 43.19 Q 41.72 49.35 42.63 53.18 L 44.14 58.03 Q 44.55 60.45 43.03 61.87 Q 40.81 63.69 39.09 64.49 C 36.47 66.11 33.94 66.31 35.05 63.48 Q 35.05 63.38 35.26 62.98 Q 36.77 60.15 36.87 56.31 L 36.77 52.07 Q 36.67 46.62 36.67 42.28 L 36.67 38.44 Q 36.77 30.16 37.68 27.53 Q 38.89 22.99 42.33 20.57 Q 48.79 15.62 72.92 17.03 Q 83.63 17.74 87.87 20.16 Q 91.00 21.78 89.79 25.21 Z"
+              ]},
+              '记':{count:5,strokes:[
+                "M 29.28 90.14 Q 32.60 87.63 36.09 84.40 Q 37.53 83.24 39.05 83.24 Q 40.13 83.33 40.58 84.58 Q 40.94 86.02 40.04 88.98 Q 39.41 91.22 35.91 92.75 Q 32.42 93.91 28.65 94.90 Q 27.03 95.26 26.49 94.90 Q 25.96 94.54 26.14 93.28 Q 26.49 92.12 29.28 90.14 Z",
+                "M 18.06 65.38 Q 13.40 63.95 10.88 63.86 Q 9.54 63.95 9.36 63.23 Q 9.00 62.42 9.99 61.70 Q 13.58 59.28 16.63 60.63 Q 26.58 65.29 27.48 64.67 Q 28.11 64.31 27.48 54.53 Q 27.12 44.48 24.16 35.24 Q 22.28 32.28 26.23 27.52 Q 27.12 26.36 28.02 26.89 Q 28.83 27.52 29.99 29.59 Q 33.31 33.18 40.31 39.37 Q 41.48 40.26 41.39 40.98 Q 41.30 41.79 40.22 41.07 Q 37.44 39.72 34.57 38.29 Q 29.10 34.43 30.44 40.71 Q 30.44 46.45 32.77 60.81 Q 33.13 63.05 35.20 65.11 Q 36.36 66.01 35.56 67.27 Q 34.48 68.70 30.98 70.41 Q 29.90 70.95 28.29 69.96 Q 21.74 66.46 18.06 65.38 Z",
+                "M 72.07 66.19 Q 75.30 75.88 79.07 78.75 Q 80.77 80.72 79.25 82.61 Q 75.75 85.30 71.08 86.82 Q 69.47 87.09 67.94 86.38 Q 60.68 82.88 50.27 80.99 Q 48.56 80.72 48.83 79.83 Q 49.19 78.93 51.08 78.48 Q 53.59 77.40 57.18 78.84 Q 62.38 79.92 67.49 81.08 Q 68.84 81.44 69.38 80.90 Q 70.46 79.74 70.01 77.67 Q 68.39 71.12 66.60 65.92 C 65.70 63.41 71.17 63.68 72.07 66.19 Z",
+                "M 53.77 58.47 Q 54.31 58.47 55.02 58.65 Q 61.04 60.54 73.95 62.69 Q 75.03 62.96 75.12 63.86 Q 75.12 64.67 72.07 66.19 C 70.28 67.09 69.20 66.73 66.60 65.92 Q 59.24 63.50 53.32 61.97 C 50.72 61.26 51.08 58.21 53.77 58.47 Z",
+                "M 89.83 33.00 Q 88.40 37.03 87.41 44.03 Q 87.32 45.47 86.60 46.00 Q 85.80 46.54 85.44 44.57 Q 83.55 36.14 82.30 34.61 Q 80.86 33.00 77.27 31.83 Q 72.61 30.66 66.06 30.30 Q 58.97 30.21 55.74 31.29 Q 53.05 32.46 52.42 34.34 Q 51.26 37.39 51.35 45.20 Q 51.88 53.90 53.59 57.94 Q 53.68 58.30 53.77 58.47 C 54.58 60.90 54.58 60.90 53.32 61.97 Q 53.23 62.24 52.96 62.42 Q 48.30 66.01 46.77 65.65 Q 45.33 65.02 46.05 63.41 Q 47.94 59.91 47.40 54.71 Q 46.77 37.66 47.85 34.07 Q 48.92 30.48 51.61 28.60 Q 56.73 24.74 76.20 26.00 Q 84.90 26.81 88.22 28.69 Q 91.00 30.12 89.83 33.00 Z"
+              ]}
+            };
 
-            var allStrokes = [];
+            // --- 字符布局参数 ---
             var screenW = window.innerWidth;
             var screenH = window.innerHeight;
+            var centerY = screenH / 2;
+            // Layout: [Icon 42] [gap 28] [我 100] [gap 22] [的 90] [gap 22] [笔 100] [gap 22] [记 85]
+            var totalLayoutW = 42 + 28 + 100 + 22 + 90 + 22 + 100 + 22 + 85;
+            var layoutStartX = (screenW - totalLayoutW) / 2;
+            var charDefs = [
+                { text: '我', x: layoutStartX + 42 + 28,         w: 100, h: 120 },
+                { text: '的', x: layoutStartX + 42 + 28 + 100 + 22, w: 90,  h: 120 },
+                { text: '笔', x: layoutStartX + 42 + 28 + 100 + 22 + 90 + 22,  w: 100, h: 120 },
+                { text: '记', x: layoutStartX + 42 + 28 + 100 + 22 + 90 + 22 + 100 + 22, w: 85, h: 120 }
+            ];
+            var iconTargetX = layoutStartX;
+            var iconTargetY = centerY;
 
-            function makeStripData(el, endX, endY, endRZ, isIcon) {
-                var startX = screenW/2 + (Math.random() - 0.5) * screenW * 1.3;
-                var startY = screenH/2 + (Math.random() - 0.5) * screenH * 1.3;
-                var startZ = (Math.random() - 0.5) * 500;
-                var startRX = (Math.random() - 0.5) * 360;
-                var startRY = (Math.random() - 0.5) * 360;
-                var startRZ = (Math.random() - 0.5) * 200;
-                var cp1x = startX + (endX - startX) * (0.28 + Math.random() * 0.18);
-                var cp1y = startY + (endY - startY) * (0.28 + Math.random() * 0.18);
-                var cp1z = startZ * (0.3 + Math.random() * 0.35);
-                var cp2x = startX + (endX - startX) * (0.62 + Math.random() * 0.18);
-                var cp2y = startY + (endY - startY) * (0.62 + Math.random() * 0.18);
-                var cp2z = startZ * (-0.2 + Math.random() * 0.4);
-                var serpAmp = isIcon ? 6 : 8 + Math.random() * 14;
-                var serpFreq = isIcon ? 2.0 : 1.4 + Math.random() * 1.6;
-                return {
-                    el: el, endX: endX, endY: endY, endRZ: endRZ,
-                    start:  { x: startX, y: startY, z: startZ, rx: startRX, ry: startRY, rz: startRZ, scale: 0.25 },
-                    end:    { x: endX, y: endY, z: 0, rx: 0, ry: 0, rz: endRZ, scale: 1 },
-                    cp1:    { x: cp1x, y: cp1y, z: cp1z, rx: startRX*0.55, ry: startRY*0.55, rz: startRZ*0.55, scale: 0.4 },
-                    cp2:    { x: cp2x, y: cp2y, z: cp2z, rx: startRX*0.15, ry: startRY*0.15, rz: endRZ*1.6, scale: 0.85 },
-                    serp:   { amp: serpAmp, freq: serpFreq },
-                    duration: isIcon ? 500 : (isMobile ? 420 + Math.random() * 220 : 580 + Math.random() * 360),
-                    delay: isIcon ? (isMobile ? 500 : 900) : Math.random() * (isMobile ? 280 : 480),
-                    settled: false
-                };
+            var allStrokes = [];
+            var totalStrokeCount = 0;
+
+            // 计算总笔画数用于延迟分配
+            var _ts = 0;
+            for (var ci = 0; ci < charDefs.length; ci++) {
+                _ts += STROKE_DATA[charDefs[ci].text].count;
             }
+            _ts += 1; // book icon
+            var globalStrokeIndex = 0;
 
-            // 生成每个字符的水平切片
-            chars.forEach(function(ch) {
-                var stripH = Math.ceil(ch.ch / stripsPerChar);
-                for (var si = 0; si < stripsPerChar; si++) {
-                    var yOff = si * stripH;
-                    var wrapper = document.createElement('div');
-                    wrapper.className = 'char-strip';
-                    wrapper.style.width = ch.cw + 'px';
-                    wrapper.style.height = stripH + 'px';
-                    wrapper.style.overflow = 'hidden';
-                    var inner = document.createElement('span');
-                    inner.textContent = ch.text;
-                    inner.style.cssText = [
-                        'font-size:' + fontSize + 'px',
-                        'font-family:"Noto Serif SC","Source Han Serif SC","STSong","SimSun","Songti SC",Georgia,serif',
-                        'font-weight:700',
-                        'line-height:1',
-                        'position:absolute',
-                        'top:' + (-yOff) + 'px',
-                        'left:0'
-                    ].join(';');
-                    // 黄白交替
-                    inner.style.color = (si % 2 === 0) ? '#FFE566' : '#ffffff';
-                    wrapper.appendChild(inner);
-
-                    var endX = screenW/2 + ch.cx;
-                    var endY = screenH/2 - ch.ch/2 + yOff + stripH/2;
-                    var data = makeStripData(wrapper, endX, endY, 0, false);
-                    wrapper.style.transform =
-                        'translate3d(' + data.start.x + 'px, ' + data.start.y + 'px, ' + data.start.z + 'px) ' +
-                        'rotateX(' + data.start.rx + 'deg) rotateY(' + data.start.ry + 'deg) rotateZ(' + data.start.rz + 'deg) scale(0.25)';
-                    wrapper.style.opacity = '0';
-                    overlay.appendChild(wrapper);
-                    allStrokes.push(data);
-                }
-            });
-
-            // 书图标 SVG
-            var iconSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            iconSVG.setAttribute('width','42'); iconSVG.setAttribute('height','42');
-            iconSVG.setAttribute('viewBox','0 0 24 24');
-            iconSVG.setAttribute('fill','none'); iconSVG.setAttribute('stroke','#FFE566');
-            iconSVG.setAttribute('stroke-width','2');
-            iconSVG.setAttribute('stroke-linecap','round'); iconSVG.setAttribute('stroke-linejoin','round');
-            iconSVG.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
-            iconSVG.classList.add('char-strip','icon-el');
-            iconSVG.style.width = '42px'; iconSVG.style.height = '42px';
-            var iconData = makeStripData(iconSVG, screenW/2 + iconCX, screenH/2, 0, true);
-            iconSVG.style.transform =
-                'translate3d(' + iconData.start.x + 'px, ' + iconData.start.y + 'px, ' + iconData.start.z + 'px) ' +
-                'rotateX(' + iconData.start.rx + 'deg) rotateY(' + iconData.start.ry + 'deg) rotateZ(' + iconData.start.rz + 'deg) scale(0.25)';
-            iconSVG.style.opacity = '0';
-            overlay.appendChild(iconSVG);
-            allStrokes.push(iconData);
-
-            // --- 3D贝塞尔插值 ---
-            function lerp3D(p0, p1, p2, p3, t) {
+            // --- 辅助：贝塞尔计算 ---
+            function cubicBez2D(p0, p1, p2, p3, t) {
                 var u = 1 - t, uu = u * u, uuu = uu * u, tt = t * t, ttt = tt * t;
                 return {
                     x: uuu*p0.x + 3*uu*t*p1.x + 3*u*tt*p2.x + ttt*p3.x,
-                    y: uuu*p0.y + 3*uu*t*p1.y + 3*u*tt*p2.y + ttt*p3.y,
-                    z: uuu*p0.z + 3*uu*t*p1.z + 3*u*tt*p2.z + ttt*p3.z,
-                    rx: uuu*p0.rx + 3*uu*t*p1.rx + 3*u*tt*p2.rx + ttt*p3.rx,
-                    ry: uuu*p0.ry + 3*uu*t*p1.ry + 3*u*tt*p2.ry + ttt*p3.ry,
-                    rz: uuu*p0.rz + 3*uu*t*p1.rz + 3*u*tt*p2.rz + ttt*p3.rz,
-                    scale: uuu*p0.scale + 3*uu*t*p1.scale + 3*u*tt*p2.scale + ttt*p3.scale
+                    y: uuu*p0.y + 3*uu*t*p1.y + 3*u*tt*p2.y + ttt*p3.y
+                };
+            }
+            function bezTangent(p0, p1, p2, p3, t) {
+                var u = 1 - t;
+                var tx = 3*u*u*(p1.x-p0.x) + 6*u*t*(p2.x-p1.x) + 3*t*t*(p3.x-p2.x);
+                var ty = 3*u*u*(p1.y-p0.y) + 6*u*t*(p2.y-p1.y) + 3*t*t*(p3.y-p2.y);
+                var len = Math.sqrt(tx*tx + ty*ty) || 1e-6;
+                return { x: tx/len, y: ty/len };
+            }
+            function bezCurvature(p0, p1, p2, p3, t) {
+                var u = 1 - t;
+                var x1 = 3*u*u*(p1.x-p0.x) + 6*u*t*(p2.x-p1.x) + 3*t*t*(p3.x-p2.x);
+                var y1 = 3*u*u*(p1.y-p0.y) + 6*u*t*(p2.y-p1.y) + 3*t*t*(p3.y-p2.y);
+                var x2 = 6*u*(p2.x-2*p1.x+p0.x) + 6*t*(p3.x-2*p2.x+p1.x);
+                var y2 = 6*u*(p2.y-2*p1.y+p0.y) + 6*t*(p3.y-2*p2.y+p1.y);
+                var denom = Math.pow(x1*x1 + y1*y1, 1.5);
+                if (denom < 1e-6) return 0;
+                return (x1*y2 - y1*x2) / denom;
+            }
+
+            // --- 缓动函数：慢启动 + 物理惯性 ---
+            function easeInInertia(t) {
+                if (t <= 0) return 0;
+                if (t >= 1) return 1;
+                if (t < 0.15) {
+                    // Phase 1: slow start — cubic ease-in
+                    var p = t / 0.15;
+                    return 0.08 * p * p * p;
+                } else if (t < 0.60) {
+                    // Phase 2: acceleration — smoothstep
+                    var p = (t - 0.15) / 0.45;
+                    return 0.08 + 0.87 * p * p * (3 - 2 * p);
+                } else if (t < 0.92) {
+                    // Phase 3: inertia overshoot
+                    var p = (t - 0.60) / 0.32;
+                    return 0.95 + 0.08 * Math.sin(p * Math.PI) * (1 - p);
+                } else {
+                    // Phase 4: elastic settle
+                    var p = (t - 0.92) / 0.08;
+                    return 1.0 - 0.03 * Math.exp(-6 * p) * Math.cos(10 * Math.PI * p);
+                }
+            }
+
+            // --- 为每个笔画生成入口点（视口边缘外侧） ---
+            function getEntryPoint(idx, total, sw, sh) {
+                var edges = ['top','right','bottom','left'];
+                var edge = edges[idx % 4];
+                var frac = idx / Math.max(1, total - 1);
+                var margin = isMobile ? 60 : 100;
+                switch (edge) {
+                    case 'top':    return { x: sw * (0.15 + frac * 0.7), y: -margin };
+                    case 'right':  return { x: sw + margin, y: sh * (0.15 + frac * 0.7) };
+                    case 'bottom': return { x: sw * (0.15 + frac * 0.7), y: sh + margin };
+                    case 'left':   return { x: -margin, y: sh * (0.15 + frac * 0.7) };
+                }
+                return { x: -margin, y: sh * 0.5 };
+            }
+
+            // --- 生成弯曲的贝塞尔轨迹 ---
+            function buildTrajectory(start, end) {
+                var dx = end.x - start.x, dy = end.y - start.y;
+                var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                var perpX = -dy / dist, perpY = dx / dist;
+                var arcHeight = dist * (0.18 + Math.random() * 0.28);
+                if (Math.random() > 0.5) { perpX = -perpX; perpY = -perpY; }
+                return {
+                    start: start,
+                    cp1: { x: start.x + dx*0.30 + perpX*arcHeight, y: start.y + dy*0.30 + perpY*arcHeight },
+                    cp2: { x: start.x + dx*0.70 - perpX*arcHeight*0.5, y: start.y + dy*0.70 - perpY*arcHeight*0.5 },
+                    end: end
                 };
             }
 
-            function easeInOutCubic(t) {
-                return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+            var BEND_FACTOR = 22; // 弯曲强度（可调）
+
+            // --- 计算笔画的弯曲transform ---
+            function computeStrokeTransform(traj, t) {
+                var pos = cubicBez2D(traj.start, traj.cp1, traj.cp2, traj.end, t);
+                var tan = bezTangent(traj.start, traj.cp1, traj.cp2, traj.end, t);
+                var curv = bezCurvature(traj.start, traj.cp1, traj.cp2, traj.end, t);
+
+                // 弯曲包络：中段最强，起始/终点衰减至零
+                var bendEnv = Math.sin(t * Math.PI);
+                // 终点刚性复位：最后8%弯曲线性衰减
+                if (t > 0.92) {
+                    bendEnv *= (1 - (t - 0.92) / 0.08);
+                }
+
+                var skewAngle = curv * bendEnv * BEND_FACTOR;
+                skewAngle = Math.max(-35, Math.min(35, skewAngle)); // 钳制
+
+                var pathAngle = Math.atan2(tan.y, tan.x) * 180 / Math.PI;
+                var sc = 0.25 + t * 0.75; // scale: 0.25 → 1.0
+
+                var tf = 'translate(' + pos.x.toFixed(2) + 'px, ' + pos.y.toFixed(2) + 'px) ';
+                tf += 'rotate(' + pathAngle.toFixed(4) + 'deg) ';
+                tf += 'skewX(' + skewAngle.toFixed(4) + 'deg) ';
+                tf += 'scale(' + sc.toFixed(4) + ')';
+
+                return { x: pos.x, y: pos.y, transform: tf };
             }
 
-            // --- 单帧更新所有活跃笔画 ---
+            // --- 创建字符笔画 SVG 元素 ---
+            charDefs.forEach(function(ch) {
+                var sd = STROKE_DATA[ch.text];
+                if (!sd) return;
+                for (var si = 0; si < sd.strokes.length; si++) {
+                    var pathD = sd.strokes[si];
+                    // 颜色按全局笔画序号交替
+                    var colorClass = (globalStrokeIndex % 2 === 0) ? 'yellow' : 'white';
+                    var gradId = colorClass === 'yellow' ? 'yellow-resin-grad' : 'white-resin-grad';
+                    var filtId = colorClass === 'yellow' ? 'yellow-resin-filter' : 'white-resin-filter';
+
+                    var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svgEl.setAttribute('viewBox', '0 0 100 120');
+                    svgEl.setAttribute('width', ch.w);
+                    svgEl.setAttribute('height', ch.h);
+                    svgEl.classList.add('stroke-svg');
+                    svgEl.style.width = ch.w + 'px';
+                    svgEl.style.height = ch.h + 'px';
+                    svgEl.style.overflow = 'visible';
+
+                    var pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    pathEl.setAttribute('d', pathD);
+                    pathEl.setAttribute('fill', 'url(#' + gradId + ')');
+                    pathEl.setAttribute('filter', 'url(#' + filtId + ')');
+                    svgEl.appendChild(pathEl);
+
+                    // 目标位置 = 字符区域的左上角
+                    var endX = ch.x;
+                    var endY = centerY - ch.h / 2;
+
+                    // 入口点（从视口边缘外侧）
+                    var entry = getEntryPoint(globalStrokeIndex, _ts, screenW, screenH);
+                    var traj = buildTrajectory(entry, { x: endX, y: endY });
+
+                    // 初始状态（在入口位置，缩小透明）
+                    svgEl.style.transform = 'translate(' + entry.x.toFixed(2) + 'px, ' + entry.y.toFixed(2) + 'px) scale(0.25)';
+                    svgEl.style.opacity = '0';
+
+                    overlay.appendChild(svgEl);
+
+                    allStrokes.push({
+                        el: svgEl,
+                        endX: endX,
+                        endY: endY,
+                        traj: traj,
+                        delayFrac: globalStrokeIndex * 0.004,
+                        colorClass: colorClass,
+                        settled: false
+                    });
+
+                    globalStrokeIndex++;
+                    totalStrokeCount++;
+                }
+            });
+
+            // --- 书图标 SVG ---
+            var iconEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            iconEl.setAttribute('width','42'); iconEl.setAttribute('height','42');
+            iconEl.setAttribute('viewBox','0 0 24 24');
+            iconEl.setAttribute('fill','none'); iconEl.setAttribute('stroke','#FFE566');
+            iconEl.setAttribute('stroke-width','2');
+            iconEl.setAttribute('stroke-linecap','round'); iconEl.setAttribute('stroke-linejoin','round');
+            iconEl.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
+            iconEl.classList.add('stroke-svg');
+            iconEl.style.width = '42px'; iconEl.style.height = '42px';
+            iconEl.style.overflow = 'visible';
+            iconEl.style.filter = 'drop-shadow(0 2px 6px rgba(255,229,102,0.35)) drop-shadow(0 0 2px rgba(255,229,102,0.25))';
+
+            var iconEntry = getEntryPoint(globalStrokeIndex, _ts, screenW, screenH);
+            var iconTraj = buildTrajectory(iconEntry, { x: iconTargetX, y: iconTargetY });
+            iconEl.style.transform = 'translate(' + iconEntry.x.toFixed(2) + 'px, ' + iconEntry.y.toFixed(2) + 'px) scale(0.25)';
+            iconEl.style.opacity = '0';
+            overlay.appendChild(iconEl);
+
+            allStrokes.push({
+                el: iconEl,
+                endX: iconTargetX,
+                endY: iconTargetY,
+                traj: iconTraj,
+                delayFrac: globalStrokeIndex * 0.004,
+                colorClass: 'yellow',
+                settled: false,
+                isIcon: true
+            });
+            globalStrokeIndex++;
+            totalStrokeCount++;
+
+            // --- 动画循环 ---
+            var GLOBAL_DURATION = isMobile ? 1000 : 1300;
             var settledCount = 0;
             var allSettled = false;
-            var startTime = performance.now();
+            var animStartTime = performance.now();
 
             function frame(now) {
                 var allDone = true;
+                var globalT = (now - animStartTime) / GLOBAL_DURATION;
+                if (globalT > 1.08) { globalT = 1.08; }
+
                 for (var i = 0; i < allStrokes.length; i++) {
                     var s = allStrokes[i];
                     if (s.settled) continue;
 
-                    var elapsed = now - startTime - s.delay;
-                    if (elapsed < 0) { allDone = false; continue; }
+                    var localT = Math.max(0, Math.min(1, (globalT - s.delayFrac) / (1.0 - s.delayFrac)));
 
-                    var t = Math.min(1, elapsed / s.duration);
-                    var eased = easeInOutCubic(t);
+                    if (localT <= 0) { allDone = false; continue; }
 
-                    // 弹性overshoot（最后18%）
-                    if (t > 0.82) {
-                        var et = (t - 0.82) / 0.18;
-                        eased += Math.sin(et * Math.PI * 3.5) * (1 - et) * 0.045;
-                        eased = Math.min(1.06, Math.max(0, eased));
-                    }
+                    var eased = easeInInertia(localT);
+                    var tform = computeStrokeTransform(s.traj, Math.min(1, eased));
 
-                    var pos = lerp3D(s.start, s.cp1, s.cp2, s.end, Math.min(1, eased));
+                    s.el.style.transform = tform.transform;
+                    s.el.style.opacity = Math.min(1, localT * 3.5);
 
-                    // 蛇形弯曲（中段最强，两头衰减）
-                    var snakeEnv = Math.sin(t * Math.PI);
-                    var snake = Math.sin(t * s.serp.freq * Math.PI * 2.2) * s.serp.amp * snakeEnv * (1 - t * 0.45);
-
-                    s.el.style.transform =
-                        'translate3d(' + pos.x + 'px, ' + pos.y + 'px, ' + pos.z + 'px) ' +
-                        'rotateX(' + pos.rx + 'deg) ' +
-                        'rotateY(' + pos.ry + 'deg) ' +
-                        'rotateZ(' + (pos.rz + snake) + 'deg) ' +
-                        'scale(' + pos.scale + ')';
-
-                    s.el.style.opacity = Math.min(1, t * 2.8);
-
-                    if (t >= 1) {
+                    if (localT >= 1) {
                         s.settled = true;
-                        // 锁定最终姿态
-                        s.el.style.transform =
-                            'translate3d(' + s.end.x + 'px, ' + s.end.y + 'px, 0px) ' +
-                            'rotateX(0deg) rotateY(0deg) rotateZ(' + s.end.rz + 'deg) scale(1)';
+                        // 终点刚性复位：锁定最终姿态（无弯曲、无旋转）
+                        s.el.style.transform = 'translate(' + s.endX.toFixed(2) + 'px, ' + s.endY.toFixed(2) + 'px) rotate(0deg) skewX(0deg) scale(1)';
                         s.el.style.opacity = '1';
                         // 存储呼吸动画基准
-                        s.el.style.setProperty('--bx', s.end.x + 'px');
-                        s.el.style.setProperty('--by', s.end.y + 'px');
-                        s.el.style.setProperty('--brz', s.end.rz + 'deg');
+                        s.el.style.setProperty('--bx', s.endX.toFixed(2) + 'px');
+                        s.el.style.setProperty('--by', s.endY.toFixed(2) + 'px');
+                        s.el.style.setProperty('--brz', '0deg');
                         settledCount++;
                     } else {
                         allDone = false;
@@ -1972,9 +2091,13 @@
                     s.el.style.transition = 'all 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)';
                     s.el.style.transitionDelay = (i * 0.007) + 's';
                     s.el.style.transform =
-                        'translate3d(' + (s.end.x + scX) + 'px, ' + (s.end.y + scY) + 'px, 0px) ' +
-                        'rotateZ(' + (s.end.rz + scR) + 'deg) scale(0)';
+                        'translate(' + (s.endX + scX).toFixed(2) + 'px, ' + (s.endY + scY).toFixed(2) + 'px) ' +
+                        'rotate(' + scR + 'deg) scale(0)';
                     s.el.style.opacity = '0';
+                    // 清除 CSS 变量防止残留
+                    s.el.style.removeProperty('--bx');
+                    s.el.style.removeProperty('--by');
+                    s.el.style.removeProperty('--brz');
                 });
 
                 revealPage();
