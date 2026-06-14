@@ -30,9 +30,9 @@
             --bg-glass: rgba(14, 14, 20, 0.85);
             --bg-glass-heavy: rgba(14, 14, 20, 0.95);
             --bg-code: #12121a;
-            --bg-highlight: rgba(74, 158, 255, 0.18);
+            --bg-highlight: rgba(255, 229, 102, 0.18);
 
-            /* 文字层级 */
+            /* 文字层级 — 保持白色系不变 */
             --text-body: #e8e8ed;
             --text-heading: #ffffff;
             --text-secondary: #c8c8d4;
@@ -41,18 +41,18 @@
             --text-placeholder: #5a5a72;
             --text-accent: #ffffff;
 
-            /* 强调色 — 电光蓝 + 珊瑚橙撞色 */
-            --accent: #4a9eff;
-            --accent-light: #6db5ff;
-            --accent-mid: #3b82f6;
-            --accent-dark: #2563eb;
-            --accent-warm: #ff6b6b;
-            --accent-warm-light: #ff8e8e;
-            --accent-rgb: 74, 158, 255;
-            --accent-warm-rgb: 255, 107, 107;
+            /* 强调色 — 柠檬黄 + 暖金撞色 */
+            --accent: #FFE566;
+            --accent-light: #FFED80;
+            --accent-mid: #F0D84C;
+            --accent-dark: #C8A818;
+            --accent-warm: #FFB347;
+            --accent-warm-light: #FFC773;
+            --accent-rgb: 255, 229, 102;
+            --accent-warm-rgb: 255, 179, 71;
             --accent-glow: rgba(var(--accent-rgb), 0.15);
-            --deco-muted: #3a3a50;
-            --deco-highlight-start: #4a9eff;
+            --deco-muted: rgba(255, 229, 102, 0.12);
+            --deco-highlight-start: #FFE566;
             --poetry-first-color: #e8e8ed;
 
             /* 边框 */
@@ -405,7 +405,7 @@
             font-weight: 700;
             line-height: 1.4;
             text-align: center;
-            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            background: linear-gradient(135deg, #ffffff, #FFED80);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1369,101 +1369,98 @@
         }
 
         /* ========================================
-           高速几何碎片开场动画（Shatter & Assemble）
+           3D蛇形笔画汇聚开场动画（Serpentine Assembly）
            ======================================== */
-        .shatter-overlay {
+        .keystroke-overlay {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: #060608;
+            background: #070D1A;
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
             pointer-events: none;
-            transition: opacity 0.35s ease-out;
+            cursor: default;
+            transition: opacity 0.5s ease-out;
         }
-        .shatter-overlay.fade-out {
+        .keystroke-overlay.fade-out {
             opacity: 0;
         }
 
-        /* 碎片 */
-        .fragment {
+        /* 笔画 — 3D空间中 */
+        .stroke {
             position: absolute;
-            width: var(--frag-w);
-            height: var(--frag-h);
-            top: 50%;
+            top: 0; left: 0;
+            transform-origin: center center;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 4px;
+        }
+        /* 玻璃反光扫过 */
+        .stroke.glazed {
+            animation: glaze-sweep 0.7s ease-out forwards;
+        }
+        @keyframes glaze-sweep {
+            0%   { filter: brightness(1); }
+            50%  { filter: brightness(1.4); }
+            100% { filter: brightness(1); }
+        }
+        /* 待命呼吸 */
+        .stroke.breathe {
+            animation: stroke-breathe 2.8s ease-in-out infinite;
+        }
+        @keyframes stroke-breathe {
+            0%, 100% { transform: translate3d(var(--bx), var(--by), 0) rotateZ(var(--brz)) scale(1); }
+            50%      { transform: translate3d(var(--bx), var(--by), 0) rotateZ(var(--brz)) scale(1.018); }
+        }
+
+        /* 黄色笔画 — Apple柔和树脂质感 */
+        .stroke.yellow {
+            background: linear-gradient(135deg,
+                rgba(255, 242, 160, 0.88) 0%,
+                rgba(255, 229, 102, 0.58) 35%,
+                rgba(240, 210, 70, 0.68) 100%);
+            box-shadow:
+                inset 0 1px 3px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(180,150,50,0.22),
+                0 3px 14px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,229,102,0.2);
+        }
+        /* 白色笔画 — Apple柔和树脂质感 */
+        .stroke.white {
+            background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.92) 0%,
+                rgba(248, 248, 252, 0.58) 35%,
+                rgba(228, 228, 238, 0.68) 100%);
+            box-shadow:
+                inset 0 1px 3px rgba(255,255,255,0.6),
+                inset 0 -1px 2px rgba(150,150,170,0.18),
+                0 3px 14px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.25);
+        }
+
+        /* 点击提示 */
+        .click-hint {
+            position: absolute;
+            bottom: 14%;
             left: 50%;
-            margin-left: calc(var(--frag-w) / -2);
-            margin-top: calc(var(--frag-h) / -2);
-            opacity: 0;
+            transform: translateX(-50%);
+            color: rgba(255, 229, 102, 0.55);
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
             pointer-events: none;
-            will-change: transform, opacity;
-        }
-        /* 碎片飞入 */
-        .fragment.fly-in {
-            animation: frag-fly 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        /* 碎片爆散 */
-        .fragment.scatter {
-            animation: frag-scatter 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-        }
-        /* 聚合呼吸 */
-        .fragment.hold {
-            animation: frag-breathe 0.8s ease-in-out infinite;
-        }
-
-        @keyframes frag-fly {
-            0% {
-                transform: translate3d(var(--from-x), var(--from-y), 0)
-                           rotateX(var(--from-rx))
-                           rotateY(var(--from-ry))
-                           rotateZ(var(--from-rz))
-                           scale(0.2);
-                opacity: 0;
-            }
-            100% {
-                transform: translate3d(0, 0, 0)
-                           rotateX(0) rotateY(0) rotateZ(0)
-                           scale(1);
-                opacity: 1;
-            }
-        }
-        @keyframes frag-scatter {
-            0% {
-                transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate3d(var(--sc-x), var(--sc-y), 0)
-                           rotateX(var(--sc-rx))
-                           rotateY(var(--sc-ry))
-                           rotateZ(var(--sc-rz))
-                           scale(0);
-                opacity: 0;
-            }
-        }
-        @keyframes frag-breathe {
-            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-            50%      { transform: translate3d(0, 0, 0) scale(1.03); }
-        }
-
-        /* 中央闪光 */
-        .shatter-flash {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 200px; height: 200px;
-            margin-left: -100px; margin-top: -100px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, transparent 70%);
             opacity: 0;
-            transform: scale(0);
-            pointer-events: none;
-            will-change: transform, opacity;
+            transition: opacity 0.6s ease;
         }
-        .shatter-flash.burst {
-            animation: flash-burst 0.45s ease-out forwards;
+        .click-hint.visible {
+            opacity: 1;
+            animation: hint-pulse 2.4s ease-in-out infinite;
         }
-        @keyframes flash-burst {
-            0%   { transform: scale(0); opacity: 0; }
-            35%  { transform: scale(2.8); opacity: 0.85; }
-            100% { transform: scale(5); opacity: 0; }
+        @keyframes hint-pulse {
+            0%, 100% { opacity: 0.35; }
+            50%      { opacity: 0.75; }
         }
 
         /* 首页入场 */
@@ -1477,15 +1474,15 @@
 
         /* 移动端 */
         @media (max-width: 768px) {
-            .shatter-flash { width: 140px; height: 140px; margin-left: -70px; margin-top: -70px; }
-            .fragment.fly-in { animation-duration: 0.4s; }
+            .keystroke-overlay { perspective: 800px; }
+            .stroke.yellow, .stroke.white { box-shadow: inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.4); }
         }
     </style>
 </head>
 <body>
     {% if page.is_home %}
-    <div class="shatter-overlay" id="shatter-overlay">
-        <div class="shatter-flash" id="shatter-flash"></div>
+    <div class="keystroke-overlay" id="keystroke-overlay">
+        <div class="click-hint" id="click-hint">点击进入</div>
     </div>
     {% endif %}
     <div class="cursor-glow" id="cursor-glow"></div>
@@ -1718,32 +1715,23 @@
         })();
 
         // ========================================
-        // 4.2 高速几何碎片开场动画（Shatter & Assemble）
+        // 4.2 3D蛇形笔画汇聚开场动画（Serpentine Assembly）
         // ========================================
-        (function initShatter() {
-            var overlay = document.getElementById('shatter-overlay');
+        (function initKeystroke() {
+            var overlay = document.getElementById('keystroke-overlay');
             if (!overlay) {
-                // 非首页：直接显示
                 var c = document.querySelector('.container');
                 if (c) c.classList.add('entrance-start');
                 return;
             }
 
             var container = document.querySelector('.container');
-            var flash = document.getElementById('shatter-flash');
+            var hint = document.getElementById('click-hint');
             var isMobile = window.matchMedia('(max-width: 768px)').matches;
 
-            // --- 兜底保护：无论发生什么，3秒后强制显示页面 ---
-            var safetyTimer = setTimeout(function() {
-                if (overlay && overlay.parentNode) {
-                    overlay.classList.add('fade-out');
-                    if (container) container.classList.add('entrance-start');
-                    setTimeout(function() {
-                        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                    }, 400);
-                }
-            }, 3000);
-
+            // 8秒兜底
+            var safetyTimer = setTimeout(revealPage, 8000);
+            var revealed = false;
             function revealPage() {
                 if (revealed) return;
                 revealed = true;
@@ -1752,135 +1740,251 @@
                 if (container) container.classList.add('entrance-start');
                 setTimeout(function() {
                     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                }, 400);
+                }, 550);
             }
 
-            var revealed = false;
             try {
 
-            // --- 碎片配置 ---
-            var shapes = [
-                'polygon(50% 0%, 0% 100%, 100% 100%)',          // 三角形
-                'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',  // 菱形
-                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', // 六边形
-                '',                                                // 圆角矩形（用 border-radius）
-                '',                                                // 圆角矩形
-                '',                                                // 圆角矩形
-                'polygon(50% 0%, 0% 100%, 100% 100%)',
-                'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
-            ];
-            var colors = [
-                'rgba(74,158,255,0.92)',   // 电光蓝
-                'rgba(255,107,107,0.88)',  // 珊瑚橙
-                'rgba(255,255,255,0.85)',  // 亮白
-                'rgba(59,130,246,0.90)',   // 深蓝
-                'rgba(255,142,142,0.86)',  // 浅橙
-                'rgba(200,210,225,0.82)',  // 银白
-                'rgba(74,158,255,0.88)',
-                'rgba(255,255,255,0.90)'
-            ];
+            // --- 笔画数据定义 ---
+            // 字符中心X偏移（相对整体中心）
+            var charCX = { wo: -170, de: -42, bi: 82, ji: 198 };
 
-            var fragCount = isMobile ? 10 : 16;
-            var fragments = [];
-            var fragmentEls = [];
-
-            // --- 生成碎片 DOM ---
-            for (var i = 0; i < fragCount; i++) {
-                var el = document.createElement('div');
-                el.className = 'fragment';
-                var w = 40 + Math.random() * 100;
-                var h = 40 + Math.random() * 100;
-                el.style.setProperty('--frag-w', w + 'px');
-                el.style.setProperty('--frag-h', h + 'px');
-
-                // 随机形状
-                var shapeI = Math.floor(Math.random() * shapes.length);
-                if (shapes[shapeI]) {
-                    el.style.clipPath = shapes[shapeI];
-                } else {
-                    el.style.borderRadius = (8 + Math.random() * 20) + 'px';
-                }
-
-                // 随机颜色
-                el.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-                // 飞入起始：屏幕外随机方向
-                var angle = Math.random() * Math.PI * 2;
-                var dist = 400 + Math.random() * 600;
-                var fromX = Math.cos(angle) * dist;
-                var fromY = Math.sin(angle) * dist;
-                el.style.setProperty('--from-x', fromX + 'px');
-                el.style.setProperty('--from-y', fromY + 'px');
-                el.style.setProperty('--from-rx', ((Math.random() - 0.5) * 360) + 'deg');
-                el.style.setProperty('--from-ry', ((Math.random() - 0.5) * 360) + 'deg');
-                el.style.setProperty('--from-rz', ((Math.random() - 0.5) * 180) + 'deg');
-
-                // 爆散方向（飞出反方向）
-                el.style.setProperty('--sc-x', (-fromX * (0.8 + Math.random() * 0.6)) + 'px');
-                el.style.setProperty('--sc-y', (-fromY * (0.8 + Math.random() * 0.6)) + 'px');
-                el.style.setProperty('--sc-rx', ((Math.random() - 0.5) * 540) + 'deg');
-                el.style.setProperty('--sc-ry', ((Math.random() - 0.5) * 540) + 'deg');
-                el.style.setProperty('--sc-rz', ((Math.random() - 0.5) * 360) + 'deg');
-
-                overlay.appendChild(el);
-                fragmentEls.push(el);
-                fragments.push({ el: el, delay: 0 });
+            function S(type, w, h, cx, cy, rz, color) {
+                return { type: type, w: w, h: h, cx: cx, cy: cy, rz: rz, color: color };
             }
 
-            // --- 阶段1：碎片飞入（错峰） ---
-            var staggerBase = isMobile ? 28 : 35;
-            var totalFlyIn = 0;
-            fragmentEls.forEach(function(el, i) {
-                var delay = i * staggerBase + Math.random() * 20;
-                fragments[i].delay = delay;
-                totalFlyIn = Math.max(totalFlyIn, delay + 550); // 550 = 动画时长
-                setTimeout(function() {
-                    el.classList.add('fly-in');
-                }, delay);
+            var strokeDefs = [
+                // 我 (7笔)
+                S('p', 10, 72, -22, -18, -34, 'yellow'),
+                S('h', 68, 10, 8, -32, 4, 'white'),
+                S('g', 10, 78, -8, 5, 2, 'yellow'),
+                S('p', 8, 42, -30, 22, -46, 'white'),
+                S('g', 10, 82, 14, -5, 8, 'yellow'),
+                S('p', 8, 36, 16, -20, -22, 'white'),
+                S('d', 13, 15, 24, -26, -14, 'yellow'),
+                // 的 (8笔)
+                S('p', 10, 62, -16, -20, -30, 'white'),
+                S('v', 9, 60, -26, 5, 0, 'yellow'),
+                S('g', 10, 64, 6, -10, 0, 'white'),
+                S('h', 34, 9, 8, -18, 0, 'yellow'),
+                S('h', 32, 8, 8, 0, 0, 'white'),
+                S('g', 10, 36, 20, -4, 0, 'yellow'),
+                S('h', 30, 8, 8, 20, 0, 'white'),
+                S('d', 12, 15, 24, -20, -10, 'yellow'),
+                // 笔 (10笔)
+                S('p', 10, 64, -16, -24, -30, 'yellow'),
+                S('h', 54, 10, 6, -34, 2, 'white'),
+                S('d', 12, 14, 20, -32, -12, 'yellow'),
+                S('p', 9, 58, -20, -5, -24, 'white'),
+                S('h', 50, 9, 8, -14, 0, 'yellow'),
+                S('h', 48, 8, 8, 0, -2, 'white'),
+                S('v', 9, 54, 8, 12, 0, 'yellow'),
+                S('g', 10, 52, 2, 18, 0, 'white'),
+                S('h', 42, 8, 2, 32, 0, 'yellow'),
+                S('g', 9, 50, 24, 6, 5, 'white'),
+                // 记 (5笔)
+                S('g', 10, 54, -12, -5, -3, 'white'),
+                S('h', 38, 8, 6, -5, 0, 'yellow'),
+                S('v', 8, 48, 0, 12, -2, 'white'),
+                S('h', 38, 8, 6, 30, 0, 'yellow'),
+                S('g', 9, 48, 28, 4, 8, 'white')
+            ];
+
+            var charGroups = [
+                { name: 'wo', strokes: strokeDefs.slice(0, 7) },
+                { name: 'de', strokes: strokeDefs.slice(7, 15) },
+                { name: 'bi', strokes: strokeDefs.slice(15, 25) },
+                { name: 'ji', strokes: strokeDefs.slice(25, 30) }
+            ];
+
+            // --- 创建笔画DOM + 运动参数 ---
+            var allStrokes = [];
+            var screenW = window.innerWidth;
+            var screenH = window.innerHeight;
+
+            charGroups.forEach(function(cg) {
+                var cc = charCX[cg.name];
+                cg.strokes.forEach(function(sd) {
+                    var el = document.createElement('div');
+                    el.className = 'stroke ' + sd.color;
+                    el.style.width = sd.w + 'px';
+                    el.style.height = sd.h + 'px';
+
+                    var endX = cc.cx + sd.cx;
+                    var endY = cc.cy + sd.cy;
+                    var endRZ = sd.rz;
+
+                    // 全视口随机散布
+                    var startX = (Math.random() - 0.5) * screenW * 1.3;
+                    var startY = (Math.random() - 0.5) * screenH * 1.3;
+                    var startZ = (Math.random() - 0.5) * 500;
+                    var startRX = (Math.random() - 0.5) * 360;
+                    var startRY = (Math.random() - 0.5) * 360;
+                    var startRZ = (Math.random() - 0.5) * 200;
+
+                    // 贝塞尔控制点（随机化使每条路径不同）
+                    var cp1x = startX + (endX - startX) * (0.28 + Math.random() * 0.18);
+                    var cp1y = startY + (endY - startY) * (0.28 + Math.random() * 0.18);
+                    var cp1z = startZ * (0.3 + Math.random() * 0.35);
+                    var cp2x = startX + (endX - startX) * (0.62 + Math.random() * 0.18);
+                    var cp2y = startY + (endY - startY) * (0.62 + Math.random() * 0.18);
+                    var cp2z = startZ * (-0.2 + Math.random() * 0.4);
+
+                    var serpAmp = 10 + Math.random() * 16;
+                    var serpFreq = 1.4 + Math.random() * 1.8;
+
+                    var data = {
+                        el: el,
+                        endX: endX, endY: endY, endRZ: endRZ,
+                        start:  { x: startX, y: startY, z: startZ, rx: startRX, ry: startRY, rz: startRZ, scale: 0.25 },
+                        end:    { x: endX, y: endY, z: 0, rx: 0, ry: 0, rz: endRZ, scale: 1 },
+                        cp1:    { x: cp1x, y: cp1y, z: cp1z, rx: startRX*0.55, ry: startRY*0.55, rz: startRZ*0.55, scale: 0.4 },
+                        cp2:    { x: cp2x, y: cp2y, z: cp2z, rx: startRX*0.15, ry: startRY*0.15, rz: endRZ*1.6, scale: 0.85 },
+                        serp:   { amp: serpAmp, freq: serpFreq },
+                        duration: isMobile ? 450 + Math.random() * 250 : 600 + Math.random() * 380,
+                        delay: Math.random() * (isMobile ? 300 : 500),
+                        settled: false
+                    };
+
+                    // 初始散布位置
+                    el.style.transform =
+                        'translate3d(' + startX + 'px, ' + startY + 'px, ' + startZ + 'px) ' +
+                        'rotateX(' + startRX + 'deg) rotateY(' + startRY + 'deg) rotateZ(' + startRZ + 'deg) scale(0.25)';
+                    el.style.opacity = '0';
+
+                    overlay.appendChild(el);
+                    allStrokes.push(data);
+                });
             });
 
-            // --- 阶段2：聚合呼吸 ---
-            var holdStart = totalFlyIn + 80;
-            setTimeout(function() {
-                fragmentEls.forEach(function(el) {
-                    el.classList.remove('fly-in');
-                    el.classList.add('hold');
-                });
-            }, holdStart);
+            // --- 3D贝塞尔插值 ---
+            function lerp3D(p0, p1, p2, p3, t) {
+                var u = 1 - t, uu = u * u, uuu = uu * u, tt = t * t, ttt = tt * t;
+                return {
+                    x: uuu*p0.x + 3*uu*t*p1.x + 3*u*tt*p2.x + ttt*p3.x,
+                    y: uuu*p0.y + 3*uu*t*p1.y + 3*u*tt*p2.y + ttt*p3.y,
+                    z: uuu*p0.z + 3*uu*t*p1.z + 3*u*tt*p2.z + ttt*p3.z,
+                    rx: uuu*p0.rx + 3*uu*t*p1.rx + 3*u*tt*p2.rx + ttt*p3.rx,
+                    ry: uuu*p0.ry + 3*uu*t*p1.ry + 3*u*tt*p2.ry + ttt*p3.ry,
+                    rz: uuu*p0.rz + 3*uu*t*p1.rz + 3*u*tt*p2.rz + ttt*p3.rz,
+                    scale: uuu*p0.scale + 3*uu*t*p1.scale + 3*u*tt*p2.scale + ttt*p3.scale
+                };
+            }
 
-            // --- 阶段3：爆散 + 闪光 + 过渡 ---
-            var burstAt = holdStart + 280;
-            setTimeout(function() {
-                // 爆散
-                fragmentEls.forEach(function(el, i) {
-                    el.classList.remove('hold');
-                    // 微错峰爆散
-                    setTimeout(function() {
-                        el.classList.add('scatter');
-                    }, i * 8);
-                });
-                // 闪光
-                flash.classList.add('burst');
-                // 淡出 overlay + 首页入场
-                setTimeout(function() { revealPage(); }, 200);
-            }, burstAt);
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+            }
 
-            // --- 点击跳过 ---
-            overlay.style.pointerEvents = 'auto';
-            overlay.addEventListener('click', function skip() {
-                overlay.removeEventListener('click', skip);
+            // --- 单帧更新所有活跃笔画 ---
+            var settledCount = 0;
+            var allSettled = false;
+            var startTime = performance.now();
+
+            function frame(now) {
+                var allDone = true;
+                for (var i = 0; i < allStrokes.length; i++) {
+                    var s = allStrokes[i];
+                    if (s.settled) continue;
+
+                    var elapsed = now - startTime - s.delay;
+                    if (elapsed < 0) { allDone = false; continue; }
+
+                    var t = Math.min(1, elapsed / s.duration);
+                    var eased = easeInOutCubic(t);
+
+                    // 弹性overshoot（最后18%）
+                    if (t > 0.82) {
+                        var et = (t - 0.82) / 0.18;
+                        eased += Math.sin(et * Math.PI * 3.5) * (1 - et) * 0.045;
+                        eased = Math.min(1.06, Math.max(0, eased));
+                    }
+
+                    var pos = lerp3D(s.start, s.cp1, s.cp2, s.end, Math.min(1, eased));
+
+                    // 蛇形弯曲（中段最强，两头衰减）
+                    var snakeEnv = Math.sin(t * Math.PI);
+                    var snake = Math.sin(t * s.serp.freq * Math.PI * 2.2) * s.serp.amp * snakeEnv * (1 - t * 0.45);
+
+                    s.el.style.transform =
+                        'translate3d(' + pos.x + 'px, ' + pos.y + 'px, ' + pos.z + 'px) ' +
+                        'rotateX(' + pos.rx + 'deg) ' +
+                        'rotateY(' + pos.ry + 'deg) ' +
+                        'rotateZ(' + (pos.rz + snake) + 'deg) ' +
+                        'scale(' + pos.scale + ')';
+
+                    s.el.style.opacity = Math.min(1, t * 2.8);
+
+                    if (t >= 1) {
+                        s.settled = true;
+                        // 锁定最终姿态
+                        s.el.style.transform =
+                            'translate3d(' + s.end.x + 'px, ' + s.end.y + 'px, 0px) ' +
+                            'rotateX(0deg) rotateY(0deg) rotateZ(' + s.end.rz + 'deg) scale(1)';
+                        s.el.style.opacity = '1';
+                        // 存储呼吸动画基准
+                        s.el.style.setProperty('--bx', s.end.x + 'px');
+                        s.el.style.setProperty('--by', s.end.y + 'px');
+                        s.el.style.setProperty('--brz', s.end.rz + 'deg');
+                        settledCount++;
+                    } else {
+                        allDone = false;
+                    }
+                }
+
+                if (!allDone) {
+                    requestAnimationFrame(frame);
+                } else if (!allSettled) {
+                    allSettled = true;
+                    onAllSettled();
+                }
+            }
+
+            // --- 全部就位：反光 → 呼吸 → 等点击 ---
+            var dismissed = false;
+            function onAllSettled() {
+                setTimeout(function() {
+                    allStrokes.forEach(function(s) { s.el.classList.add('glazed'); });
+                }, 350);
+
+                setTimeout(function() {
+                    allStrokes.forEach(function(s) {
+                        s.el.classList.remove('glazed');
+                        s.el.classList.add('breathe');
+                    });
+                    if (hint) hint.classList.add('visible');
+                    overlay.style.pointerEvents = 'auto';
+                    overlay.style.cursor = 'pointer';
+                }, 1200);
+            }
+
+            // --- 点击 → 笔画爆散 + 页面淡入 ---
+            overlay.addEventListener('click', function dismiss() {
+                if (dismissed) return;
+                dismissed = true;
                 overlay.style.pointerEvents = 'none';
-                // 立即爆散
-                fragmentEls.forEach(function(el, i) {
-                    el.classList.remove('fly-in', 'hold');
-                    setTimeout(function() { el.classList.add('scatter'); }, i * 6);
+                overlay.style.cursor = 'default';
+                if (hint) hint.classList.remove('visible');
+
+                allStrokes.forEach(function(s, i) {
+                    s.el.classList.remove('breathe', 'glazed');
+                    var scX = (Math.random() - 0.5) * 900;
+                    var scY = (Math.random() - 0.5) * 700;
+                    var scR = (Math.random() - 0.5) * 420;
+                    s.el.style.transition = 'all 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                    s.el.style.transitionDelay = (i * 0.007) + 's';
+                    s.el.style.transform =
+                        'translate3d(' + (s.end.x + scX) + 'px, ' + (s.end.y + scY) + 'px, 0px) ' +
+                        'rotateZ(' + (s.end.rz + scR) + 'deg) scale(0)';
+                    s.el.style.opacity = '0';
                 });
-                flash.classList.add('burst');
+
                 revealPage();
             });
 
+            // 启动
+            requestAnimationFrame(frame);
+
             } catch(e) {
-                // JS 错误兜底：直接显示页面
                 revealPage();
             }
         })();
@@ -2070,8 +2174,8 @@
                 'bottom: 30px',
                 'left: 50%',
                 'transform: translateX(-50%)',
-                'background: #1a314f',
-                'color: var(--bg-page)',
+                'background: #0D1B3E',
+                'color: #FFE566',
                 'padding: 10px 24px',
                 'border-radius: 6px',
                 'font-size: 0.9rem',
