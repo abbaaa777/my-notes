@@ -1386,6 +1386,12 @@
 
         /* 独立笔画容器 — SVG path元素 */
         .stroke-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
 
         /* 玻璃扫光 */
         .stroke-svg.glazed {
