@@ -14,6 +14,9 @@
     <meta property="og:description" content="读书 · 思考 · 诗文 — 个人笔记与诗歌创作集">
     <meta property="og:type" content="website">
     <title>{% if page.title %}{{ page.title }} · 我的笔记{% else %}我的笔记 · My Notes{% endif %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         /* ========================================
            基础重置
@@ -287,7 +290,11 @@
             padding: 0;
         }
 
-        /* 诗歌专属：行间距更宽松，诗题更醒目 */
+        /* 诗歌专属：寒蝉活宋体（Shippori Mincho）+ 宽松排版 */
+        .content.poetry {
+            font-family: "Shippori Mincho", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Songti SC", serif;
+        }
+
         .content.poetry p {
             line-height: 2.4;
             letter-spacing: 0.06em;
@@ -298,6 +305,17 @@
             font-size: 1.55rem;
             letter-spacing: 0.06em;
         }
+
+        /*
+         * 如有寒蝉活宋体本地文件，替换上方 Shippori Mincho：
+         *
+         * @font-face {
+         *     font-family: 'ChillHuoSong';
+         *     src: url('{{ site.baseurl }}/assets/fonts/ChillHuoSong_F.woff2') format('woff2');
+         *     font-display: swap;
+         * }
+         * .content.poetry { font-family: "ChillHuoSong", ...; }
+         */
 
         /* ========================================
            页脚
