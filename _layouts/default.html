@@ -529,32 +529,41 @@
                 height: 36px;
             }
             .back-nav {
-                left: 12px;
-                top: 16px;
-                width: 36px;
-                height: 36px;
+                left: 10px;
+                top: 14px;
+                height: 30px;
+                font-size: 0.78rem;
+                padding: 0 12px;
+            }
+            .back-to-top {
+                right: 10px;
+                bottom: 16px;
+                height: 30px;
+                font-size: 0.78rem;
+                padding: 0 12px;
+            }
+            .music-player {
+                right: 10px;
+                bottom: 56px;
+                height: 30px;
+                font-size: 0.78rem;
+                padding: 0 10px;
             }
             .search-bar {
-                padding: 8px 12px;
+                width: 94%;
+                top: 10px;
+            }
+            .search-bar-inner {
+                padding: 4px 6px 4px 16px;
             }
             .search-input {
-                padding: 8px 12px;
+                padding: 7px 0;
                 font-size: 0.88rem;
             }
             .dir-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 1.1rem;
-            }
-            .dir-dropdown {
-                min-width: 150px;
-            }
-            .dir-sub {
-                min-width: 110px;
-            }
-            .dir-sub-sub {
-                min-width: 100px;
-                max-height: 260px;
+                height: 28px;
+                font-size: 0.78rem;
+                padding: 0 10px;
             }
         }
 
@@ -591,54 +600,46 @@
            ======================================== */
         .search-bar {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-140%);
             z-index: 90;
-            transform: translateY(-100%);
-            transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-            background: rgba(243, 245, 249, 0.97);
-            -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid #dce3eb;
-            box-shadow: 0 2px 16px rgba(58, 90, 130, 0.08);
-            padding: 12px 24px;
+            width: 90%;
+            max-width: 540px;
+            transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            padding: 0;
         }
 
         .search-bar.visible {
-            transform: translateY(0);
-            box-shadow: 0 2px 30px rgba(74, 125, 171, 0.1), 0 -4px 20px rgba(74, 125, 171, 0.04);
+            transform: translateX(-50%) translateY(0);
         }
 
         .search-bar-inner {
-            max-width: 720px;
-            margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            background: rgba(250, 251, 253, 0.82);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            backdrop-filter: blur(24px) saturate(1.4);
+            border-radius: 50px;
+            padding: 5px 8px 5px 22px;
+            box-shadow: 0 4px 24px rgba(58, 90, 130, 0.1), 0 0 0 1px rgba(58, 90, 130, 0.06);
         }
 
         .search-input {
             flex: 1;
-            border: 1px solid #c0d0e0;
-            border-radius: 6px;
-            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            padding: 9px 0;
             font-size: 0.95rem;
             font-family: inherit;
             letter-spacing: 0.04em;
-            background: #fafbfd;
             color: #1e293b;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: #4a7dab;
-            box-shadow: 0 0 0 3px rgba(74, 125, 171, 0.15);
         }
 
         .search-input::placeholder {
-            color: #7a8b9e;
+            color: #94a3b8;
         }
 
         .dir-btn-wrap {
@@ -647,24 +648,26 @@
         }
 
         .dir-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            border: 1px solid #c0d0e0;
-            background: #fafbfd;
+            height: 34px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(58, 90, 130, 0.07);
             cursor: pointer;
-            font-size: 1.3rem;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            padding: 0;
+            font-size: 0.85rem;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+            color: #475569;
+            padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
+            transition: background 0.25s, transform 0.2s;
+            white-space: nowrap;
         }
 
         .dir-btn:hover {
-            border-color: #4a7dab;
-            background: #eef3f8;
-            box-shadow: 0 0 0 3px rgba(74, 125, 171, 0.12);
+            background: rgba(58, 90, 130, 0.13);
         }
 
         /* ---- 搜索结果面板 ---- */
@@ -677,7 +680,13 @@
             border-radius: 6px;
             max-height: 360px;
             overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(58, 90, 130, 0.1);
+            border-radius: 14px;
+            background: rgba(250, 251, 253, 0.9);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border: none;
+            box-shadow: 0 8px 32px rgba(58, 90, 130, 0.12), 0 0 0 1px rgba(58, 90, 130, 0.06);
+            margin: 10px 0 0 0;
         }
 
         .search-results.active {
@@ -739,15 +748,17 @@
         .dir-dropdown {
             display: none;
             position: absolute;
-            top: 100%;
+            top: calc(100% + 8px);
             right: 0;
-            margin-top: 6px;
-            background: #fafbfd;
-            border: 1px solid #dbe3ec;
-            border-radius: 6px;
-            box-shadow: 0 4px 20px rgba(58, 90, 130, 0.12);
+            background: rgba(250, 251, 253, 0.9);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(58, 90, 130, 0.12), 0 0 0 1px rgba(58, 90, 130, 0.06);
             min-width: 180px;
             z-index: 91;
+            overflow: hidden;
         }
 
         .dir-dropdown.active {
@@ -784,13 +795,16 @@
             position: absolute;
             right: 100%;
             top: 0;
-            margin-right: 2px;
-            background: #fafbfd;
-            border: 1px solid #dbe3ec;
-            border-radius: 6px;
-            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.1);
+            margin-right: 4px;
+            background: rgba(250, 251, 253, 0.9);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(58, 90, 130, 0.1), 0 0 0 1px rgba(58, 90, 130, 0.05);
             min-width: 140px;
             z-index: 92;
+            overflow: hidden;
         }
 
         .dir-category:hover > .dir-sub {
@@ -858,11 +872,13 @@
             position: absolute;
             right: 100%;
             top: 0;
-            margin-right: 2px;
-            background: #fafbfd;
-            border: 1px solid #dbe3ec;
-            border-radius: 6px;
-            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.1);
+            margin-right: 4px;
+            background: rgba(250, 251, 253, 0.9);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(58, 90, 130, 0.1), 0 0 0 1px rgba(58, 90, 130, 0.05);
             min-width: 140px;
             z-index: 93;
             max-height: 360px;
@@ -889,30 +905,33 @@
         }
 
         /* ========================================
-           返回顶部按钮
+           返回顶部按钮（右下角·Apple 胶囊）
            ======================================== */
         .back-to-top {
             position: fixed;
             right: 24px;
             bottom: 30px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid #4a7dab;
-            background: #fafbfd;
-            color: #3d6a94;
-            font-size: 1.2rem;
+            height: 36px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(250, 251, 253, 0.8);
+            color: #475569;
+            font-size: 0.85rem;
             cursor: pointer;
             z-index: 99;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 8px rgba(58, 90, 130, 0.15);
+            letter-spacing: 0.03em;
+            transition: opacity 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s;
+            box-shadow: 0 1px 6px rgba(58, 90, 130, 0.08), 0 0 0 1px rgba(58, 90, 130, 0.06);
             line-height: 1;
-            padding: 0;
+            padding: 0 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            backdrop-filter: blur(16px) saturate(1.2);
         }
 
         .back-to-top.visible {
@@ -921,38 +940,83 @@
         }
 
         .back-to-top:hover {
-            background: #4a7dab;
-            color: #fafbfd;
+            background: rgba(74, 125, 171, 0.12);
+            color: #1a314f;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(58, 90, 130, 0.14), 0 0 0 1px rgba(74, 125, 171, 0.15);
+        }
+
+        /* ---- 音乐播放器（右下角·Apple 胶囊） ---- */
+        .music-player {
+            position: fixed;
+            right: 24px;
+            bottom: 76px;
+            height: 36px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(250, 251, 253, 0.8);
+            color: #475569;
+            font-size: 0.95rem;
+            cursor: pointer;
+            z-index: 99;
+            letter-spacing: 0.03em;
+            transition: opacity 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s;
+            box-shadow: 0 1px 6px rgba(58, 90, 130, 0.08), 0 0 0 1px rgba(58, 90, 130, 0.06);
+            line-height: 1;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            backdrop-filter: blur(16px) saturate(1.2);
+        }
+
+        .music-player:hover {
+            background: rgba(74, 125, 171, 0.12);
+            color: #1a314f;
             transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(58, 90, 130, 0.25);
+            box-shadow: 0 4px 16px rgba(58, 90, 130, 0.14), 0 0 0 1px rgba(74, 125, 171, 0.15);
+        }
+
+        .music-player.playing {
+            background: rgba(74, 125, 171, 0.12);
+            color: #3d6a94;
+            animation: music-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes music-pulse {
+            0%, 100% { box-shadow: 0 1px 6px rgba(58, 90, 130, 0.08), 0 0 0 1px rgba(58, 90, 130, 0.06); }
+            50% { box-shadow: 0 2px 14px rgba(74, 125, 171, 0.18), 0 0 0 2px rgba(74, 125, 171, 0.12); }
         }
 
         /* ========================================
-           返回上级按钮（左上角固定）
+           返回上级按钮（左上角固定·Apple 胶囊）
            ======================================== */
         .back-nav {
             position: fixed;
             left: 24px;
             top: 24px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid #c0d0e0;
-            background: rgba(250, 251, 253, 0.92);
-            color: #5a6d85;
-            font-size: 1.2rem;
+            height: 36px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(250, 251, 253, 0.8);
+            color: #475569;
+            font-size: 0.85rem;
             cursor: pointer;
             z-index: 99;
             opacity: 0;
-            transition: opacity 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 8px rgba(58, 90, 130, 0.1);
+            letter-spacing: 0.03em;
+            transition: opacity 0.4s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s;
+            box-shadow: 0 1px 6px rgba(58, 90, 130, 0.08), 0 0 0 1px rgba(58, 90, 130, 0.06);
             line-height: 1;
-            padding: 0;
+            padding: 0 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-backdrop-filter: blur(4px);
-            backdrop-filter: blur(4px);
+            gap: 4px;
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            backdrop-filter: blur(16px) saturate(1.2);
         }
 
         .back-nav.visible {
@@ -961,7 +1025,7 @@
         }
 
         @keyframes nav-pop-in {
-            0% { transform: scale(0.6); opacity: 0; }
+            0% { transform: scale(0.7); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
@@ -970,10 +1034,10 @@
         }
 
         .back-nav:hover {
-            background: rgba(74, 125, 171, 0.15);
+            background: rgba(74, 125, 171, 0.12);
             color: #1a314f;
-            transform: translateX(-2px);
-            box-shadow: 0 3px 12px rgba(58, 90, 130, 0.18);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 16px rgba(58, 90, 130, 0.14), 0 0 0 1px rgba(74, 125, 171, 0.15);
         }
 
         /* ========================================
@@ -1077,12 +1141,18 @@
         <div class="search-bar-inner">
             <input type="text" class="search-input" id="search-input" placeholder="🔍 搜索诗歌、文章..." autocomplete="off">
             <div class="dir-btn-wrap">
-                <button class="dir-btn" id="dir-btn" title="目录">📑</button>
+                <button class="dir-btn" id="dir-btn" title="目录">浏览 ▾</button>
                 <div class="dir-dropdown" id="dir-dropdown">
                     <div class="dir-category" data-cat="史学笔记">
                         <span class="dir-cat-label">📜 史学笔记</span>
                         <div class="dir-sub">
                             <a href="{{ site.baseurl }}/notes/中国史学史.html">中国史学史</a>
+                        </div>
+                    </div>
+                    <div class="dir-category" data-cat="随笔">
+                        <span class="dir-cat-label">✍️ 随笔</span>
+                        <div class="dir-sub">
+                            <a href="{{ site.baseurl }}/notes/随笔.html">随笔</a>
                         </div>
                     </div>
                     <div class="dir-category" data-cat="文哲笔记">
@@ -1133,8 +1203,9 @@
     </div>
 
     <div class="progress-bar" id="progress-bar"></div>
-    <button class="back-nav{% if page.is_home %} home-hidden{% endif %}" id="back-nav" title="返回上级" onclick="window.history.length > 1 ? history.back() : location.href='{{ site.baseurl }}/'">←</button>
-    <button class="back-to-top" id="back-to-top" title="返回顶部">↑</button>
+    <button class="back-nav{% if page.is_home %} home-hidden{% endif %}" id="back-nav" title="返回上级" onclick="window.history.length > 1 ? history.back() : location.href='{{ site.baseurl }}/'">← 返回</button>
+    <button class="music-player" id="music-player" title="播放音乐" data-playing="false">♪</button>
+    <button class="back-to-top" id="back-to-top" title="返回顶部">↑ 顶部</button>
     <div class="container">
         <header{% if page.is_home %} class="home-header"{% endif %}>
             {% if page.is_home %}
@@ -1291,6 +1362,73 @@
                 });
             }
         })();
+
+        // ========================================
+        // 5.5 音乐播放器
+        // ========================================
+        var musicBtn = document.getElementById('music-player');
+        var audio = null;
+        var musicTracks = [];
+
+        // 尝试加载音乐文件
+        function initMusic() {
+            var basePath = '{{ site.baseurl }}/assets/music/';
+            // 检测可用的音乐文件
+            var testFiles = ['bgm.mp3', 'bgm.ogg', 'music.mp3', 'music.ogg'];
+            var loaded = false;
+
+            function tryNext(index) {
+                if (index >= testFiles.length) return;
+                var testAudio = new Audio();
+                testAudio.src = basePath + testFiles[index];
+                testAudio.addEventListener('loadedmetadata', function() {
+                    musicTracks.push(basePath + testFiles[index]);
+                    if (!loaded) {
+                        loaded = true;
+                        setupPlayer();
+                    }
+                });
+                testAudio.addEventListener('error', function() {
+                    tryNext(index + 1);
+                });
+                testAudio.load();
+            }
+            tryNext(0);
+        }
+
+        function setupPlayer() {
+            if (musicTracks.length === 0) return;
+            audio = new Audio(musicTracks[0]);
+            audio.loop = true;
+            audio.volume = 0.5;
+
+            musicBtn.addEventListener('click', function() {
+                if (!audio) return;
+                if (audio.paused) {
+                    audio.play().then(function() {
+                        musicBtn.textContent = '♪ 暂停';
+                        musicBtn.classList.add('playing');
+                        musicBtn.dataset.playing = 'true';
+                    }).catch(function() {
+                        // 浏览器阻止自动播放
+                        musicBtn.textContent = '♪ 重试';
+                    });
+                } else {
+                    audio.pause();
+                    musicBtn.textContent = '♪';
+                    musicBtn.classList.remove('playing');
+                    musicBtn.dataset.playing = 'false';
+                }
+            });
+
+            // 显示播放器按钮
+            musicBtn.style.display = 'flex';
+        }
+
+        if (musicBtn) {
+            musicBtn.style.display = 'none';
+            initMusic();
+        }
 
         // ========================================
         // 著作权保护
