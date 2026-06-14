@@ -63,6 +63,17 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
+        /* ---- 滚动揭示 ---- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* 极淡背景纹理 */
         body::after {
             content: '';
@@ -145,7 +156,7 @@
            首页卡片
            ======================================== */
         .section {
-            margin-bottom: 48px;
+            margin-bottom: 64px;
         }
 
         .section-title {
@@ -186,6 +197,25 @@
             box-shadow: 0 1px 4px rgba(58, 90, 130, 0.06);
         }
 
+        .card-list li a {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-list li a::before {
+            content: '';
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, rgba(74,125,171,0.07), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+        .card-list li a:hover::before {
+            opacity: 1;
+        }
+
         .card-list li a:hover {
             background: #fff;
             box-shadow: 0 8px 28px rgba(74, 125, 171, 0.16);
@@ -209,13 +239,16 @@
 
         .content h1 {
             font-size: 2.2rem;
-            color: #1a314f;
             margin-bottom: 0.6em;
             margin-top: 0.4em;
             letter-spacing: 0.05em;
             font-weight: 700;
             line-height: 1.4;
             text-align: center;
+            background: linear-gradient(135deg, #4a7dab, #1a314f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .content h2 {
@@ -294,12 +327,15 @@
 
         .content a {
             color: #3d6a94;
-            text-decoration: underline;
-            text-underline-offset: 3px;
+            text-decoration: none;
+            background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+            transition: background-size 0.35s ease, color 0.25s;
+            padding-bottom: 1px;
         }
 
         .content a:hover {
             color: #1a314f;
+            background-size: 100% 1px;
         }
 
         .content code {
@@ -334,6 +370,27 @@
             letter-spacing: 0.06em;
         }
 
+        /* 诗歌组：每首诗作为独立"卡片" */
+        .content.poetry .reveal-group {
+            padding-top: 2em;
+            margin-bottom: 2.5em;
+            border-top: 1px solid #e8edf3;
+        }
+        .content.poetry .reveal-group:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+        .content.poetry .reveal-group > p:last-child {
+            margin-bottom: 0;
+            padding-bottom: 1em;
+            position: relative;
+        }
+        .content.poetry .reveal-group > p:last-child::after {
+            content: '';
+            display: block;
+            margin-top: 1.5em;
+        }
+
         .content.poetry h2 {
             color: #1a314f;
             font-size: 1.55rem;
@@ -342,6 +399,18 @@
             padding-bottom: 0;
             padding-left: 16px;
             border-left: 4px solid #4a7dab;
+            margin-top: 3em;
+        }
+
+        /* 每首诗首行放大 */
+        .reveal-group > p:first-of-type {
+            font-size: 1.15rem;
+            color: #2c3e50;
+        }
+
+        .content.poetry .reveal-group > p:first-of-type {
+            font-size: 1.22rem;
+            color: #1e3140;
         }
 
         /*
@@ -366,6 +435,16 @@
             font-size: 0.85rem;
             color: #7a8b9e;
             letter-spacing: 0.04em;
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: calc(-50vw + 50%);
+            right: calc(-50vw + 50%);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c0d0e0 20%, #c0d0e0 80%, transparent);
         }
 
         footer .copyright-line {
@@ -398,6 +477,14 @@
         }
 
         /* ========================================
+           滚动条
+           ======================================== */
+        ::-webkit-scrollbar { width: 7px; }
+        ::-webkit-scrollbar-track { background: #f3f5f9; }
+        ::-webkit-scrollbar-thumb { background: #c0d0e0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a7dab; }
+
+        /* ========================================
            响应式
            ======================================== */
         @media (max-width: 600px) {
@@ -421,6 +508,13 @@
             }
             .content {
                 font-size: 1rem;
+            }
+            .content.poetry .reveal-group {
+                padding-top: 1.4em;
+                margin-bottom: 1.8em;
+            }
+            .section {
+                margin-bottom: 44px;
             }
             .toc-card {
                 padding: 16px 18px;
@@ -513,6 +607,7 @@
 
         .search-bar.visible {
             transform: translateY(0);
+            box-shadow: 0 2px 30px rgba(74, 125, 171, 0.1), 0 -4px 20px rgba(74, 125, 171, 0.04);
         }
 
         .search-bar-inner {
@@ -605,7 +700,7 @@
             font-size: 0.92rem;
             letter-spacing: 0.03em;
             border-bottom: 1px solid #e8edf3;
-            transition: background 0.15s;
+            transition: background 0.2s, padding-left 0.25s ease;
             cursor: pointer;
         }
 
@@ -614,7 +709,8 @@
         }
 
         .search-results .result-item:hover {
-            background: #f3f5f9;
+            background: #f0f3f8;
+            padding-left: 22px;
         }
 
         .search-results .result-item .result-heading {
@@ -718,10 +814,19 @@
             border-bottom: none;
         }
 
+        .dir-sub a,
+        .dir-sub-sub a,
+        .dir-sub-cat > a {
+            transition: background 0.2s, color 0.2s, padding-left 0.25s ease;
+        }
         .dir-sub a:hover,
         .dir-sub-sub a:hover {
-            background: #f3f5f9;
+            background: #eef3f8;
             color: #3d6a94;
+            padding-left: 20px;
+        }
+        .dir-sub-cat > a:hover {
+            padding-left: 6px;
         }
 
         /* ---- 三级子菜单（诗名） ---- */
@@ -1123,6 +1228,69 @@
                 if (!h.id) h.id = makeSlug(h.textContent);
             });
         }
+
+        // ========================================
+        // 4.1 滚动揭示
+        // ========================================
+        (function initReveal() {
+            var mainEl2 = document.querySelector('main.content');
+            if (!mainEl2) return;
+
+            // 首页：卡片分区依次揭示
+            var sections = document.querySelectorAll('.section');
+            if (sections.length > 0) {
+                sections.forEach(function(sec, i) {
+                    sec.classList.add('reveal');
+                    sec.style.transitionDelay = (i * 0.1) + 's';
+                });
+            }
+
+            // 内容页：把每个 h2 + 后续内容分成一组
+            var groups = [];
+            var currentGroup = [];
+            var children = mainEl2.children;
+            for (var i = 0; i < children.length; i++) {
+                var el = children[i];
+                if (el.tagName === 'H2') {
+                    if (currentGroup.length > 0) groups.push(currentGroup);
+                    currentGroup = [el];
+                } else {
+                    currentGroup.push(el);
+                }
+            }
+            if (currentGroup.length > 0) groups.push(currentGroup);
+
+            // 为每组创建包裹元素，级联延迟
+            groups.forEach(function(group, gi) {
+                if (group.length === 0) return;
+                var wrapper = document.createElement('div');
+                wrapper.className = 'reveal reveal-group';
+                wrapper.style.transitionDelay = (gi * 0.06) + 's';
+                group[0].parentNode.insertBefore(wrapper, group[0]);
+                group.forEach(function(el) { wrapper.appendChild(el); });
+            });
+
+            // Intersection Observer
+            if ('IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+                document.querySelectorAll('.reveal').forEach(function(el) {
+                    observer.observe(el);
+                });
+            } else {
+                // 降级：直接显示
+                document.querySelectorAll('.reveal').forEach(function(el) {
+                    el.classList.add('revealed');
+                });
+            }
+        })();
 
         // ========================================
         // 著作权保护
