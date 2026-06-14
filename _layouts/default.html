@@ -24,60 +24,6 @@
            ======================================== */
         :root {
             /* 背景层级 */
-            --bg-page: #f3f5f9;
-            --bg-surface: #fafbfd;
-            --bg-surface-hover: #fff;
-            --bg-glass: rgba(250, 251, 253, 0.8);
-            --bg-glass-heavy: rgba(250, 251, 253, 0.9);
-            --bg-code: #e8edf3;
-            --bg-highlight: #d4e2f0;
-
-            /* 文字层级 */
-            --text-body: #1e293b;
-            --text-heading: #1a314f;
-            --text-secondary: #475569;
-            --text-muted: #5a6d85;
-            --text-faint: #7a8b9e;
-            --text-placeholder: #94a3b8;
-            --text-accent: #3d6a94;
-
-            /* 强调色 */
-            --accent: #4a7dab;
-            --accent-light: #5b8cb8;
-            --accent-mid: #2c5f8a;
-            --accent-dark: #1a314f;
-            --accent-rgb: 74, 125, 171;
-            --accent-glow: rgba(var(--accent-rgb), 0.07);
-            --deco-muted: #c0d0e0;
-            --deco-highlight-start: #a0c4e0;
-
-            /* 边框 */
-            --border-light: #dce3eb;
-            --border-subtle: #e8edf3;
-            --border-card: #dbe3ec;
-
-            /* 阴影基色（RGB三值，配合 rgba() 使用） */
-            --shadow-rgb: 58, 90, 130;
-
-            /* 毛玻璃 */
-            --blur-glass: blur(16px) saturate(1.2);
-            --blur-heavy: blur(24px) saturate(1.4);
-
-            /* 装饰渐变 */
-            --deco-gradient: linear-gradient(135deg, var(--accent), var(--accent-dark));
-            --deco-bar: linear-gradient(90deg, var(--accent-light), var(--text-accent), var(--accent-mid), var(--text-accent), var(--accent-light));
-
-            /* 诗歌 */
-            --poetry-first-color: #1e3140;
-        }
-
-        /* 平滑过渡（深色模式切换） */
-        html {
-            transition: background-color 0.4s ease, color 0.4s ease;
-        }
-
-        /* 深色模式 */
-        [data-theme="dark"] {
             --bg-page: #0f172a;
             --bg-surface: #1e293b;
             --bg-surface-hover: #273549;
@@ -86,6 +32,7 @@
             --bg-code: #273549;
             --bg-highlight: rgba(74, 125, 171, 0.25);
 
+            /* 文字层级 */
             --text-body: #f1f5f9;
             --text-heading: #ffffff;
             --text-secondary: #e2e8f0;
@@ -94,6 +41,7 @@
             --text-placeholder: #94a3b8;
             --text-accent: #ffffff;
 
+            /* 强调色 */
             --accent: #5b8cb8;
             --accent-light: #4a7dab;
             --accent-mid: #3d6a94;
@@ -104,11 +52,21 @@
             --deco-highlight-start: #3d6a94;
             --poetry-first-color: #e2e8f0;
 
+            /* 边框 */
             --border-light: #273549;
             --border-subtle: #1e314f;
             --border-card: #273549;
 
+            /* 阴影基色（RGB三值，配合 rgba() 使用） */
             --shadow-rgb: 0, 0, 0;
+
+            /* 毛玻璃 */
+            --blur-glass: blur(16px) saturate(1.2);
+            --blur-heavy: blur(24px) saturate(1.4);
+
+            /* 装饰渐变 */
+            --deco-gradient: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            --deco-bar: linear-gradient(90deg, var(--accent-light), var(--text-accent), var(--accent-mid), var(--text-accent), var(--accent-light));
         }
 
         /* ========================================
@@ -147,12 +105,12 @@
             max-width: 720px;
             margin: 0 auto;
             padding: 60px 24px 80px;
-            animation: page-in 0.5s ease-out both;
+            animation: page-in 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
         }
 
         @keyframes page-in {
-            0% { opacity: 0; transform: translateY(14px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0%   { opacity: 0; transform: translateY(24px); filter: blur(4px); }
+            100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
         }
 
         /* ---- 滚动揭示 ---- */
@@ -166,22 +124,40 @@
             transform: translateY(0);
         }
 
+        /* 鼠标跟随光晕 */
+        .cursor-glow {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(91,140,184,0.06) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
         /* 水墨云雾背景纹理 */
         body::after {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
-            opacity: 0.05;
+            opacity: 0.08;
             pointer-events: none;
+            animation: bg-breathe 8s ease-in-out infinite;
             background:
                 radial-gradient(ellipse 80% 60% at 20% 50%, var(--accent) 0%, transparent 50%),
                 radial-gradient(ellipse 60% 50% at 80% 20%, var(--accent) 0%, transparent 45%),
                 radial-gradient(ellipse 70% 55% at 50% 80%, var(--accent) 0%, transparent 50%);
         }
 
-        [data-theme="dark"] body::after {
-            opacity: 0.08;
+        @keyframes bg-breathe {
+            0%, 100% { opacity: 0.06; }
+            50%      { opacity: 0.10; }
         }
 
         /* ========================================
@@ -208,10 +184,32 @@
         header .site-title a {
             color: var(--text-heading);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .site-logo {
+            flex-shrink: 0;
+            color: var(--text-accent);
+            opacity: 0.85;
         }
 
         header .site-title a:hover {
             color: var(--text-accent);
+        }
+
+        @keyframes logo-shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .site-title.shimmer a {
+            background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: logo-shimmer 1.2s ease-in-out forwards;
         }
 
         header .page-subtitle {
@@ -345,8 +343,20 @@
             border-radius: 20px;
             padding: 28px;
             box-shadow: 0 2px 16px rgba(var(--shadow-rgb), 0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        box-shadow 0.3s ease;
             margin-bottom: 0;
+        }
+
+        /* 首页 Bento 开场：从下方淡入 */
+        .bento-card.reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .bento-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .bento-card:hover {
@@ -428,7 +438,7 @@
             font-weight: 700;
             line-height: 1.4;
             text-align: center;
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -449,13 +459,6 @@
             background: var(--accent);
             margin: 18px auto 0;
             border-radius: 1px;
-        }
-
-        /* 暗色模式：h1 渐变改为白色调 */
-        [data-theme="dark"] .content h1 {
-            background: linear-gradient(135deg, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            background-clip: text;
         }
 
         .content h2 {
@@ -553,6 +556,12 @@
             font-size: 1.3rem;
             color: var(--accent);
             letter-spacing: normal;
+            animation: fleuron-breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes fleuron-breathe {
+            0%, 100% { opacity: 0.45; }
+            50%      { opacity: 0.85; }
         }
 
         .content a {
@@ -657,35 +666,21 @@
         /* ========================================
            复古质感（活字印刷凹凸 + 纸张晕染）
            ======================================== */
-        /* 所有内容页：纸张暖色晕染 */
+        /* 所有内容页：暗色纸张晕染 */
         .content {
-            background: radial-gradient(ellipse at 50% 0%, rgba(210,190,160,0.04) 0%, transparent 60%);
-        }
-
-        /* 所有段落：活字印刷凹凸感 */
-        .content p {
-            text-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 -1px 0 rgba(0,0,0,0.04);
-        }
-
-        /* 诗歌页：加强凹凸感和晕染 */
-        .content.poetry {
-            background: radial-gradient(ellipse at 50% 0%, rgba(210,190,160,0.06) 0%, transparent 55%);
-        }
-        .content.poetry p {
-            text-shadow: 0 1px 0 rgba(255,255,255,0.5), 0 -1px 0 rgba(0,0,0,0.06);
-        }
-
-        /* 暗色模式：纸张晕染改为冷色 */
-        [data-theme="dark"] .content {
             background: radial-gradient(ellipse at 50% 0%, rgba(30,50,80,0.3) 0%, transparent 60%);
         }
-        [data-theme="dark"] .content.poetry {
-            background: radial-gradient(ellipse at 50% 0%, rgba(30,50,80,0.4) 0%, transparent 55%);
-        }
-        [data-theme="dark"] .content p {
+
+        /* 所有段落：暗色活字凹凸感 */
+        .content p {
             text-shadow: 0 1px 0 rgba(255,255,255,0.02), 0 -1px 0 rgba(0,0,0,0.15);
         }
-        [data-theme="dark"] .content.poetry p {
+
+        /* 诗歌页：加强晕染和凹凸 */
+        .content.poetry {
+            background: radial-gradient(ellipse at 50% 0%, rgba(30,50,80,0.4) 0%, transparent 55%);
+        }
+        .content.poetry p {
             text-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 -1px 0 rgba(0,0,0,0.2);
         }
 
@@ -939,36 +934,6 @@
         .dir-btn:hover {
             background: rgba(var(--shadow-rgb), 0.13);
         }
-
-        .theme-toggle {
-            height: 34px;
-            width: 34px;
-            border-radius: 50px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 1rem;
-            font-family: inherit;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.25s, transform 0.2s;
-            flex-shrink: 0;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(var(--shadow-rgb), 0.07);
-            transform: scale(1.1);
-        }
-
-        /* 浅色模式：显示月亮，隐藏太阳 */
-        .theme-toggle .icon-sun { display: none; }
-        .theme-toggle .icon-moon { display: block; }
-
-        /* 深色模式：显示太阳，隐藏月亮 */
-        [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
-        [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
 
         /* ---- 搜索结果面板 ---- */
         .search-results {
@@ -1438,15 +1403,12 @@
     </style>
 </head>
 <body>
+    <div class="cursor-glow" id="cursor-glow"></div>
     <!-- 搜索栏（鼠标移到顶部浮现） -->
     <div class="search-bar" id="search-bar">
         <div class="search-bar-inner">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" class="search-input" id="search-input" placeholder="搜索诗歌、文章..." autocomplete="off">
-            <button class="theme-toggle" id="theme-toggle" title="切换深色模式" aria-label="切换深色模式">
-                <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            </button>
             <div class="dir-btn-wrap">
                 <button class="dir-btn" id="dir-btn" title="目录">浏览 ▾</button>
                 <div class="dir-dropdown" id="dir-dropdown">
@@ -1517,7 +1479,7 @@
         <header{% if page.is_home %} class="home-header"{% endif %}>
             {% if page.is_home %}
             <div class="site-title">
-                <a href="{{ site.baseurl }}/">📖 我的笔记</a>
+                <a href="{{ site.baseurl }}/"><svg class="site-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/></svg> 我的笔记</a>
             </div>
             <div class="header-decoration"></div>
             <p class="tagline">读书 · 思考 · 诗文</p>
@@ -1587,42 +1549,6 @@
                 backNav.classList.add('visible');
             });
         }
-
-        // ========================================
-        // 深色模式切换
-        // ========================================
-        var themeToggle = document.getElementById('theme-toggle');
-        var html = document.documentElement;
-
-        function setTheme(theme) {
-            html.dataset.theme = theme;
-            try { localStorage.setItem('theme', theme); } catch(e) {}
-        }
-
-        // 初始化：localStorage > 系统偏好 > light
-        var savedTheme = null;
-        try { savedTheme = localStorage.getItem('theme'); } catch(e) {}
-        if (savedTheme === 'dark' || savedTheme === 'light') {
-            setTheme(savedTheme);
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark');
-        }
-
-        // 监听系统主题变化（仅当用户未手动设置时跟随）
-        if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                var hasManual = false;
-                try { hasManual = !!localStorage.getItem('theme'); } catch(e) {}
-                if (!hasManual) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        }
-
-        themeToggle.addEventListener('click', function() {
-            var next = html.dataset.theme === 'dark' ? 'light' : 'dark';
-            setTheme(next);
-        });
 
         // ========================================
         // 通用：标题 → URL 安全 ID
@@ -1704,6 +1630,92 @@
                     el.classList.add('revealed');
                 });
             }
+        })();
+
+        // ========================================
+        // 4.2 首页 Logo 微光扫过 + Bento 卡片错落入场
+        // ========================================
+        (function initHomeEntrance() {
+            // Logo 微光扫过（延迟 0.3s 触发）
+            var siteTitle = document.querySelector('.site-title');
+            if (siteTitle) {
+                setTimeout(function() {
+                    siteTitle.classList.add('shimmer');
+                    // 动画结束后移除 class 恢复常态
+                    setTimeout(function() {
+                        siteTitle.classList.remove('shimmer');
+                    }, 1500);
+                }, 300);
+            }
+
+            // 首页 Bento 卡片：增大错落间隔
+            var bentoCards = document.querySelectorAll('.bento-card.reveal');
+            if (bentoCards.length > 0) {
+                bentoCards.forEach(function(card, i) {
+                    card.style.transitionDelay = (i * 0.15) + 's';
+                });
+            }
+        })();
+
+        // ========================================
+        // 4.3 鼠标跟随光晕
+        // ========================================
+        (function initCursorGlow() {
+            var glow = document.getElementById('cursor-glow');
+            if (!glow || window.matchMedia('(max-width: 768px)').matches) return;
+
+            var ticking = false;
+            var mx = -300, my = -300;
+
+            document.addEventListener('mousemove', function(e) {
+                mx = e.clientX;
+                my = e.clientY;
+                if (!ticking) {
+                    ticking = true;
+                    requestAnimationFrame(function() {
+                        glow.style.left = mx + 'px';
+                        glow.style.top = my + 'px';
+                        glow.style.opacity = '1';
+                        ticking = false;
+                    });
+                }
+            });
+
+            // 鼠标离开页面时渐隐光晕
+            document.addEventListener('mouseleave', function() {
+                glow.style.opacity = '0';
+            });
+            document.addEventListener('mouseenter', function() {
+                glow.style.opacity = '1';
+            });
+        })();
+
+        // ========================================
+        // 4.4 卡片 3D 悬浮倾斜
+        // ========================================
+        (function initCardTilt() {
+            if (window.matchMedia('(max-width: 768px)').matches) return;
+
+            var cards = document.querySelectorAll('.bento-card');
+            if (!cards.length) return;
+
+            cards.forEach(function(card) {
+                card.addEventListener('mousemove', function(e) {
+                    var rect = card.getBoundingClientRect();
+                    var x = (e.clientX - rect.left) / rect.width  - 0.5;  // -0.5 ~ 0.5
+                    var y = (e.clientY - rect.top)  / rect.height - 0.5;
+
+                    card.style.transform = 'perspective(800px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 6) + 'deg) translateY(-4px)';
+                    card.style.boxShadow = (x * 16) + 'px ' + (y * 10) + 'px 32px rgba(0,0,0,0.3)';
+                    card.style.transition = 'transform 0.15s ease-out, box-shadow 0.15s ease-out';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    card.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) translateY(0)';
+                    card.style.boxShadow = '0 2px 16px rgba(0,0,0,0.1)';
+                    card.style.transition = 'transform 0.5s ease-out, box-shadow 0.5s ease-out';
+                });
+            });
         })();
 
         // ========================================
