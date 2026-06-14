@@ -1404,144 +1404,137 @@
             font-weight: 600;
         }
         /* ========================================
-           蓝图开场覆盖层
+           打字机手稿开场覆盖层
            ======================================== */
-        .blueprint-overlay {
+        .manuscript-overlay {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: #0a1018;
-            transition: opacity 0.5s ease-out;
+            background: #0d1117;
             cursor: pointer;
+            transition: opacity 0.6s ease-out;
         }
-        .blueprint-overlay.fade-out {
+        .manuscript-overlay.fade-out {
             opacity: 0;
             pointer-events: none;
         }
 
-        .bp-inner {
+        /* 稿纸横线纹理 */
+        .ms-paper {
             position: absolute;
-            top: 42%;
+            inset: 0;
+            opacity: 0.03;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 28px,
+                rgba(255,255,255,0.4) 28px,
+                rgba(255,255,255,0.4) 29px
+            );
+            pointer-events: none;
+        }
+
+        /* 打字工作区 */
+        .ms-workspace {
+            position: absolute;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 820px;
-            height: 420px;
+            max-width: 680px;
+            font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+            font-size: 1.05rem;
+            line-height: 2;
+            color: rgba(255,255,255,0.85);
             pointer-events: none;
-            overflow: hidden;
+            transition: font-family 0.6s ease;
+        }
+        .ms-workspace.finalized {
+            font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
+            color: var(--text-body);
         }
 
-        /* ---- 网格线 ---- */
-        .bp-vline {
-            position: absolute;
-            top: 0;
-            left: 60%;
-            width: 1px;
-            height: 0;
-            background: rgba(255,255,255,0.12);
-            animation: draw-vertical 0.35s ease-out 0.15s forwards;
+        /* 标题区域 */
+        .ms-title-area {
+            margin-bottom: 28px;
+            min-height: 3em;
         }
-        .bp-hline {
-            position: absolute;
-            left: 0;
-            height: 1px;
-            width: 0;
-            background: rgba(255,255,255,0.1);
-        }
-        .bp-hl-1 { top: 32%; animation: draw-horizontal 0.4s ease-out 0.25s forwards; }
-        .bp-hl-2 { top: 62%; animation: draw-horizontal 0.4s ease-out 0.35s forwards; }
-        .bp-hl-3 { top: 90%; animation: draw-horizontal 0.4s ease-out 0.45s forwards; }
-
-        @keyframes draw-vertical {
-            from { height: 0; opacity: 0; }
-            to   { height: 100%; opacity: 1; }
-        }
-        @keyframes draw-horizontal {
-            from { width: 0; opacity: 0; }
-            to   { width: 100%; opacity: 1; }
+        .ms-title-area .ms-line {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: #fff;
         }
 
-        /* ---- 线框卡片占位 ---- */
-        .bp-wf {
-            position: absolute;
-            border: 1px dashed rgba(255,255,255,0.12);
-            border-radius: 20px;
-            opacity: 0;
-            transition: opacity 0.25s, border-color 0.4s, box-shadow 0.4s;
+        /* 卡片区域 */
+        .ms-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
-        .bp-wf.visible {
-            opacity: 1;
+        .ms-card {
+            padding: 10px 0;
+            min-height: 2.5em;
         }
-        .bp-wf.resolve {
-            border-color: rgba(255,255,255,0.45);
-            box-shadow: 0 0 24px rgba(91,140,184,0.25);
-            opacity: 0;
-            transition: opacity 0.35s, border-color 0.3s, box-shadow 0.3s;
+        .ms-card .ms-card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2px;
         }
-        .bp-wf-left {
-            top: 4%;
-            left: 2%;
-            width: 56%;
-            height: 36%;
-        }
-        .bp-wf-right {
-            top: 4%;
-            left: 62%;
-            width: 36%;
-            height: 36%;
-        }
-        .bp-wf-wide {
-            top: 42%;
-            left: 2%;
-            width: 96%;
-            height: 14%;
-        }
-        .bp-wf-full {
-            top: 60%;
-            left: 2%;
-            width: 96%;
-            height: 27%;
+        .ms-card .ms-card-desc {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.45);
         }
 
-        /* ---- 标题 ---- */
-        .bp-title {
+        /* 闪烁光标 */
+        .ms-cursor {
+            display: inline;
+            font-weight: 400;
+            color: rgba(255,255,255,0.6);
+            animation: cursor-blink 1s steps(2) infinite;
+        }
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0; }
+        }
+
+        /* 删除线修正 */
+        .ms-char {
+            display: inline;
+        }
+        .ms-char.correcting {
+            text-decoration: line-through;
+            text-decoration-color: rgba(255,100,100,0.5);
+            animation: strike-in 0.25s ease-out;
+        }
+        @keyframes strike-in {
+            from { text-decoration-color: transparent; }
+            to   { text-decoration-color: rgba(255,100,100,0.5); }
+        }
+        .ms-char.corrected {
+            animation: char-pop 0.2s ease-out;
+        }
+        @keyframes char-pop {
+            from { transform: scale(1.15); opacity: 0.6; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        /* 提示文字 */
+        .ms-hint {
             position: absolute;
-            top: 8%;
+            bottom: 10%;
             left: 50%;
             transform: translateX(-50%);
-            text-align: center;
-            opacity: 0;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.08em;
             pointer-events: none;
-        }
-        .bp-title.reveal {
-            animation: bp-title-in 0.7s ease-out forwards;
-        }
-        .bp-title h1 {
-            font-size: 2.4rem;
-            color: #fff;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-            margin: 0 0 6px;
-            text-shadow: 0 0 40px rgba(255,255,255,0.08);
-        }
-        .bp-title p {
-            font-size: 0.95rem;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 0.15em;
-            margin: 0;
-        }
-        .bp-logo {
-            display: block;
-            margin: 0 auto 12px;
-            color: rgba(255,255,255,0.5);
-        }
-        @keyframes bp-title-in {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+            transition: opacity 0.5s;
         }
 
         /* ========================================
-           毛玻璃气泡
+           海底气泡（清澈清晰、水平摇晃）
            ======================================== */
         .bubbles-layer {
             position: fixed;
@@ -1552,53 +1545,47 @@
         }
         .bubble {
             position: absolute;
-            bottom: -100px;
+            bottom: -120px;
             border-radius: 50%;
             pointer-events: none;
-            background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.015) 40%, transparent 70%);
-            border: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-            animation: bubble-rise linear infinite;
+            border: 1.5px solid rgba(255,255,255,0.15);
+            background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, transparent 75%);
+            box-shadow: inset 0 0 12px rgba(255,255,255,0.04);
+            animation: bubble-float linear infinite;
         }
-        @keyframes bubble-rise {
-            0%   { transform: translateY(0) scale(0.7); opacity: 0; }
-            10%  { opacity: 0.5; }
-            80%  { opacity: 0.12; }
-            100% { transform: translateY(-110vh) scale(1.15); opacity: 0; }
-        }
-
-        /* 蓝图阶段：气泡更亮 */
-        .blueprint-overlay:not(.fade-out) ~ .bubbles-layer .bubble {
-            opacity: 0.35;
+        @keyframes bubble-float {
+            0%   { transform: translateY(0) translateX(0) scale(0.7); opacity: 0; }
+            5%   { opacity: 0.65; }
+            25%  { transform: translateY(-25vh) translateX(6px) scale(0.85); }
+            50%  { transform: translateY(-50vh) translateX(-5px) scale(0.95); }
+            75%  { transform: translateY(-75vh) translateX(8px) scale(1); opacity: 0.4; }
+            100% { transform: translateY(-105vh) translateX(-3px) scale(1.05); opacity: 0; }
         }
 
-        /* 移动端气泡减半（由 JS 控制数量，此处仅作备用） */
+        /* 手稿阶段：气泡更亮 */
+        .manuscript-overlay:not(.fade-out) ~ .bubbles-layer .bubble {
+            opacity: 0.55;
+        }
+
+        /* 移动端 */
         @media (max-width: 768px) {
-            .bp-title h1 { font-size: 1.8rem; }
-            .bp-inner { height: 340px; }
+            .ms-workspace { font-size: 0.9rem; max-width: 94%; }
+            .ms-title-area .ms-line { font-size: 1.3rem; }
+            .ms-hint { bottom: 6%; font-size: 0.7rem; }
         }
     </style>
 </head>
 <body>
     <div class="bubbles-layer" id="bubbles-layer"></div>
     {% if page.is_home %}
-    <div class="blueprint-overlay" id="blueprint-overlay">
-        <div class="bp-inner">
-            <div class="bp-vline"></div>
-            <div class="bp-hline bp-hl-1"></div>
-            <div class="bp-hline bp-hl-2"></div>
-            <div class="bp-hline bp-hl-3"></div>
-            <div class="bp-wf bp-wf-left"></div>
-            <div class="bp-wf bp-wf-right"></div>
-            <div class="bp-wf bp-wf-wide"></div>
-            <div class="bp-wf bp-wf-full"></div>
+    <div class="manuscript-overlay" id="manuscript-overlay">
+        <div class="ms-paper"></div>
+        <div class="ms-workspace" id="ms-workspace">
+            <div class="ms-title-area" id="ms-title"></div>
+            <div class="ms-cards" id="ms-cards"></div>
+            <span class="ms-cursor" id="ms-cursor">|</span>
         </div>
-        <div class="bp-title">
-            <svg class="bp-logo" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/></svg>
-            <h1>我的笔记</h1>
-            <p>读书 · 思考 · 诗文</p>
-        </div>
+        <div class="ms-hint" id="ms-hint">按下任意键参与写作 · 点击跳过</div>
     </div>
     {% endif %}
     <div class="cursor-glow" id="cursor-glow"></div>
@@ -1831,29 +1818,37 @@
         })();
 
         // ========================================
-        // 4.2 毛玻璃气泡生成 + 蓝图开场时间线
+        // 4.2 海底气泡生成 + 打字机手稿开场
         // ========================================
-        (function initBubblesAndBlueprint() {
-            // --- 气泡生成 ---
+        (function initBubblesAndManuscript() {
+            // --- 气泡生成（海底风格，清晰边缘+水平摇晃） ---
             var bubblesLayer = document.getElementById('bubbles-layer');
             if (bubblesLayer) {
                 var isMobile = window.matchMedia('(max-width: 768px)').matches;
-                var count = isMobile ? 6 : 12;
+                var count = isMobile ? 15 : 30;
+                var clusters = Math.floor(count / 5); // 聚簇数量
+                var clusterCenters = [];
+                for (var c = 0; c < clusters; c++) {
+                    clusterCenters.push(Math.random() * 90 + 5); // 5%-95%
+                }
                 for (var i = 0; i < count; i++) {
                     var b = document.createElement('div');
                     b.className = 'bubble';
-                    var size = 50 + Math.random() * 200;
+                    var isSmall = Math.random() < 0.7;
+                    var size = isSmall ? (15 + Math.random() * 35) : (50 + Math.random() * 70);
                     b.style.width = size + 'px';
                     b.style.height = size + 'px';
-                    b.style.left = (Math.random() * 92) + '%';
-                    b.style.animationDuration = (14 + Math.random() * 22) + 's';
-                    b.style.animationDelay = (Math.random() * 20) + 's';
+                    // 聚簇分布：围绕簇中心偏移
+                    var clusterIdx = i % clusters;
+                    var centerX = clusterCenters[clusterIdx];
+                    b.style.left = (centerX + (Math.random() - 0.5) * 20) + '%';
+                    b.style.animationDuration = (isSmall ? (8 + Math.random() * 8) : (16 + Math.random() * 14)) + 's';
+                    b.style.animationDelay = (Math.random() * 25) + 's';
                     bubblesLayer.appendChild(b);
                 }
             }
 
-            // --- 蓝图时间线 ---
-            var overlay = document.getElementById('blueprint-overlay');
+            var overlay = document.getElementById('manuscript-overlay');
             var container = document.querySelector('.container');
             if (!overlay) {
                 // 非首页：直接触发入场
@@ -1861,76 +1856,181 @@
                 if (bubblesLayer) { bubblesLayer.style.zIndex = '0'; }
                 return;
             }
-            // 蓝图阶段提升光晕层级
-            var glow = document.getElementById('cursor-glow');
+
+            // --- 打字机引擎 ---
+            var msTitle   = document.getElementById('ms-title');
+            var msCards   = document.getElementById('ms-cards');
+            var msCursor  = document.getElementById('ms-cursor');
+            var msHint    = document.getElementById('ms-hint');
+            var workspace = document.getElementById('ms-workspace');
+            var glow      = document.getElementById('cursor-glow');
             if (glow) glow.style.zIndex = '10001';
 
-            var wfLeft  = overlay.querySelector('.bp-wf-left');
-            var wfRight = overlay.querySelector('.bp-wf-right');
-            var wfWide  = overlay.querySelector('.bp-wf-wide');
-            var wfFull  = overlay.querySelector('.bp-wf-full');
-            var bpTitle = overlay.querySelector('.bp-title');
+            var queue = [];
+            var timer = null;
             var skipped = false;
+            var speed = 58;  // 基础打字速度 ms/字
+            var allDone = false;
 
-            function showWf(el, delay) {
-                if (skipped) return;
-                setTimeout(function() { if (!skipped && el) el.classList.add('visible'); }, delay);
+            // 将文本加入打字队列
+            function enqueue(targetEl, text, cls, onStart, onDone) {
+                for (var i = 0; i < text.length; i++) {
+                    queue.push({ el: targetEl, char: text[i], cls: cls || '', onStart: i === 0 ? onStart : null, onDone: i === text.length - 1 ? onDone : null });
+                }
             }
-            function resolveWf(el, delay) {
-                if (skipped) return;
-                setTimeout(function() { if (!skipped && el) el.classList.add('resolve'); }, delay);
+
+            // 打下一个字符
+            function typeNext() {
+                if (skipped || queue.length === 0) return;
+                var item = queue.shift();
+                if (item.onStart) item.onStart();
+
+                var span = document.createElement('span');
+                span.className = 'ms-char ' + (item.cls || '');
+                span.textContent = item.char;
+                item.el.appendChild(span);
+
+                // 随机删除线修正（15%概率，且不在标题行）
+                if (!item.cls && Math.random() < 0.12 && item.char !== ' ' && item.char !== '·') {
+                    span.classList.add('correcting');
+                    setTimeout(function() {
+                        if (span.parentNode) span.parentNode.removeChild(span);
+                        var fixed = document.createElement('span');
+                        fixed.className = 'ms-char corrected';
+                        fixed.textContent = item.char;
+                        item.el.appendChild(fixed);
+                    }, 250);
+                }
+
+                if (item.onDone) item.onDone();
+                updateCursor();
+                scheduleNext();
             }
 
-            // 时间线
-            showWf(wfLeft, 500);
-            showWf(wfRight, 650);
-            showWf(wfWide, 800);
-            showWf(wfFull, 950);
+            function updateCursor() {
+                if (msCursor) {
+                    msCursor.parentNode.insertBefore(msCursor, null); // 移到末尾
+                }
+            }
 
-            resolveWf(wfLeft, 900);
-            resolveWf(wfRight, 1050);
-            resolveWf(wfWide, 1200);
-            resolveWf(wfFull, 1350);
-
-            setTimeout(function() {
-                if (!skipped && bpTitle) bpTitle.classList.add('reveal');
-            }, 1400);
-
-            setTimeout(function() {
-                if (!skipped) finishBlueprint();
-            }, 2200);
-
-            // --- 点击跳过 ---
-            overlay.addEventListener('click', function skipHandler() {
+            function scheduleNext() {
+                clearTimeout(timer);
                 if (skipped) return;
-                skipped = true;
-                overlay.removeEventListener('click', skipHandler);
-                // 瞬间完成所有线框
-                [wfLeft, wfRight, wfWide, wfFull].forEach(function(el) {
-                    if (el) { el.classList.add('visible'); el.classList.add('resolve'); }
-                });
-                if (bpTitle) bpTitle.classList.add('reveal');
-                setTimeout(function() { finishBlueprint(); }, 400);
-            });
+                if (queue.length === 0) {
+                    if (!allDone) { allDone = true; onAllTyped(); }
+                    return;
+                }
+                timer = setTimeout(typeNext, speed);
+            }
 
-            function finishBlueprint() {
+            function onAllTyped() {
+                // 所有打字完成 → 定稿
+                setTimeout(function() {
+                    if (workspace) workspace.classList.add('finalized');
+                    if (msHint) msHint.style.opacity = '0';
+                    setTimeout(function() { finishManuscript(); }, 800);
+                }, 600);
+            }
+
+            function finishManuscript() {
+                if (skipped) return;
                 overlay.classList.add('fade-out');
                 if (glow) glow.style.zIndex = '0';
                 setTimeout(function() {
                     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
                     if (bubblesLayer) bubblesLayer.style.zIndex = '0';
                     if (container) container.classList.add('entrance-start');
-                }, 550);
+                }, 650);
             }
+
+            // ---- 构建手稿内容 ----
+            // 标题行
+            var titleLine = document.createElement('div');
+            titleLine.className = 'ms-line';
+            msTitle.appendChild(titleLine);
+            enqueue(titleLine, '我的笔记', 'ms-title-char');
+
+            // 副标题行
+            var subLine = document.createElement('div');
+            subLine.className = 'ms-line';
+            subLine.style.fontSize = '1rem';
+            subLine.style.fontWeight = '400';
+            subLine.style.color = 'rgba(255,255,255,0.5)';
+            msTitle.appendChild(subLine);
+            enqueue(subLine, '读书 · 思考 · 诗文');
+
+            // 4张卡片
+            var cardData = [
+                { title: '史学笔记', desc: '中国史学的发展脉络与经典研读' },
+                { title: '文哲笔记', desc: '从古希腊到现代的哲学思想之旅' },
+                { title: '随笔',     desc: '随感而发，不拘一格' },
+                { title: '个人诗集', desc: '古风雅韵与现代诗篇的创作整理' }
+            ];
+
+            cardData.forEach(function(cd) {
+                var cardDiv = document.createElement('div');
+                cardDiv.className = 'ms-card';
+                var titleDiv = document.createElement('div');
+                titleDiv.className = 'ms-card-title';
+                var descDiv = document.createElement('div');
+                descDiv.className = 'ms-card-desc';
+                cardDiv.appendChild(titleDiv);
+                cardDiv.appendChild(descDiv);
+                msCards.appendChild(cardDiv);
+
+                enqueue(titleDiv, cd.title, 'ms-card-title-char');
+                enqueue(descDiv, cd.desc, 'ms-card-desc-char');
+            });
+
+            updateCursor();
+            // 初始延迟后开始打字
+            setTimeout(function() { scheduleNext(); }, 200);
+
+            // ---- 键盘交互：按任意键立即打字 ----
+            var idleTimer;
+            document.addEventListener('keydown', function keyHandler(e) {
+                if (skipped || allDone) {
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
+                e.preventDefault();
+                clearTimeout(timer);
+                typeNext();
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(function() { /* 用户停止按键，自动继续 */ }, 400);
+            });
+
+            // ---- 点击跳过 ----
+            overlay.addEventListener('click', function skipHandler() {
+                if (skipped) return;
+                skipped = true;
+                overlay.removeEventListener('click', skipHandler);
+                clearTimeout(timer);
+                // 瞬间打出所有剩余字符
+                while (queue.length > 0) {
+                    var item = queue.shift();
+                    var span = document.createElement('span');
+                    span.className = 'ms-char ' + (item.cls || '');
+                    span.textContent = item.char;
+                    item.el.appendChild(span);
+                }
+                updateCursor();
+                allDone = true;
+                setTimeout(function() {
+                    if (workspace) workspace.classList.add('finalized');
+                    if (msHint) msHint.style.opacity = '0';
+                    setTimeout(function() { finishManuscript(); }, 500);
+                }, 300);
+            });
         })();
 
         // ========================================
         // 4.3 首页 Logo 微光扫过 + Bento 卡片错落入场
         // ========================================
         (function initHomeEntrance() {
-            // Logo 微光扫过（仅非蓝图页；蓝图已处理标题动画）
-            var hasBlueprint = !!document.getElementById('blueprint-overlay');
-            if (!hasBlueprint) {
+            // Logo 微光扫过（仅非手稿页；手稿已处理标题动画）
+            var hasOverlay = !!document.getElementById('manuscript-overlay');
+            if (!hasOverlay) {
                 var siteTitle = document.querySelector('.site-title');
                 if (siteTitle) {
                     setTimeout(function() {
