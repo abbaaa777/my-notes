@@ -1477,6 +1477,8 @@
         /* 移动端 */
         @media (max-width: 768px) {
             .home-title { font-size: 2rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
+            .click-hint { font-size: 0.8rem; bottom: 16%; letter-spacing: 0.06em; }
+            .keystroke-overlay { background: #060A14; }
         }
     </style>
 </head>
@@ -1751,22 +1753,31 @@
               '记':["M396 349Q382 349 371.50 359.50Q361 370 361 384L361 686Q361 701 371.50 711Q382 721 396 721L679 721Q694 721 704 731Q714 741 714 756L714 779Q714 793 704 803.50Q694 814 679 814L377 814Q362 814 345 807Q328 800 317 789L292 763Q283 754 276 736.50Q269 719 269 705L269 320Q269 288 281.50 272Q294 256 337 256L586 256Q601 256 611.50 246Q622 236 622 221L622 23Q622 9 611.50-1.50Q601-12 586-12L303-12Q289-12 279-22Q269-32 269-47L269-70Q269-84 279-94Q289-104 303-104L679-104Q694-104 704-94Q714-84 714-70L714 239Q714 254 707 271Q700 288 689 299L666 323Q655 334 638 341.50Q621 349 606 349Z","M159-64Q170-54 170-39Q170-25 159-14L144 2Q132 12 119 12Q106 12 93 2L77-14Q66-27 66-39Q66-53 77-64L93-80Q104-90 119-90Q134-90 144-80Z","M71 721Q79 721 85 711Q91 701 91 686L91 191Q91 176 85 166Q79 156 71 156Q61 156 55 146Q49 136 49 121L49 98Q49 83 59 73Q69 63 83 63L149 63Q163 63 173.50 73Q184 83 184 98L184 705Q184 720 177 737Q170 754 159 763L136 789Q125 800 109 807Q93 814 80 814Q66 814 57.50 804Q49 794 49 779L49 756Q49 741 55 731Q61 721 71 721Z"]
             };
 
-            // 布局: [Icon 42] [gap 24] [我] [gap 20] [的] [gap 20] [笔] [gap 20] [记]
+            // 布局: [Icon] [gap] [我] [gap] [的] [gap] [笔] [gap] [记]
+            // 桌面基准尺寸 → 移动端按屏宽等比缩放
             var screenW = window.innerWidth, screenH = window.innerHeight;
             var centerY = screenH / 2;
-            var charW = [100, 90, 100, 85], charH = [130, 130, 130, 130];
-            var totalW = 42 + 24 + charW[0] + 20 + charW[1] + 20 + charW[2] + 20 + charW[3];
+            var baseIconW = 42, baseGapI = 24, baseGapC = 20;
+            var baseCharW = [100, 90, 100, 85], baseCharH = [130, 130, 130, 130];
+            var baseTotalW = baseIconW + baseGapI + baseCharW[0] + baseGapC + baseCharW[1] + baseGapC + baseCharW[2] + baseGapC + baseCharW[3];
+            var mobileScale = isMobile ? Math.min(1, (screenW * 0.88) / baseTotalW) : 1;
+            var iconW = Math.round(baseIconW * mobileScale);
+            var gapI  = Math.round(baseGapI * mobileScale);
+            var gapC  = Math.round(baseGapC * mobileScale);
+            var charW = baseCharW.map(function(w){ return Math.round(w * mobileScale); });
+            var charH = baseCharH.map(function(h){ return Math.round(h * mobileScale); });
+            var totalW = iconW + gapI + charW[0] + gapC + charW[1] + gapC + charW[2] + gapC + charW[3];
             var startX = (screenW - totalW) / 2;
             var charKeys = ['我','的','笔','记'];
             var charDefs = [];
-            var cx = startX + 42 + 24;
+            var cx = startX + iconW + gapI;
             for (var ci = 0; ci < 4; ci++) {
                 charDefs.push({ text: charKeys[ci], x: cx, w: charW[ci], h: charH[ci] });
-                cx += charW[ci] + 20;
+                cx += charW[ci] + gapC;
             }
-            var iconX = startX, iconY = centerY;
-            var titleScale = isMobile ? 0.28 : 0.32;
-            var titleTargetY = isMobile ? 30 : 44;
+            var iconX = startX, iconY = centerY - iconW/2;
+            var titleScale = isMobile ? mobileScale * 0.32 : 0.32;
+            var titleTargetY = isMobile ? Math.round(44 * mobileScale) : 44;
 
             var allStrokes = [];
             var _ts = 1;
@@ -1835,11 +1846,11 @@
 
             // 书图标
             var icon = document.createElementNS('http://www.w3.org/2000/svg','svg');
-            icon.setAttribute('width','42'); icon.setAttribute('height','42'); icon.setAttribute('viewBox','0 0 24 24');
+            icon.setAttribute('width',iconW); icon.setAttribute('height',iconW); icon.setAttribute('viewBox','0 0 24 24');
             icon.setAttribute('fill','none'); icon.setAttribute('stroke','#FFE566'); icon.setAttribute('stroke-width','2.5');
             icon.setAttribute('stroke-linecap','round'); icon.setAttribute('stroke-linejoin','round');
             icon.innerHTML='<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
-            icon.classList.add('stroke-svg'); icon.style.width='42px'; icon.style.height='42px'; icon.style.overflow='visible';
+            icon.classList.add('stroke-svg'); icon.style.width=iconW+'px'; icon.style.height=iconW+'px'; icon.style.overflow='visible';
             icon.style.filter='drop-shadow(0 2px 6px rgba(255,229,102,0.35)) drop-shadow(0 0 2px rgba(255,229,102,0.25))';
             var ie = entry(gIdx,_ts,screenW,screenH);
             var it = traj(ie,{x:iconX,y:iconY});
