@@ -16,7 +16,7 @@
     <title>{% if page.title %}{{ page.title }} · 我的笔记{% else %}我的笔记 · My Notes{% endif %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Shippori+Mincho:wght@400;600;700&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js"></script>
     <style>
         /* ========================================
@@ -1432,7 +1432,7 @@
         }
         .home-title-main {
             display: block;
-            font-family: 'ZCOOL QingKe HuangYou', 'Shippori Mincho', serif;
+            font-family: 'Noto Serif SC', 'Shippori Mincho', serif;
             font-weight: bold;
             font-size: 6rem;
             line-height: 1.1;
@@ -1765,43 +1765,61 @@
 
             try {
 
-            // --- ZCOOL QingKe HuangYou 原生glyph contours（字体精确轮廓） ---
-            var ZCOOL = {
-              '我':["M168 721Q183 721 193 710.50Q203 700 203 685L203 486Q203 472 194.50 462Q186 452 173 452Q159 452 150.50 461.50Q142 471 142 486L142 621Q142 635 132 645.50Q122 656 107 656L83 656Q69 656 59 645.50Q49 635 49 621L49 468Q49 453 56 436Q63 419 73 407L99 384Q108 373 125.50 366Q143 359 159 359L168 359Q183 359 193 348.50Q203 338 203 323L203 295Q203 280 193 269.50Q183 259 168 259L83 259Q69 259 59 249Q49 239 49 225L49 202Q49 188 59 177.50Q69 167 83 167L168 167Q183 167 193 156.50Q203 146 203 132L203 93Q203 78 193 67.50Q183 57 168 57L83 57Q69 57 59 46Q49 35 49 21L49-1Q49-15 59-25.50Q69-36 83-36L264-36Q279-36 290-46Q301-56 301-70Q301-84 311-94Q321-104 336-104L358-104Q372-104 382.50-94Q393-84 393-70L393-53Q393-38 386-20.50Q379-3 368 8L343 32Q333 42 322.50 49.50Q312 57 308 57Q303 57 300 67Q297 77 297 93L297 132Q297 146 307 156.50Q317 167 331 167L408 167Q423 167 433 156.50Q443 146 443 132L443-70Q443-84 453.50-94Q464-104 479-104L501-104Q515-104 525.50-94Q536-84 536-70L536 132Q536 146 546.50 156.50Q557 167 571 167L683 167Q698 167 708 177.50Q718 188 718 202L718 225Q718 239 708 249Q698 259 683 259L571 259Q557 259 546.50 270Q536 281 536 295L536 520Q536 534 546.50 544Q557 554 571 554L590 554Q605 554 615.50 544Q626 534 626 520L626 358Q626 343 636 332.50Q646 322 660 322L683 322Q698 322 708 332.50Q718 343 718 358L718 538Q718 553 711 570Q704 587 694 599L669 623Q659 633 641.50 641Q624 649 609 649L571 649Q557 649 546.50 659Q536 669 536 683L536 685Q536 700 546.50 710.50Q557 721 571 721L683 721Q698 721 708 731Q718 741 718 756L718 779Q718 793 708 803.50Q698 814 683 814L552 814Q537 814 519.50 807Q502 800 493 789L468 764Q458 755 450.50 737.50Q443 720 443 705L443 683Q443 669 433.50 659Q424 649 410 649Q396 649 386.50 638.50Q377 628 377 613L377 590Q377 575 386.50 564.50Q396 554 410 554Q424 554 433.50 544Q443 534 443 520L443 295Q443 280 433 269.50Q423 259 408 259L331 259Q317 259 307 270Q297 281 297 295L297 323Q297 338 306.50 348.50Q316 359 330 359Q344 359 353.50 369Q363 379 363 394L363 415Q363 430 353.50 441Q344 452 330 452Q316 452 306.50 462Q297 472 297 486L297 705Q297 720 289.50 737.50Q282 755 271 764L246 789Q237 800 219.50 807Q202 814 187 814L83 814Q69 814 59 803.50Q49 793 49 779L49 756Q49 741 59 731Q69 721 83 721Z","M668 80Q657 91 640 98Q623 105 608 105L603 105Q588 105 577.50 94.50Q567 84 567 69L567 48Q567 33 576 22Q585 11 596 11Q609 11 617.50 1Q626-9 626-24L626-50Q626-65 636-75.50Q646-86 660-86L683-86Q698-86 708-75.50Q718-65 718-50L718-4Q718 10 711 28Q704 46 694 55Z"],
-              '的':["M325 85Q339 85 349 95.50Q359 106 359 121L359 779Q359 793 349 803.50Q339 814 325 814L83 814Q69 814 59 803.50Q49 793 49 779L49-36Q49-50 59-61Q69-72 83-72L219-72Q234-72 244.50-76.50Q255-81 255-88Q255-96 264.50-100Q274-104 290-104L312-104Q326-104 336.50-96.50Q347-89 347-78L347-13Q347 1 336.50 11Q326 21 312 21L177 21Q161 20 152 30Q143 40 143 54Q143 67 152 76.50Q161 86 177 85Z","M682-44Q696-44 706-33.50Q716-23 716-8L716 779Q716 793 706 803.50Q696 814 682 814L467 814Q453 814 443 803.50Q433 793 433 779L433 756Q433 741 443 731Q453 721 467 721L588 721Q603 721 613 711Q623 701 623 686L623 84Q623 70 613 59.50Q603 49 588 49L432 49Q417 49 407 38.50Q397 28 397 14L397-70Q397-84 407-94Q417-104 432-104L455-104Q469-104 479.50-95Q490-86 490-74Q490-62 500-53Q510-44 524-44Z","M496 135Q510 135 520 145.50Q530 156 530 170L530 493Q530 507 535.50 517.50Q541 528 547 528Q555 528 560 538Q565 548 565 563L565 586Q565 600 557 610.50Q549 621 539 621L473 621Q459 621 449 610.50Q439 600 439 586L439 170Q439 156 449 145.50Q459 135 473 135Z","M177 178Q162 178 152 188.50Q142 199 142 213L142 361Q142 375 152 385.50Q162 396 177 396L231 396Q246 396 256 385.50Q266 375 266 361L266 213Q266 199 256 188.50Q246 178 231 178Z","M231 721Q246 721 256 711Q266 701 266 686L266 524Q266 509 256 498.50Q246 488 231 488L177 488Q162 488 152 498.50Q142 509 142 524L142 686Q142 701 152 711Q162 721 177 721Z"],
-              '笔':["M142 117Q142 131 132 141Q122 151 107 151L83 151Q69 151 59 141Q49 131 49 117L49-70Q49-84 59-94Q69-104 83-104L333-104Q348-104 358-94Q368-84 368-70L368-47Q368-32 358-22Q348-12 333-12L320-12Q306-12 296-1.50Q286 9 286 23L286 33Q286 48 296 58Q306 68 320 68L333 68Q348 68 358 78.50Q368 89 368 103L368 117Q368 131 358 141Q348 151 333 151L228 151Q214 151 203.50 141Q193 131 193 117L193 23Q193 9 185.50-1.50Q178-12 167-12Q157-12 149.50-1.50Q142 9 142 23Z","M575 151Q561 151 550.50 141Q540 131 540 117L540 23Q540 8 533-2Q526-12 514-12Q504-12 497-1.50Q490 9 490 23L490 117Q490 131 479.50 141Q469 151 455 151L432 151Q417 151 407 141Q397 131 397 117L397-70Q397-84 407-94Q417-104 432-104L682-104Q696-104 706-94Q716-84 716-70L716-47Q716-32 706-22Q696-12 682-12L668-12Q654-12 643-1.50Q632 9 632 23L632 33Q632 48 642.50 58Q653 68 668 68L682 68Q696 68 706 78.50Q716 89 716 103L716 117Q716 131 706 141Q696 151 682 151Z","M209 687Q209 672 198.50 662Q188 652 173 652L83 652Q69 652 59 641.50Q49 631 49 616L49 594Q49 580 59 569.50Q69 559 83 559L173 559Q188 559 198.50 549Q209 539 209 525Q209 511 198.50 500Q188 489 173 489L83 489Q69 489 59 479Q49 469 49 455L49 432Q49 417 59 406.50Q69 396 83 396L173 396Q188 396 198.50 386Q209 376 209 361L209 360Q209 345 198.50 334.50Q188 324 173 324L83 324Q69 324 59 314Q49 304 49 289L49 267Q49 253 59 242Q69 231 83 231L588 231Q603 231 613 226.50Q623 222 623 215Q623 207 633.50 202Q644 197 659 197L682 197Q696 197 706 207.50Q716 218 716 232L716 289Q716 304 706 314Q696 324 682 324L337 324Q322 324 311.50 334.50Q301 345 301 360L301 361Q301 376 311.50 386Q322 396 337 396L682 396Q696 396 706 406.50Q716 417 716 432L716 455Q716 469 706 479Q696 489 682 489L337 489Q322 489 311.50 500Q301 511 301 525Q301 539 311.50 549Q322 559 337 559L682 559Q696 559 706 569.50Q716 580 716 594L716 616Q716 631 706 641.50Q696 652 682 652L337 652Q322 652 311.50 662Q301 672 301 687Q301 701 311.50 711Q322 721 337 721L682 721Q696 721 706 731Q716 741 716 756L716 779Q716 793 706 803.50Q696 814 682 814L244 814Q229 814 219 803.50Q209 793 209 779Z"],
-              '记':["M396 349Q382 349 371.50 359.50Q361 370 361 384L361 686Q361 701 371.50 711Q382 721 396 721L679 721Q694 721 704 731Q714 741 714 756L714 779Q714 793 704 803.50Q694 814 679 814L377 814Q362 814 345 807Q328 800 317 789L292 763Q283 754 276 736.50Q269 719 269 705L269 320Q269 288 281.50 272Q294 256 337 256L586 256Q601 256 611.50 246Q622 236 622 221L622 23Q622 9 611.50-1.50Q601-12 586-12L303-12Q289-12 279-22Q269-32 269-47L269-70Q269-84 279-94Q289-104 303-104L679-104Q694-104 704-94Q714-84 714-70L714 239Q714 254 707 271Q700 288 689 299L666 323Q655 334 638 341.50Q621 349 606 349Z","M159-64Q170-54 170-39Q170-25 159-14L144 2Q132 12 119 12Q106 12 93 2L77-14Q66-27 66-39Q66-53 77-64L93-80Q104-90 119-90Q134-90 144-80Z","M71 721Q79 721 85 711Q91 701 91 686L91 191Q91 176 85 166Q79 156 71 156Q61 156 55 146Q49 136 49 121L49 98Q49 83 59 73Q69 63 83 63L149 63Q163 63 173.50 73Q184 83 184 98L184 705Q184 720 177 737Q170 754 159 763L136 789Q125 800 109 807Q93 814 80 814Q66 814 57.50 804Q49 794 49 779L49 756Q49 741 55 731Q61 721 71 721Z"]
-            };
+            // 等待思源宋体 Bold 加载完毕再开始动画
+            document.fonts.load('bold 130px "Noto Serif SC"').then(function() { startAnimation(); });
+            function startAnimation() {
 
-            // 布局: [Icon] [gap] [我] [gap] [的] [gap] [笔] [gap] [记]
-            // 桌面基准尺寸 → 移动端按屏宽等比缩放
+            // --- 思源宋体 Bold "My Notes" 字母动画 ---
+            var GLYPHS = ['M','y',null,'N','o','t','e','s']; // null=空格
             var screenW = window.innerWidth, screenH = window.innerHeight;
             var centerY = screenH / 2;
-            var baseIconW = 42, baseGapI = 24, baseGapC = 20;
-            var baseCharW = [100, 90, 100, 85], baseCharH = [130, 130, 130, 130];
-            var baseTotalW = baseIconW + baseGapI + baseCharW[0] + baseGapC + baseCharW[1] + baseGapC + baseCharW[2] + baseGapC + baseCharW[3];
-            var mobileScale = isMobile ? Math.min(1, (screenW * 0.88) / baseTotalW) : 1;
-            var iconW = Math.round(baseIconW * mobileScale);
-            var gapI  = Math.round(baseGapI * mobileScale);
-            var gapC  = Math.round(baseGapC * mobileScale);
-            var charW = baseCharW.map(function(w){ return Math.round(w * mobileScale); });
-            var charH = baseCharH.map(function(h){ return Math.round(h * mobileScale); });
-            var totalW = iconW + gapI + charW[0] + gapC + charW[1] + gapC + charW[2] + gapC + charW[3];
+
+            // Canvas 测量字母宽度
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var baseFontSize = isMobile ? 80 : 130;
+            ctx.font = 'bold ' + baseFontSize + 'px "Noto Serif SC", serif';
+            var spaceW = ctx.measureText(' ').width;
+            var letterMetrics = GLYPHS.map(function(g) {
+                if (!g) return { letter: null, w: spaceW * 0.85 };
+                var m = ctx.measureText(g);
+                return { letter: g, w: m.width };
+            });
+
+            // 布局：图标 + 间距 + 字母依次排列
+            var iconSize = Math.round(baseFontSize * 0.48);
+            var gapIcon = Math.round(baseFontSize * 0.2);
+            var totalW = iconSize + gapIcon;
+            for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
+            var mobileScale = isMobile ? Math.min(1, (screenW * 0.9) / totalW) : 1;
+            var fs = Math.round(baseFontSize * mobileScale);
+
+            iconSize = Math.round(iconSize * mobileScale);
+            gapIcon = Math.round(gapIcon * mobileScale);
+            for (var i = 0; i < letterMetrics.length; i++) { letterMetrics[i].w = Math.round(letterMetrics[i].w * mobileScale); }
+            totalW = iconSize + gapIcon;
+            for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
+
             var startX = (screenW - totalW) / 2;
-            var charKeys = ['我','的','笔','记'];
-            var charDefs = [];
-            var cx = startX + iconW + gapI;
-            for (var ci = 0; ci < 4; ci++) {
-                charDefs.push({ text: charKeys[ci], x: cx, w: charW[ci], h: charH[ci] });
-                cx += charW[ci] + gapC;
+            var iconX = startX;
+            var iconY = centerY - iconSize / 2;
+
+            // 计算每个字母的目标位置
+            var letterPositions = [];
+            var curX = startX + iconSize + gapIcon;
+            for (var i = 0; i < letterMetrics.length; i++) {
+                if (letterMetrics[i].letter) {
+                    letterPositions.push({ letter: letterMetrics[i].letter, x: curX, w: letterMetrics[i].w, idx: i });
+                }
+                curX += letterMetrics[i].w;
             }
-            var iconX = startX, iconY = centerY - iconW/2;
+
             var titleScale = isMobile ? mobileScale * 0.32 : 0.32;
             var titleTargetY = isMobile ? Math.round(44 * mobileScale) : 44;
 
+            // --- 核心动画函数 ---
             var allStrokes = [];
-            var _ts = 1;
-            for (var ci = 0; ci < 4; ci++) { _ts += ZCOOL[charDefs[ci].text].length; }
+            var _ts = letterPositions.length + 1; // 字母 + 图标
             var gIdx = 0, idCtr = 0;
             function nid() { return 'c' + (idCtr++); }
 
@@ -1814,138 +1832,143 @@
             var BEND = 22;
             function xform(tr,t){var p=cBez(tr.start,tr.cp1,tr.cp2,tr.end,t);var tn=bTang(tr.start,tr.cp1,tr.cp2,tr.end,t);var cv=bCurv(tr.start,tr.cp1,tr.cp2,tr.end,t);var env=Math.sin(t*Math.PI);if(t>0.92)env*=(1-(t-0.92)/0.08);var sk=cv*env*BEND;sk=Math.max(-35,Math.min(35,sk));var pa=Math.atan2(tn.y,tn.x)*180/Math.PI;var sc=0.25+t*0.75;return{x:p.x,y:p.y,transform:'translate('+p.x.toFixed(2)+'px,'+p.y.toFixed(2)+'px) rotate('+pa.toFixed(4)+'deg) skewX('+sk.toFixed(4)+'deg) scale('+sc.toFixed(4)+')'};}
 
-            // 创建ZCOOL原生contour为SVG path
-            charDefs.forEach(function(ch){
-                var contours = ZCOOL[ch.text];
-                if(!contours) return;
-                for(var si=0;si<contours.length;si++){
-                    var colorKey = (gIdx%2===0)?'yellow':'white';
-                    var gid = nid(), fid = nid();
+            // 为每个字母创建 SVG text 元素
+            var svgNS = 'http://www.w3.org/2000/svg';
+            letterPositions.forEach(function(lp) {
+                var colorKey = (gIdx % 2 === 0) ? 'yellow' : 'white';
+                var gid = nid(), fid = nid();
 
-                    var svgNS = 'http://www.w3.org/2000/svg';
-                    var svg = document.createElementNS(svgNS,'svg');
-                    svg.setAttribute('viewBox','0 -120 800 1040');
-                    svg.setAttribute('width',ch.w); svg.setAttribute('height',ch.h);
-                    svg.classList.add('stroke-svg');
-                    svg.style.width=ch.w+'px'; svg.style.height=ch.h+'px';
-                    svg.style.overflow='visible';
+                var svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('viewBox', '0 0 ' + lp.w + ' ' + fs);
+                svg.setAttribute('width', lp.w);
+                svg.setAttribute('height', fs);
+                svg.classList.add('stroke-svg');
+                svg.style.width = lp.w + 'px';
+                svg.style.height = fs + 'px';
+                svg.style.overflow = 'visible';
 
-                    var defs = document.createElementNS(svgNS,'defs');
-                    // 本地渐变
-                    var grad = document.createElementNS(svgNS,'linearGradient');
-                    grad.setAttribute('id',gid); grad.setAttribute('x1','0%'); grad.setAttribute('y1','0%'); grad.setAttribute('x2','100%'); grad.setAttribute('y2','100%');
-                    grad.innerHTML = colorKey==='yellow' ?
-                        '<stop offset="0%" stop-color="rgba(255,245,175,0.95)"/><stop offset="20%" stop-color="rgba(255,235,120,0.72)"/><stop offset="45%" stop-color="rgba(255,225,90,0.55)"/><stop offset="55%" stop-color="rgba(255,240,140,0.82)"/><stop offset="80%" stop-color="rgba(245,215,75,0.65)"/><stop offset="100%" stop-color="rgba(255,238,155,0.9)"/>' :
-                        '<stop offset="0%" stop-color="rgba(255,255,255,0.96)"/><stop offset="20%" stop-color="rgba(250,250,255,0.68)"/><stop offset="45%" stop-color="rgba(235,235,245,0.52)"/><stop offset="55%" stop-color="rgba(252,252,255,0.85)"/><stop offset="80%" stop-color="rgba(230,230,240,0.62)"/><stop offset="100%" stop-color="rgba(248,248,255,0.9)"/>';
-                    defs.appendChild(grad);
-                    // 本地滤镜
-                    var filt = document.createElementNS(svgNS,'filter');
-                    filt.setAttribute('id',fid); filt.setAttribute('x','-20%'); filt.setAttribute('y','-20%'); filt.setAttribute('width','140%'); filt.setAttribute('height','140%');
-                    filt.innerHTML = colorKey==='yellow' ?
-                        '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.55)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(200,160,40,0.25)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,240,120,0.25)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,229,102,0.12)"/>' :
-                        '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(180,180,200,0.18)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,255,255,0.3)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
-                    defs.appendChild(filt);
-                    svg.appendChild(defs);
+                var defs = document.createElementNS(svgNS, 'defs');
+                // 本地渐变
+                var grad = document.createElementNS(svgNS, 'linearGradient');
+                grad.setAttribute('id', gid); grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%'); grad.setAttribute('x2', '100%'); grad.setAttribute('y2', '100%');
+                grad.innerHTML = colorKey === 'yellow' ?
+                    '<stop offset="0%" stop-color="rgba(255,245,175,0.95)"/><stop offset="20%" stop-color="rgba(255,235,120,0.72)"/><stop offset="45%" stop-color="rgba(255,225,90,0.55)"/><stop offset="55%" stop-color="rgba(255,240,140,0.82)"/><stop offset="80%" stop-color="rgba(245,215,75,0.65)"/><stop offset="100%" stop-color="rgba(255,238,155,0.9)"/>' :
+                    '<stop offset="0%" stop-color="rgba(255,255,255,0.96)"/><stop offset="20%" stop-color="rgba(250,250,255,0.68)"/><stop offset="45%" stop-color="rgba(235,235,245,0.52)"/><stop offset="55%" stop-color="rgba(252,252,255,0.85)"/><stop offset="80%" stop-color="rgba(230,230,240,0.62)"/><stop offset="100%" stop-color="rgba(248,248,255,0.9)"/>';
+                defs.appendChild(grad);
+                // 本地滤镜
+                var filt = document.createElementNS(svgNS, 'filter');
+                filt.setAttribute('id', fid); filt.setAttribute('x', '-20%'); filt.setAttribute('y', '-20%'); filt.setAttribute('width', '140%'); filt.setAttribute('height', '140%');
+                filt.innerHTML = colorKey === 'yellow' ?
+                    '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.55)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(200,160,40,0.25)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,240,120,0.25)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,229,102,0.12)"/>' :
+                    '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(180,180,200,0.18)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,255,255,0.3)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
+                defs.appendChild(filt);
+                svg.appendChild(defs);
 
-                    var path = document.createElementNS(svgNS,'path');
-                    path.setAttribute('d',contours[si]);
-                    path.setAttribute('fill','url(#'+gid+')');
-                    path.setAttribute('filter','url(#'+fid+')');
-                    svg.appendChild(path);
+                var text = document.createElementNS(svgNS, 'text');
+                text.setAttribute('x', '0');
+                text.setAttribute('y', fs * 0.78);
+                text.setAttribute('font-family', '"Noto Serif SC", "Source Han Serif SC", serif');
+                text.setAttribute('font-weight', '700');
+                text.setAttribute('font-size', fs + 'px');
+                text.setAttribute('fill', 'url(#' + gid + ')');
+                text.setAttribute('filter', 'url(#' + fid + ')');
+                text.textContent = lp.letter;
+                svg.appendChild(text);
 
-                    var endX = ch.x, endY = centerY - ch.h/2;
-                    var ent = entry(gIdx,_ts,screenW,screenH);
-                    var tr = traj(ent,{x:endX,y:endY});
-                    svg.style.transform = 'translate('+ent.x.toFixed(2)+'px,'+ent.y.toFixed(2)+'px) scale(0.25)';
-                    svg.style.opacity = '0';
-                    overlay.appendChild(svg);
-                    allStrokes.push({el:svg,endX:endX,endY:endY,traj:tr,df:gIdx*0.004,colorKey:colorKey,settled:false});
-                    gIdx++;
-                }
+                var endX = lp.x, endY = centerY - fs / 2;
+                var ent = entry(gIdx, _ts, screenW, screenH);
+                var tr = traj(ent, {x: endX, y: endY});
+                svg.style.transform = 'translate(' + ent.x.toFixed(2) + 'px,' + ent.y.toFixed(2) + 'px) scale(0.25)';
+                svg.style.opacity = '0';
+                overlay.appendChild(svg);
+                allStrokes.push({el: svg, endX: endX, endY: endY, traj: tr, df: gIdx * 0.004, colorKey: colorKey, settled: false});
+                gIdx++;
             });
 
             // 书图标
-            var icon = document.createElementNS('http://www.w3.org/2000/svg','svg');
-            icon.setAttribute('width',iconW); icon.setAttribute('height',iconW); icon.setAttribute('viewBox','0 0 24 24');
-            icon.setAttribute('fill','none'); icon.setAttribute('stroke','#FFE566'); icon.setAttribute('stroke-width','2.5');
-            icon.setAttribute('stroke-linecap','round'); icon.setAttribute('stroke-linejoin','round');
-            icon.innerHTML='<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
-            icon.classList.add('stroke-svg'); icon.style.width=iconW+'px'; icon.style.height=iconW+'px'; icon.style.overflow='visible';
-            icon.style.filter='drop-shadow(0 2px 6px rgba(255,229,102,0.35)) drop-shadow(0 0 2px rgba(255,229,102,0.25))';
-            var ie = entry(gIdx,_ts,screenW,screenH);
-            var it = traj(ie,{x:iconX,y:iconY});
-            icon.style.transform='translate('+ie.x.toFixed(2)+'px,'+ie.y.toFixed(2)+'px) scale(0.25)';
-            icon.style.opacity='0';
+            var icon = document.createElementNS(svgNS, 'svg');
+            icon.setAttribute('width', iconSize); icon.setAttribute('height', iconSize); icon.setAttribute('viewBox', '0 0 24 24');
+            icon.setAttribute('fill', 'none'); icon.setAttribute('stroke', '#FFE566'); icon.setAttribute('stroke-width', '2.5');
+            icon.setAttribute('stroke-linecap', 'round'); icon.setAttribute('stroke-linejoin', 'round');
+            icon.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
+            icon.classList.add('stroke-svg'); icon.style.width = iconSize + 'px'; icon.style.height = iconSize + 'px'; icon.style.overflow = 'visible';
+            icon.style.filter = 'drop-shadow(0 2px 6px rgba(255,229,102,0.35)) drop-shadow(0 0 2px rgba(255,229,102,0.25))';
+            var ie = entry(gIdx, _ts, screenW, screenH);
+            var it = traj(ie, {x: iconX, y: iconY});
+            icon.style.transform = 'translate(' + ie.x.toFixed(2) + 'px,' + ie.y.toFixed(2) + 'px) scale(0.25)';
+            icon.style.opacity = '0';
             overlay.appendChild(icon);
-            allStrokes.push({el:icon,endX:iconX,endY:iconY,traj:it,df:gIdx*0.004,colorKey:'yellow',settled:false,isIcon:true});
+            allStrokes.push({el: icon, endX: iconX, endY: iconY, traj: it, df: gIdx * 0.004, colorKey: 'yellow', settled: false, isIcon: true});
 
             // 常驻标题（含副标题）
             var homeTitle = document.createElement('div');
-            homeTitle.id='home-title'; homeTitle.className='home-title';
-            homeTitle.innerHTML = '<span class="home-title-main">我的笔记</span><span class="home-title-sub">读书 · 思考 · 诗文</span>';
-            if(container){var fc=container.firstChild;if(fc)container.insertBefore(homeTitle,fc);else container.appendChild(homeTitle);}
+            homeTitle.id = 'home-title'; homeTitle.className = 'home-title';
+            homeTitle.innerHTML = '<span class="home-title-main">My Notes</span><span class="home-title-sub">读书 · 思考 · 诗文</span>';
+            if (container) { var fc = container.firstChild; if (fc) container.insertBefore(homeTitle, fc); else container.appendChild(homeTitle); }
 
-            var DUR = isMobile?1000:1300, allSettled=false, animStart=performance.now(), dismissed=false;
+            var DUR = isMobile ? 1000 : 1300, allSettled = false, animStart = performance.now(), dismissed = false;
 
-            function frame(now){
-                var allDone=true;
-                var gT=(now-animStart)/DUR; if(gT>1.08)gT=1.08;
-                for(var i=0;i<allStrokes.length;i++){
-                    var s=allStrokes[i]; if(s.settled)continue;
-                    var lt=Math.max(0,Math.min(1,(gT-s.df)/(1.0-s.df)));
-                    if(lt<=0){allDone=false;continue;}
-                    var et=ease(lt);
-                    var tf=xform(s.traj,Math.min(1,et));
-                    s.el.style.transform=tf.transform;
-                    s.el.style.opacity=Math.min(1,lt*3.5);
-                    if(lt>=1){
-                        s.settled=true;
-                        s.el.style.transform='translate('+s.endX.toFixed(2)+'px,'+s.endY.toFixed(2)+'px) rotate(0deg) skewX(0deg) scale(1)';
-                        s.el.style.opacity='1';
-                        s.el.style.setProperty('--bx',s.endX.toFixed(2)+'px');
-                        s.el.style.setProperty('--by',s.endY.toFixed(2)+'px');
-                        s.el.style.setProperty('--brz','0deg');
-                    }else{allDone=false;}
+            function frame(now) {
+                var allDone = true;
+                var gT = (now - animStart) / DUR; if (gT > 1.08) gT = 1.08;
+                for (var i = 0; i < allStrokes.length; i++) {
+                    var s = allStrokes[i]; if (s.settled) continue;
+                    var lt = Math.max(0, Math.min(1, (gT - s.df) / (1.0 - s.df)));
+                    if (lt <= 0) { allDone = false; continue; }
+                    var et = ease(lt);
+                    var tf = xform(s.traj, Math.min(1, et));
+                    s.el.style.transform = tf.transform;
+                    s.el.style.opacity = Math.min(1, lt * 3.5);
+                    if (lt >= 1) {
+                        s.settled = true;
+                        s.el.style.transform = 'translate(' + s.endX.toFixed(2) + 'px,' + s.endY.toFixed(2) + 'px) rotate(0deg) skewX(0deg) scale(1)';
+                        s.el.style.opacity = '1';
+                        s.el.style.setProperty('--bx', s.endX.toFixed(2) + 'px');
+                        s.el.style.setProperty('--by', s.endY.toFixed(2) + 'px');
+                        s.el.style.setProperty('--brz', '0deg');
+                    } else { allDone = false; }
                 }
-                if(!allDone)requestAnimationFrame(frame);
-                else if(!allSettled){allSettled=true;onAllSettled();}
+                if (!allDone) requestAnimationFrame(frame);
+                else if (!allSettled) { allSettled = true; onAllSettled(); }
             }
 
-            function onAllSettled(){
-                setTimeout(function(){allStrokes.forEach(function(s){s.el.classList.add('glazed');});},350);
-                setTimeout(function(){
-                    allStrokes.forEach(function(s){s.el.classList.remove('glazed');s.el.classList.add('breathe');});
-                    if(hint)hint.classList.add('visible');
-                    overlay.style.pointerEvents='auto'; overlay.style.cursor='pointer';
-                },1200);
+            function onAllSettled() {
+                setTimeout(function() { allStrokes.forEach(function(s) { s.el.classList.add('glazed'); }); }, 350);
+                setTimeout(function() {
+                    allStrokes.forEach(function(s) { s.el.classList.remove('glazed'); s.el.classList.add('breathe'); });
+                    if (hint) hint.classList.add('visible');
+                    overlay.style.pointerEvents = 'auto'; overlay.style.cursor = 'pointer';
+                }, 1200);
             }
 
-            overlay.addEventListener('click',function(){
-                if(dismissed)return; dismissed=true;
-                overlay.style.pointerEvents='none'; overlay.style.cursor='default';
-                if(hint)hint.classList.remove('visible');
-                var cx=0,cy=0,ct=0;
-                allStrokes.forEach(function(s){if(!s.isIcon){cx+=s.endX;cy+=s.endY;ct++;}});
-                cx/=ct;cy/=ct;
-                var ttx=screenW/2-(totalW*titleScale)/2;
-                var tty=titleTargetY;
-                allStrokes.forEach(function(s,i){
-                    s.el.classList.remove('breathe','glazed');
-                    var dx=s.endX-cx,dy=s.endY-cy;
-                    var tx=ttx+dx*titleScale+(totalW*titleScale)/2;
-                    var ty=tty+dy*titleScale+65;
-                    s.el.style.transition='all 0.8s cubic-bezier(0.22,0.61,0.36,1)';
-                    s.el.style.transitionDelay=(i*0.005)+'s';
-                    s.el.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) rotate(0deg) skewX(0deg) scale('+titleScale.toFixed(3)+')';
-                    s.el.style.opacity='0.55';
+            overlay.addEventListener('click', function() {
+                if (dismissed) return; dismissed = true;
+                overlay.style.pointerEvents = 'none'; overlay.style.cursor = 'default';
+                if (hint) hint.classList.remove('visible');
+                var cx = 0, cy = 0, ct = 0;
+                allStrokes.forEach(function(s) { if (!s.isIcon) { cx += s.endX; cy += s.endY; ct++; } });
+                cx /= ct; cy /= ct;
+                var ttx = screenW / 2 - (totalW * titleScale) / 2;
+                var tty = titleTargetY;
+                allStrokes.forEach(function(s, i) {
+                    s.el.classList.remove('breathe', 'glazed');
+                    var dx = s.endX - cx, dy = s.endY - cy;
+                    var tx = ttx + dx * titleScale + (totalW * titleScale) / 2;
+                    var ty = tty + dy * titleScale + fs * 0.5;
+                    s.el.style.transition = 'all 0.8s cubic-bezier(0.22,0.61,0.36,1)';
+                    s.el.style.transitionDelay = (i * 0.005) + 's';
+                    s.el.style.transform = 'translate(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px) rotate(0deg) skewX(0deg) scale(' + titleScale.toFixed(3) + ')';
+                    s.el.style.opacity = '0.55';
                     s.el.style.removeProperty('--bx'); s.el.style.removeProperty('--by'); s.el.style.removeProperty('--brz');
                 });
-                setTimeout(function(){var ht=document.getElementById('home-title');if(ht)ht.classList.add('visible');},500);
-                setTimeout(function(){overlay.classList.add('fade-out');if(container)container.classList.add('entrance-start');},650);
-                setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},1300);
+                setTimeout(function() { var ht = document.getElementById('home-title'); if (ht) ht.classList.add('visible'); }, 500);
+                setTimeout(function() { overlay.classList.add('fade-out'); if (container) container.classList.add('entrance-start'); }, 650);
+                setTimeout(function() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 1300);
             });
 
             requestAnimationFrame(frame);
+
+            } // end startAnimation
 
             } catch(e) {
                 revealPage();
