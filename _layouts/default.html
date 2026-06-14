@@ -17,6 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js"></script>
     <style>
         /* ========================================
            基础重置
@@ -418,11 +419,10 @@
                 font-size: 1.1rem;
             }
             .dir-dropdown {
-                right: 12px;
+                min-width: 150px;
             }
             .dir-sub {
-                left: auto;
-                right: 100%;
+                min-width: 110px;
             }
         }
 
@@ -494,6 +494,11 @@
             color: #b0a090;
         }
 
+        .dir-btn-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
         .dir-btn {
             width: 42px;
             height: 42px;
@@ -502,7 +507,6 @@
             background: #fffef9;
             cursor: pointer;
             font-size: 1.3rem;
-            flex-shrink: 0;
             transition: border-color 0.2s, box-shadow 0.2s;
             padding: 0;
             display: flex;
@@ -582,13 +586,13 @@
             font-size: 0.9rem;
         }
 
-        /* ---- 目录下拉 ---- */
+        /* ---- 目录下拉（定位在按钮下方） ---- */
         .dir-dropdown {
             display: none;
             position: absolute;
             top: 100%;
-            right: 24px;
-            margin-top: 4px;
+            right: 0;
+            margin-top: 6px;
             background: #fffef9;
             border: 1px solid #e8ddcc;
             border-radius: 6px;
@@ -629,8 +633,9 @@
         .dir-sub {
             display: none;
             position: absolute;
-            left: 100%;
+            right: 100%;
             top: 0;
+            margin-right: 2px;
             background: #fffef9;
             border: 1px solid #e8ddcc;
             border-radius: 6px;
@@ -861,32 +866,34 @@
     <div class="search-bar" id="search-bar">
         <div class="search-bar-inner">
             <input type="text" class="search-input" id="search-input" placeholder="🔍 搜索诗歌、文章..." autocomplete="off">
-            <button class="dir-btn" id="dir-btn" title="目录">📑</button>
+            <div class="dir-btn-wrap">
+                <button class="dir-btn" id="dir-btn" title="目录">📑</button>
+                <div class="dir-dropdown" id="dir-dropdown">
+                    <div class="dir-category" data-cat="史学笔记">
+                        <span class="dir-cat-label">📜 史学笔记</span>
+                        <div class="dir-sub">
+                            <a href="{{ site.baseurl }}/notes/中国史学史.html">中国史学史</a>
+                        </div>
+                    </div>
+                    <div class="dir-category" data-cat="文哲笔记">
+                        <span class="dir-cat-label">🏛️ 文哲笔记</span>
+                        <div class="dir-sub">
+                            <a href="{{ site.baseurl }}/notes/西方哲学史.html">西方哲学史</a>
+                            <a href="{{ site.baseurl }}/notes/文学理论.html">文学理论</a>
+                        </div>
+                    </div>
+                    <div class="dir-category" data-cat="个人诗集">
+                        <span class="dir-cat-label">🎋 个人诗集</span>
+                        <div class="dir-sub">
+                            <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
+                            <a href="{{ site.baseurl }}/notes/现代诗歌.html">现代诗歌</a>
+                            <a href="{{ site.baseurl }}/notes/诗家理论.html">诗家理论</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="search-results" id="search-results"></div>
-        <div class="dir-dropdown" id="dir-dropdown">
-            <div class="dir-category" data-cat="史学笔记">
-                <span class="dir-cat-label">📜 史学笔记</span>
-                <div class="dir-sub">
-                    <a href="{{ site.baseurl }}/notes/中国史学史.html">中国史学史</a>
-                </div>
-            </div>
-            <div class="dir-category" data-cat="文哲笔记">
-                <span class="dir-cat-label">🏛️ 文哲笔记</span>
-                <div class="dir-sub">
-                    <a href="{{ site.baseurl }}/notes/西方哲学史.html">西方哲学史</a>
-                    <a href="{{ site.baseurl }}/notes/文学理论.html">文学理论</a>
-                </div>
-            </div>
-            <div class="dir-category" data-cat="个人诗集">
-                <span class="dir-cat-label">🎋 个人诗集</span>
-                <div class="dir-sub">
-                    <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
-                    <a href="{{ site.baseurl }}/notes/现代诗歌.html">现代诗歌</a>
-                    <a href="{{ site.baseurl }}/notes/诗家理论.html">诗家理论</a>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="progress-bar" id="progress-bar"></div>
@@ -968,6 +975,14 @@
         }
 
         // ========================================
+        // 通用：标题 → URL 安全 ID
+        // ========================================
+        function makeSlug(text) {
+            // 保留中文、英文、数字，空格和特殊字符转连字符
+            return text.replace(/[^\w一-鿿]+/g, '-').replace(/^-+|-+$/g, '').replace(/-+/g, '-');
+        }
+
+        // ========================================
         // 2.1 长文目录 + 2.4 诗歌跳转
         // ========================================
         var mainEl = document.querySelector('main.content');
@@ -982,13 +997,12 @@
                 nav.className = 'poem-nav';
                 headings.forEach(function(h, i) {
                     if (h.tagName === 'H2') {
-                        var id = 'poem-' + i;
+                        var id = makeSlug(h.textContent);
                         h.id = id;
                         var a = document.createElement('a');
                         a.href = '#' + id;
                         a.textContent = h.textContent;
                         a.addEventListener('click', function() {
-                            // 移除所有 active
                             var all = nav.querySelectorAll('a');
                             for (var j = 0; j < all.length; j++) all[j].classList.remove('active');
                             a.classList.add('active');
@@ -1020,7 +1034,7 @@
 
                     var ol = document.createElement('ol');
                     headings.forEach(function(h, i) {
-                        var id = 'toc-' + i;
+                        var id = makeSlug(h.textContent);
                         h.id = id;
                         var li = document.createElement('li');
                         li.className = h.tagName === 'H3' ? 'toc-h3' : 'toc-h2';
@@ -1192,6 +1206,23 @@
             xhr.send();
         }
 
+        // 拼音辅助
+        function toPinyin(text) {
+            try {
+                var pp = window.pinyinPro;
+                if (!pp) return '';
+                var fn = pp.pinyin || (pp.default && pp.default.pinyin) || (pp.default && typeof pp.default === 'function' ? pp.default : null);
+                if (!fn) return '';
+                var arr = fn(text, { toneType: 'none', type: 'array' });
+                return Array.isArray(arr) ? arr.join('') : String(arr).replace(/\s/g, '');
+            } catch(e) { return ''; }
+        }
+
+        function textMatchable(str) {
+            // 返回 [原始文本, 拼音无空格] 用于匹配
+            return [str.toLowerCase(), toPinyin(str).toLowerCase()];
+        }
+
         // 搜索
         var searchTimer = null;
         searchInput.addEventListener('input', function() {
@@ -1218,18 +1249,29 @@
 
                     idx.forEach(function(page) {
                         // 标题匹配
-                        if (page.title.toLowerCase().indexOf(q) !== -1) {
+                        var titleTexts = textMatchable(page.title);
+                        if (titleTexts[0].indexOf(q) !== -1 || titleTexts[1].indexOf(q) !== -1) {
                             titleMatches.push({ page: page, heading: null, excerpt: null });
                         }
-                        // 内容匹配
+                        // 内容匹配（heading + text 都搜）
                         if (page.sections) {
                             page.sections.forEach(function(sec) {
-                                var textIdx = sec.text.toLowerCase().indexOf(q);
-                                if (textIdx !== -1) {
-                                    var start = Math.max(0, textIdx - 30);
-                                    var end = Math.min(sec.text.length, textIdx + query.length + 30);
-                                    var excerpt = (start > 0 ? '...' : '') + sec.text.substring(start, end).trim() + (end < sec.text.length ? '...' : '');
-                                    // 避免重复添加同一 heading
+                                var searchText = sec.heading + ' ' + sec.text;
+                                var matchTexts = textMatchable(searchText);
+                                var found = matchTexts[0].indexOf(q) !== -1 || matchTexts[1].indexOf(q) !== -1;
+                                if (found) {
+                                    // 确定匹配位置（用原始文本）
+                                    var textIdx = sec.text.toLowerCase().indexOf(q);
+                                    if (textIdx === -1) textIdx = sec.heading.toLowerCase().indexOf(q);
+                                    if (textIdx === -1) textIdx = 0;
+                                    var excerpt = '';
+                                    if (textIdx !== -1 && textIdx < sec.text.length) {
+                                        var start = Math.max(0, textIdx - 25);
+                                        var end = Math.min(sec.text.length, textIdx + query.length + 25);
+                                        excerpt = (start > 0 ? '...' : '') + sec.text.substring(start, end).trim() + (end < sec.text.length ? '...' : '');
+                                    } else {
+                                        excerpt = sec.heading;
+                                    }
                                     var dup = false;
                                     for (var i = 0; i < contentMatches.length; i++) {
                                         if (contentMatches[i].page.url === page.url && contentMatches[i].heading === sec.heading) { dup = true; break; }
@@ -1256,7 +1298,8 @@
                     if (contentMatches.length > 0) {
                         html += '<div class="result-group">内容匹配</div>';
                         contentMatches.forEach(function(m) {
-                            html += '<a class="result-item" href="' + m.page.url + '?hl=' + encodeURIComponent(query) + '#' + encodeURIComponent(m.heading) + '">'
+                            var slug = makeSlug(m.heading);
+                            html += '<a class="result-item" href="' + m.page.url + '?hl=' + encodeURIComponent(query) + '#' + slug + '">'
                                 + '<div>' + m.page.title + ' · ' + m.heading + '</div>'
                                 + '<div class="result-excerpt">' + escapeHTML(m.excerpt) + '</div>'
                                 + '</a>';
