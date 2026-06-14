@@ -1378,7 +1378,7 @@
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: #070D1A;
+            background: var(--bg-page);
             pointer-events: none;
             cursor: default;
             transition: opacity 0.6s ease-out;
@@ -1497,7 +1497,7 @@
             .home-title-main { font-size: 3rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
             .home-title-sub { font-size: 0.95rem; margin-top: 6px; }
             .click-hint { font-size: 0.8rem; bottom: 16%; letter-spacing: 0.06em; }
-            .keystroke-overlay { background: #060A14; }
+            .keystroke-overlay { background: var(--bg-page); }
             .music-player { top: 10px; right: 12px; height: 32px; width: 32px; }
             .music-icon { width: 18px; height: 18px; }
         }
@@ -1777,7 +1777,7 @@
             // Canvas 测量字母宽度
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
-            var baseFontSize = Math.max(80, Math.round(screenW * 0.11)); // 11vw, mobile min 80px
+            var baseFontSize = Math.max(80, Math.round(screenW * 0.12)); // 12vw, mobile min 80px
             ctx.font = 'bold ' + baseFontSize + 'px "Quicksand", sans-serif';
             var spaceW = ctx.measureText(' ').width;
             var letterMetrics = GLYPHS.map(function(g) {
