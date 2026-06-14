@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="abbaaa777">
+    <meta name="copyright" content="Copyright © 2024-2025 abbaaa777. All rights reserved.">
+    <meta name="robots" content="index, follow, noarchive">
+    <meta property="og:title" content="我的笔记 · My Notes">
+    <meta property="og:description" content="读书 · 思考 · 诗文 — 个人笔记与诗歌创作集">
+    <meta property="og:type" content="website">
     <title>我的笔记 · My Notes</title>
     <style>
         * {
@@ -134,6 +140,25 @@
             letter-spacing: 0.04em;
         }
 
+        footer .copyright-line {
+            font-size: 0.9rem;
+            color: #6b5a4a;
+            margin-bottom: 6px;
+        }
+
+        footer .license-line {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        footer .license-line a {
+            color: #8b7355;
+        }
+
+        footer .repo-line {
+            font-size: 0.78rem;
+        }
+
         footer a {
             color: #8b7355;
             text-decoration: none;
@@ -218,9 +243,111 @@
         </div>
 
         <footer>
-            <p>由 <a href="https://github.com/abbaaa777">abbaaa777</a> 维护 ·
-            <a href="https://github.com/abbaaa777/my-notes">GitHub 仓库</a></p>
+            <p class="copyright-line">
+                © 2024–2025 <strong>abbaaa777</strong> · 保留所有权利
+            </p>
+            <p class="license-line">
+                本作品采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a> 国际许可协议
+            </p>
+            <p class="repo-line">
+                <a href="https://github.com/abbaaa777/my-notes">GitHub 仓库</a>
+            </p>
         </footer>
     </div>
+
+    <!-- 著作权保护：禁用右键菜单、禁止文字选择、禁止拖拽图片 -->
+    <script>
+    (function() {
+        'use strict';
+
+        // 禁止右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showProtectTip();
+            return false;
+        });
+
+        // 禁止文字选择（鼠标拖动）
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 禁止 Ctrl+C / Ctrl+Shift+I / F12 等快捷键（仅提示，不强制阻止）
+        document.addEventListener('keydown', function(e) {
+            // F12 开发者工具
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+            // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C（开发者工具快捷键）
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' ||
+                                             e.key === 'J' || e.key === 'j' ||
+                                             e.key === 'C' || e.key === 'c')) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+            // Ctrl+U（查看源代码）
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                e.preventDefault();
+                showProtectTip();
+                return false;
+            }
+        });
+
+        // 禁止拖拽（防止拖图片/文字到地址栏等）
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 提示浮层
+        var tipTimer = null;
+        function showProtectTip() {
+            // 移除已有提示
+            var old = document.getElementById('protect-tip');
+            if (old) { old.remove(); }
+
+            var tip = document.createElement('div');
+            tip.id = 'protect-tip';
+            tip.textContent = '⛔ 内容受著作权保护，未经授权禁止复制';
+            tip.style.cssText = [
+                'position: fixed',
+                'bottom: 30px',
+                'left: 50%',
+                'transform: translateX(-50%)',
+                'background: #5c3d2e',
+                'color: #fdf6ec',
+                'padding: 10px 24px',
+                'border-radius: 6px',
+                'font-size: 0.9rem',
+                'font-family: inherit',
+                'letter-spacing: 0.04em',
+                'z-index: 99999',
+                'opacity: 0',
+                'transition: opacity 0.3s ease',
+                'pointer-events: none',
+                'box-shadow: 0 4px 16px rgba(0,0,0,0.2)'
+            ].join(';');
+            document.body.appendChild(tip);
+
+            // 淡入
+            requestAnimationFrame(function() {
+                tip.style.opacity = '1';
+            });
+
+            // 2秒后淡出
+            clearTimeout(tipTimer);
+            tipTimer = setTimeout(function() {
+                tip.style.opacity = '0';
+                setTimeout(function() {
+                    if (tip.parentNode) { tip.remove(); }
+                }, 300);
+            }, 2000);
+        }
+    })();
+    </script>
 </body>
 </html>
