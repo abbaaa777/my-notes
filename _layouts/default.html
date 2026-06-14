@@ -1838,13 +1838,13 @@
                         el.style.height = sd.h + 'px';
                     }
 
-                    var endX = cc + sd.cx;
-                    var endY = sd.cy;
+                    var endX = screenW / 2 + cc + sd.cx;
+                    var endY = screenH / 2 + sd.cy;
                     var endRZ = sd.rz;
 
-                    // 全视口随机散布
-                    var startX = (Math.random() - 0.5) * screenW * 1.3;
-                    var startY = (Math.random() - 0.5) * screenH * 1.3;
+                    // 全视口随机散布（以屏幕中心为基准）
+                    var startX = screenW/2 + (Math.random() - 0.5) * screenW * 1.3;
+                    var startY = screenH/2 + (Math.random() - 0.5) * screenH * 1.3;
                     var startZ = (Math.random() - 0.5) * 500;
                     var startRX = (Math.random() - 0.5) * 360;
                     var startRY = (Math.random() - 0.5) * 360;
