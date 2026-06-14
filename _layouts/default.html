@@ -770,11 +770,14 @@
                 padding: 0 12px;
             }
             .music-player {
+                top: 10px;
                 right: 10px;
-                bottom: 56px;
                 height: 30px;
-                font-size: 0.78rem;
-                padding: 0 10px;
+                width: 30px;
+            }
+            .music-icon {
+                width: 16px;
+                height: 16px;
             }
             .search-bar {
                 width: 94%;
@@ -1180,36 +1183,36 @@
             box-shadow: 0 4px 16px rgba(var(--shadow-rgb), 0.14), 0 0 0 1px rgba(var(--accent-rgb), 0.15);
         }
 
-        /* ---- 音乐播放器（右下角·Apple 胶囊） ---- */
+        /* ---- 音乐播放器（右上角·与搜索栏同行） ---- */
         .music-player {
             position: fixed;
+            top: 14px;
             right: 24px;
-            bottom: 76px;
             height: 36px;
-            border-radius: 50px;
+            width: 36px;
+            border-radius: 50%;
             border: none;
             background: var(--bg-glass);
             color: var(--text-secondary);
-            font-size: 0.95rem;
             cursor: pointer;
-            z-index: 99;
-            letter-spacing: 0.03em;
-            transition: opacity 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s;
+            z-index: 91;
+            transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, color 0.25s;
             box-shadow: 0 1px 6px rgba(var(--shadow-rgb), 0.08), 0 0 0 1px rgba(var(--shadow-rgb), 0.06);
-            line-height: 1;
-            padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
             -webkit-backdrop-filter: blur(16px) saturate(1.2);
             backdrop-filter: blur(16px) saturate(1.2);
+        }
+        .music-icon {
+            flex-shrink: 0;
+            color: inherit;
         }
 
         .music-player:hover {
             background: rgba(var(--accent-rgb), 0.12);
-            color: var(--text-heading);
-            transform: translateY(-2px);
+            color: var(--text-accent);
+            transform: scale(1.08);
             box-shadow: 0 4px 16px rgba(var(--shadow-rgb), 0.14), 0 0 0 1px rgba(var(--accent-rgb), 0.15);
         }
 
@@ -1416,9 +1419,22 @@
             position: relative;
             z-index: 1;
             text-align: center;
+            opacity: 0;
+            transform: scale(0.7);
+            transition: opacity 0.7s cubic-bezier(0.22,0.61,0.36,1),
+                        transform 0.7s cubic-bezier(0.22,0.61,0.36,1);
+            pointer-events: none;
+        }
+        .home-title.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .home-title-main {
+            display: block;
             font-family: 'ZCOOL QingKe HuangYou', 'Shippori Mincho', serif;
             font-weight: bold;
-            font-size: 3.2rem;
+            font-size: 4.2rem;
+            line-height: 1.1;
             color: transparent;
             background: linear-gradient(180deg,
                 rgba(255,242,160,0.95) 0%,
@@ -1431,15 +1447,15 @@
             paint-order: stroke fill;
             filter: drop-shadow(0 0 18px rgba(255,229,102,0.3))
                     drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-            opacity: 0;
-            transform: scale(0.7);
-            transition: opacity 0.7s cubic-bezier(0.22,0.61,0.36,1),
-                        transform 0.7s cubic-bezier(0.22,0.61,0.36,1);
-            pointer-events: none;
         }
-        .home-title.visible {
-            opacity: 1;
-            transform: scale(1);
+        .home-title-sub {
+            display: block;
+            margin-top: 10px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.1em;
         }
 
         /* 点击提示 */
@@ -1476,9 +1492,12 @@
 
         /* 移动端 */
         @media (max-width: 768px) {
-            .home-title { font-size: 2rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
+            .home-title-main { font-size: 2.5rem; -webkit-text-stroke: 1.2px rgba(255,229,102,0.3); }
+            .home-title-sub { font-size: 0.85rem; margin-top: 6px; }
             .click-hint { font-size: 0.8rem; bottom: 16%; letter-spacing: 0.06em; }
             .keystroke-overlay { background: #060A14; }
+            .music-player { top: 10px; right: 12px; height: 32px; width: 32px; }
+            .music-icon { width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -1556,18 +1575,17 @@
         <div class="search-results" id="search-results"></div>
     </div>
 
+    <button class="music-player" id="music-player" title="播放音乐" data-playing="false">
+        <svg class="music-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </button>
+
     <div class="progress-bar" id="progress-bar"></div>
     <button class="back-nav{% if page.is_home %} home-hidden{% endif %}" id="back-nav" title="返回上级" onclick="window.history.length > 1 ? history.back() : location.href='{{ site.baseurl }}/'">← 返回</button>
-    <button class="music-player" id="music-player" title="播放音乐" data-playing="false">♪</button>
     <button class="back-to-top" id="back-to-top" title="返回顶部">↑ 顶部</button>
     <div class="container">
         <header{% if page.is_home %} class="home-header"{% endif %}>
             {% if page.is_home %}
-            <div class="site-title">
-                <a href="{{ site.baseurl }}/"><svg class="site-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/></svg> 我的笔记</a>
-            </div>
-            <div class="header-decoration"></div>
-            <p class="tagline">读书 · 思考 · 诗文</p>
+            <!-- 标题 & 副标题由开场动画 #home-title 接管 -->
             {% endif %}
         </header>
 
@@ -1859,9 +1877,10 @@
             overlay.appendChild(icon);
             allStrokes.push({el:icon,endX:iconX,endY:iconY,traj:it,df:gIdx*0.004,colorKey:'yellow',settled:false,isIcon:true});
 
-            // 常驻标题
+            // 常驻标题（含副标题）
             var homeTitle = document.createElement('div');
-            homeTitle.id='home-title'; homeTitle.className='home-title'; homeTitle.textContent='我的笔记';
+            homeTitle.id='home-title'; homeTitle.className='home-title';
+            homeTitle.innerHTML = '<span class="home-title-main">我的笔记</span><span class="home-title-sub">读书 · 思考 · 诗文</span>';
             if(container){var fc=container.firstChild;if(fc)container.insertBefore(homeTitle,fc);else container.appendChild(homeTitle);}
 
             var DUR = isMobile?1000:1300, allSettled=false, animStart=performance.now(), dismissed=false;
@@ -1992,70 +2011,62 @@
         })();
 
         // ========================================
-        // 5.5 音乐播放器
+        // 5.5 音乐播放器（右上角常驻·点击切换）
         // ========================================
         var musicBtn = document.getElementById('music-player');
         var audio = null;
-        var musicTracks = [];
+        var musicReady = false;
 
-        // 尝试加载音乐文件
-        function initMusic() {
+        if (musicBtn) {
+            // 按钮始终可见，初始显示为暂停状态
+            musicBtn.style.display = 'flex';
+
+            // 尝试加载 assets/music/ 下的音乐文件
             var basePath = '{{ site.baseurl }}/assets/music/';
-            // 检测可用的音乐文件
-            var testFiles = ['bgm.mp3', 'bgm.ogg', 'music.mp3', 'music.ogg'];
-            var loaded = false;
+            var testFiles = ['bgm.mp3', 'music.mp3', 'bgm.ogg', 'music.ogg'];
 
             function tryNext(index) {
                 if (index >= testFiles.length) return;
                 var testAudio = new Audio();
                 testAudio.src = basePath + testFiles[index];
                 testAudio.addEventListener('loadedmetadata', function() {
-                    musicTracks.push(basePath + testFiles[index]);
-                    if (!loaded) {
-                        loaded = true;
-                        setupPlayer();
+                    if (!musicReady) {
+                        musicReady = true;
+                        audio = new Audio(basePath + testFiles[index]);
+                        audio.loop = true;
+                        audio.volume = 0.45;
                     }
                 });
                 testAudio.addEventListener('error', function() {
                     tryNext(index + 1);
                 });
-                testAudio.load();
             }
             tryNext(0);
-        }
-
-        function setupPlayer() {
-            if (musicTracks.length === 0) return;
-            audio = new Audio(musicTracks[0]);
-            audio.loop = true;
-            audio.volume = 0.5;
 
             musicBtn.addEventListener('click', function() {
-                if (!audio) return;
+                if (!audio) {
+                    // 音乐文件未加载，轻提示
+                    musicBtn.style.opacity = '0.5';
+                    setTimeout(function(){ musicBtn.style.opacity = ''; }, 300);
+                    return;
+                }
                 if (audio.paused) {
                     audio.play().then(function() {
-                        musicBtn.textContent = '♪ 暂停';
                         musicBtn.classList.add('playing');
                         musicBtn.dataset.playing = 'true';
+                        musicBtn.title = '暂停音乐';
                     }).catch(function() {
-                        // 浏览器阻止自动播放
-                        musicBtn.textContent = '♪ 重试';
+                        // 浏览器需用户交互后才允许播放，再点一次即可
+                        musicBtn.style.opacity = '0.5';
+                        setTimeout(function(){ musicBtn.style.opacity = ''; }, 200);
                     });
                 } else {
                     audio.pause();
-                    musicBtn.textContent = '♪';
                     musicBtn.classList.remove('playing');
                     musicBtn.dataset.playing = 'false';
+                    musicBtn.title = '播放音乐';
                 }
             });
-
-            // 显示播放器按钮
-            musicBtn.style.display = 'flex';
-        }
-
-        if (musicBtn) {
-            musicBtn.style.display = 'none';
-            initMusic();
         }
 
         // ========================================
