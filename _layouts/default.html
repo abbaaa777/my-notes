@@ -61,9 +61,12 @@
            ======================================== */
         header {
             text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header.home-header {
             padding: 60px 0 40px;
             border-bottom: 1px solid #e0d5c1;
-            margin-bottom: 50px;
         }
 
         header .site-title {
@@ -331,9 +334,9 @@
         }
 
         footer .copyright-line {
-            font-size: 0.9rem;
-            color: #6b5a4a;
-            margin-bottom: 6px;
+            font-size: 0.75rem;
+            color: #9b8b7a;
+            margin-bottom: 4px;
         }
 
         footer .license-line {
@@ -396,6 +399,12 @@
                 width: 36px;
                 height: 36px;
             }
+            .back-nav {
+                left: 12px;
+                top: 16px;
+                width: 36px;
+                height: 36px;
+            }
         }
 
         /* ========================================
@@ -449,6 +458,49 @@
             color: #fffef9;
             transform: translateY(-2px);
             box-shadow: 0 4px 14px rgba(139, 94, 60, 0.25);
+        }
+
+        /* ========================================
+           返回上级按钮（左上角固定）
+           ======================================== */
+        .back-nav {
+            position: fixed;
+            left: 24px;
+            top: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #d4c5a9;
+            background: rgba(255, 254, 249, 0.92);
+            color: #8b7355;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(139, 94, 60, 0.1);
+            line-height: 1;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+
+        .back-nav.visible {
+            opacity: 1;
+        }
+
+        .back-nav.home-hidden {
+            display: none;
+        }
+
+        .back-nav:hover {
+            background: rgba(201, 169, 110, 0.15);
+            color: #5c3d2e;
+            transform: translateX(-2px);
+            box-shadow: 0 3px 12px rgba(139, 94, 60, 0.18);
         }
 
         /* ========================================
@@ -548,18 +600,16 @@
 </head>
 <body>
     <div class="progress-bar" id="progress-bar"></div>
+    <button class="back-nav{% if page.is_home %} home-hidden{% endif %}" id="back-nav" title="返回上级" onclick="window.history.length > 1 ? history.back() : location.href='{{ site.baseurl }}/'">←</button>
     <button class="back-to-top" id="back-to-top" title="返回顶部">↑</button>
     <div class="container">
-        <header>
+        <header{% if page.is_home %} class="home-header"{% endif %}>
+            {% if page.is_home %}
             <div class="site-title">
                 <a href="{{ site.baseurl }}/">📖 我的笔记</a>
             </div>
-            {% if page.is_home %}
             <div class="header-decoration"></div>
             <p class="tagline">读书 · 思考 · 诗文</p>
-            {% else %}
-            <p class="page-subtitle">{{ page.title }}</p>
-            <a class="back-link" href="{{ site.baseurl }}/">← 返回首页</a>
             {% endif %}
         </header>
 
@@ -617,6 +667,15 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         toggleBackBtn();
+
+        // 返回上级按钮（始终可见，页面加载后淡入）
+        var backNav = document.getElementById('back-nav');
+        if (backNav && !backNav.classList.contains('home-hidden')) {
+            // 延迟一帧触发淡入
+            requestAnimationFrame(function() {
+                backNav.classList.add('visible');
+            });
+        }
 
         // ========================================
         // 2.1 长文目录 + 2.4 诗歌跳转
