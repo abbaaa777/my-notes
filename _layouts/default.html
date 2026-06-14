@@ -271,7 +271,9 @@
         }
 
         .section-title .icon {
-            font-size: 1.3rem;
+            flex-shrink: 0;
+            color: var(--text-accent);
+            opacity: 0.8;
         }
 
         .card-list {
@@ -905,6 +907,11 @@
             color: var(--text-placeholder);
         }
 
+        .search-icon {
+            flex-shrink: 0;
+            color: var(--text-placeholder);
+        }
+
         .dir-btn-wrap {
             position: relative;
             flex-shrink: 0;
@@ -954,6 +961,14 @@
             background: rgba(var(--shadow-rgb), 0.07);
             transform: scale(1.1);
         }
+
+        /* 浅色模式：显示月亮，隐藏太阳 */
+        .theme-toggle .icon-sun { display: none; }
+        .theme-toggle .icon-moon { display: block; }
+
+        /* 深色模式：显示太阳，隐藏月亮 */
+        [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+        [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
 
         /* ---- 搜索结果面板 ---- */
         .search-results {
@@ -1060,7 +1075,9 @@
         }
 
         .dir-cat-label {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             padding: 12px 16px;
             font-size: 0.92rem;
             color: var(--text-heading);
@@ -1424,32 +1441,36 @@
     <!-- 搜索栏（鼠标移到顶部浮现） -->
     <div class="search-bar" id="search-bar">
         <div class="search-bar-inner">
-            <input type="text" class="search-input" id="search-input" placeholder="🔍 搜索诗歌、文章..." autocomplete="off">
-            <button class="theme-toggle" id="theme-toggle" title="切换深色模式" aria-label="切换深色模式">🌙</button>
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="search-input" placeholder="搜索诗歌、文章..." autocomplete="off">
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式" aria-label="切换深色模式">
+                <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
             <div class="dir-btn-wrap">
                 <button class="dir-btn" id="dir-btn" title="目录">浏览 ▾</button>
                 <div class="dir-dropdown" id="dir-dropdown">
                     <div class="dir-category" data-cat="史学笔记">
-                        <span class="dir-cat-label">📜 史学笔记</span>
+                        <span class="dir-cat-label"><svg class="dir-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 史学笔记</span>
                         <div class="dir-sub">
                             <a href="{{ site.baseurl }}/notes/中国史学史.html">中国史学史</a>
                         </div>
                     </div>
                     <div class="dir-category" data-cat="随笔">
-                        <span class="dir-cat-label">✍️ 随笔</span>
+                        <span class="dir-cat-label"><svg class="dir-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg> 随笔</span>
                         <div class="dir-sub">
                             <a href="{{ site.baseurl }}/notes/随笔.html">随笔</a>
                         </div>
                     </div>
                     <div class="dir-category" data-cat="文哲笔记">
-                        <span class="dir-cat-label">🏛️ 文哲笔记</span>
+                        <span class="dir-cat-label"><svg class="dir-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> 文哲笔记</span>
                         <div class="dir-sub">
                             <a href="{{ site.baseurl }}/notes/西方哲学史.html">西方哲学史</a>
                             <a href="{{ site.baseurl }}/notes/文学理论.html">文学理论</a>
                         </div>
                     </div>
                     <div class="dir-category" data-cat="个人诗集">
-                        <span class="dir-cat-label">🎋 个人诗集</span>
+                        <span class="dir-cat-label"><svg class="dir-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/><circle cx="18" cy="6" r="2" fill="currentColor" stroke="none"/></svg> 个人诗集</span>
                         <div class="dir-sub">
                             <div class="dir-sub-cat">
                                 <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
@@ -1575,7 +1596,6 @@
 
         function setTheme(theme) {
             html.dataset.theme = theme;
-            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
             try { localStorage.setItem('theme', theme); } catch(e) {}
         }
 
