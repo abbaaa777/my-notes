@@ -20,44 +20,47 @@
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js"></script>
     <style>
         /* ========================================
-           CSS 自定义属性（色彩系统）
+           CSS 自定义属性（暗色 + 撞色系统）
            ======================================== */
         :root {
-            /* 背景层级 */
-            --bg-page: #0f172a;
-            --bg-surface: #1e293b;
-            --bg-surface-hover: #273549;
-            --bg-glass: rgba(30, 41, 59, 0.8);
-            --bg-glass-heavy: rgba(30, 41, 59, 0.9);
-            --bg-code: #273549;
-            --bg-highlight: rgba(74, 125, 171, 0.25);
+            /* 背景层级 — 深黑底 */
+            --bg-page: #060608;
+            --bg-surface: #0e0e14;
+            --bg-surface-hover: #16161f;
+            --bg-glass: rgba(14, 14, 20, 0.85);
+            --bg-glass-heavy: rgba(14, 14, 20, 0.95);
+            --bg-code: #12121a;
+            --bg-highlight: rgba(74, 158, 255, 0.18);
 
             /* 文字层级 */
-            --text-body: #f1f5f9;
+            --text-body: #e8e8ed;
             --text-heading: #ffffff;
-            --text-secondary: #e2e8f0;
-            --text-muted: #cbd5e1;
-            --text-faint: #cbd5e1;
-            --text-placeholder: #94a3b8;
+            --text-secondary: #c8c8d4;
+            --text-muted: #8888a0;
+            --text-faint: #666680;
+            --text-placeholder: #5a5a72;
             --text-accent: #ffffff;
 
-            /* 强调色 */
-            --accent: #5b8cb8;
-            --accent-light: #4a7dab;
-            --accent-mid: #3d6a94;
-            --accent-dark: #c0d0e0;
-            --accent-rgb: 91, 140, 184;
-            --accent-glow: rgba(var(--accent-rgb), 0.12);
-            --deco-muted: #4a6080;
-            --deco-highlight-start: #3d6a94;
-            --poetry-first-color: #e2e8f0;
+            /* 强调色 — 电光蓝 + 珊瑚橙撞色 */
+            --accent: #4a9eff;
+            --accent-light: #6db5ff;
+            --accent-mid: #3b82f6;
+            --accent-dark: #2563eb;
+            --accent-warm: #ff6b6b;
+            --accent-warm-light: #ff8e8e;
+            --accent-rgb: 74, 158, 255;
+            --accent-warm-rgb: 255, 107, 107;
+            --accent-glow: rgba(var(--accent-rgb), 0.15);
+            --deco-muted: #3a3a50;
+            --deco-highlight-start: #4a9eff;
+            --poetry-first-color: #e8e8ed;
 
             /* 边框 */
-            --border-light: #273549;
-            --border-subtle: #1e314f;
-            --border-card: #273549;
+            --border-light: #1e1e2a;
+            --border-subtle: #16161f;
+            --border-card: #1e1e2a;
 
-            /* 阴影基色（RGB三值，配合 rgba() 使用） */
+            /* 阴影基色 */
             --shadow-rgb: 0, 0, 0;
 
             /* 毛玻璃 */
@@ -66,7 +69,7 @@
 
             /* 装饰渐变 */
             --deco-gradient: linear-gradient(135deg, var(--accent), var(--accent-dark));
-            --deco-bar: linear-gradient(90deg, var(--accent-light), var(--text-accent), var(--accent-mid), var(--text-accent), var(--accent-light));
+            --deco-bar: linear-gradient(90deg, var(--accent-warm), var(--accent), var(--accent-warm-light), var(--accent), var(--accent-warm));
         }
 
         /* ========================================
@@ -107,14 +110,6 @@
             padding: 60px 24px 80px;
             opacity: 0;
         }
-        .container.entrance-start {
-            animation: page-in 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-        }
-
-        @keyframes page-in {
-            0%   { opacity: 0; transform: translateY(24px); filter: blur(4px); }
-            100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
-        }
 
         /* ---- 滚动揭示 ---- */
         .reveal {
@@ -143,25 +138,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* 水墨云雾背景纹理 */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: -1;
-            opacity: 0.08;
-            pointer-events: none;
-            animation: bg-breathe 8s ease-in-out infinite;
-            background:
-                radial-gradient(ellipse 80% 60% at 20% 50%, var(--accent) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 50% at 80% 20%, var(--accent) 0%, transparent 45%),
-                radial-gradient(ellipse 70% 55% at 50% 80%, var(--accent) 0%, transparent 50%);
-        }
-
-        @keyframes bg-breathe {
-            0%, 100% { opacity: 0.06; }
-            50%      { opacity: 0.10; }
-        }
 
         /* ========================================
            页头
@@ -273,8 +249,8 @@
 
         .section-title .icon {
             flex-shrink: 0;
-            color: var(--text-accent);
-            opacity: 0.8;
+            color: var(--accent);
+            opacity: 0.9;
         }
 
         .card-list {
@@ -285,47 +261,34 @@
 
         .card-list li a {
             display: block;
-            padding: 18px 22px;
-            background: var(--bg-surface);
+            padding: 18px 22px 18px 26px;
+            background: rgba(255,255,255,0.025);
             border: none;
-            border-radius: 8px;
+            border-left: 3px solid transparent;
+            border-radius: 6px;
             text-decoration: none;
             color: var(--text-heading);
             font-size: 1.02rem;
             transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
             letter-spacing: 0.03em;
-            box-shadow: 0 1px 4px rgba(var(--shadow-rgb), 0.06);
+            position: relative;
         }
 
-        .card-list li a {
-            position: relative;
-            overflow: hidden;
-        }
-        .card-list li a::before {
-            content: '';
-            position: absolute;
-            top: -20px; left: -20px;
-            width: 80px; height: 80px;
-            background: radial-gradient(circle, rgba(74,125,171,0.07), transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            opacity: 0;
-        }
-        .card-list li a:hover::before {
-            opacity: 1;
-        }
+        /* 撞色左边条 — 蓝橙交替 */
+        .card-list li:nth-child(odd) a  { border-left-color: var(--accent); }
+        .card-list li:nth-child(even) a { border-left-color: var(--accent-warm); }
 
         .card-list li a:hover {
-            background: var(--bg-surface-hover);
-            box-shadow: 0 8px 28px rgba(var(--accent-rgb), 0.16);
-            transform: translateY(-3px);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.18);
+            transform: translateX(4px);
+            border-left-width: 4px;
         }
 
         .card-list li a .desc {
             display: block;
             font-size: 0.85rem;
-            color: var(--text-faint);
+            color: var(--text-muted);
             margin-top: 4px;
             letter-spacing: 0.02em;
         }
@@ -342,12 +305,13 @@
         }
 
         .bento-card {
-            background: var(--bg-surface);
+            background: rgba(255,255,255,0.018);
+            border: 1px solid var(--border-card);
             border-radius: 20px;
             padding: 28px;
-            box-shadow: 0 2px 16px rgba(var(--shadow-rgb), 0.06);
             transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
                         transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        border-color 0.3s ease,
                         box-shadow 0.3s ease;
             margin-bottom: 0;
         }
@@ -363,8 +327,8 @@
         }
 
         .bento-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(var(--shadow-rgb), 0.12);
+            border-color: rgba(255,255,255,0.08);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04) inset;
         }
 
         .bento-card .section-title {
@@ -1403,189 +1367,125 @@
             color: var(--text-accent);
             font-weight: 600;
         }
+
         /* ========================================
-           打字机手稿开场覆盖层
+           高速几何碎片开场动画（Shatter & Assemble）
            ======================================== */
-        .manuscript-overlay {
+        .shatter-overlay {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: #0d1117;
-            cursor: pointer;
-            transition: opacity 0.6s ease-out;
+            background: #060608;
+            pointer-events: none;
+            transition: opacity 0.35s ease-out;
         }
-        .manuscript-overlay.fade-out {
+        .shatter-overlay.fade-out {
             opacity: 0;
-            pointer-events: none;
         }
 
-        /* 稿纸横线纹理 */
-        .ms-paper {
+        /* 碎片 */
+        .fragment {
             position: absolute;
-            inset: 0;
-            opacity: 0.03;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 28px,
-                rgba(255,255,255,0.4) 28px,
-                rgba(255,255,255,0.4) 29px
-            );
-            pointer-events: none;
-        }
-
-        /* 打字工作区 */
-        .ms-workspace {
-            position: absolute;
+            width: var(--frag-w);
+            height: var(--frag-h);
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 680px;
-            font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
-            font-size: 1.05rem;
-            line-height: 2;
-            color: rgba(255,255,255,0.85);
+            margin-left: calc(var(--frag-w) / -2);
+            margin-top: calc(var(--frag-h) / -2);
+            opacity: 0;
             pointer-events: none;
-            transition: font-family 0.6s ease;
+            will-change: transform, opacity;
         }
-        .ms-workspace.finalized {
-            font-family: 'Shippori Mincho', 'Noto Serif SC', serif;
-            color: var(--text-body);
+        /* 碎片飞入 */
+        .fragment.fly-in {
+            animation: frag-fly 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-
-        /* 标题区域 */
-        .ms-title-area {
-            margin-bottom: 28px;
-            min-height: 3em;
+        /* 碎片爆散 */
+        .fragment.scatter {
+            animation: frag-scatter 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
-        .ms-title-area .ms-line {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            color: #fff;
+        /* 聚合呼吸 */
+        .fragment.hold {
+            animation: frag-breathe 0.8s ease-in-out infinite;
         }
 
-        /* 卡片区域 */
-        .ms-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+        @keyframes frag-fly {
+            0% {
+                transform: translate3d(var(--from-x), var(--from-y), 0)
+                           rotateX(var(--from-rx))
+                           rotateY(var(--from-ry))
+                           rotateZ(var(--from-rz))
+                           scale(0.2);
+                opacity: 0;
+            }
+            100% {
+                transform: translate3d(0, 0, 0)
+                           rotateX(0) rotateY(0) rotateZ(0)
+                           scale(1);
+                opacity: 1;
+            }
         }
-        .ms-card {
-            padding: 10px 0;
-            min-height: 2.5em;
+        @keyframes frag-scatter {
+            0% {
+                transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate3d(var(--sc-x), var(--sc-y), 0)
+                           rotateX(var(--sc-rx))
+                           rotateY(var(--sc-ry))
+                           rotateZ(var(--sc-rz))
+                           scale(0);
+                opacity: 0;
+            }
         }
-        .ms-card .ms-card-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 2px;
-        }
-        .ms-card .ms-card-desc {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.45);
-        }
-
-        /* 闪烁光标 */
-        .ms-cursor {
-            display: inline;
-            font-weight: 400;
-            color: rgba(255,255,255,0.6);
-            animation: cursor-blink 1s steps(2) infinite;
-        }
-        @keyframes cursor-blink {
-            0%, 100% { opacity: 1; }
-            50%      { opacity: 0; }
-        }
-
-        /* 删除线修正 */
-        .ms-char {
-            display: inline;
-        }
-        .ms-char.correcting {
-            text-decoration: line-through;
-            text-decoration-color: rgba(255,100,100,0.5);
-            animation: strike-in 0.25s ease-out;
-        }
-        @keyframes strike-in {
-            from { text-decoration-color: transparent; }
-            to   { text-decoration-color: rgba(255,100,100,0.5); }
-        }
-        .ms-char.corrected {
-            animation: char-pop 0.2s ease-out;
-        }
-        @keyframes char-pop {
-            from { transform: scale(1.15); opacity: 0.6; }
-            to   { transform: scale(1); opacity: 1; }
+        @keyframes frag-breathe {
+            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+            50%      { transform: translate3d(0, 0, 0) scale(1.03); }
         }
 
-        /* 提示文字 */
-        .ms-hint {
+        /* 中央闪光 */
+        .shatter-flash {
             position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 0.08em;
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
-
-        /* ========================================
-           海底气泡（清澈清晰、水平摇晃）
-           ======================================== */
-        .bubbles-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .bubble {
-            position: absolute;
-            bottom: -120px;
+            top: 50%; left: 50%;
+            width: 200px; height: 200px;
+            margin-left: -100px; margin-top: -100px;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
             pointer-events: none;
-            border: 1.5px solid rgba(255,255,255,0.15);
-            background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, transparent 75%);
-            box-shadow: inset 0 0 12px rgba(255,255,255,0.04);
-            animation: bubble-float linear infinite;
+            will-change: transform, opacity;
         }
-        @keyframes bubble-float {
-            0%   { transform: translateY(0) translateX(0) scale(0.7); opacity: 0; }
-            5%   { opacity: 0.65; }
-            25%  { transform: translateY(-25vh) translateX(6px) scale(0.85); }
-            50%  { transform: translateY(-50vh) translateX(-5px) scale(0.95); }
-            75%  { transform: translateY(-75vh) translateX(8px) scale(1); opacity: 0.4; }
-            100% { transform: translateY(-105vh) translateX(-3px) scale(1.05); opacity: 0; }
+        .shatter-flash.burst {
+            animation: flash-burst 0.45s ease-out forwards;
+        }
+        @keyframes flash-burst {
+            0%   { transform: scale(0); opacity: 0; }
+            35%  { transform: scale(2.8); opacity: 0.85; }
+            100% { transform: scale(5); opacity: 0; }
         }
 
-        /* 手稿阶段：气泡更亮 */
-        .manuscript-overlay:not(.fade-out) ~ .bubbles-layer .bubble {
-            opacity: 0.55;
+        /* 首页入场 */
+        .container.entrance-start {
+            animation: page-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        @keyframes page-in {
+            0% { opacity: 0; filter: blur(6px); }
+            100% { opacity: 1; filter: blur(0); }
         }
 
         /* 移动端 */
         @media (max-width: 768px) {
-            .ms-workspace { font-size: 0.9rem; max-width: 94%; }
-            .ms-title-area .ms-line { font-size: 1.3rem; }
-            .ms-hint { bottom: 6%; font-size: 0.7rem; }
+            .shatter-flash { width: 140px; height: 140px; margin-left: -70px; margin-top: -70px; }
+            .fragment.fly-in { animation-duration: 0.4s; }
         }
     </style>
 </head>
 <body>
-    <div class="bubbles-layer" id="bubbles-layer"></div>
     {% if page.is_home %}
-    <div class="manuscript-overlay" id="manuscript-overlay">
-        <div class="ms-paper"></div>
-        <div class="ms-workspace" id="ms-workspace">
-            <div class="ms-title-area" id="ms-title"></div>
-            <div class="ms-cards" id="ms-cards"></div>
-            <span class="ms-cursor" id="ms-cursor">|</span>
-        </div>
-        <div class="ms-hint" id="ms-hint">按下任意键参与写作 · 点击跳过</div>
+    <div class="shatter-overlay" id="shatter-overlay">
+        <div class="shatter-flash" id="shatter-flash"></div>
     </div>
     {% endif %}
     <div class="cursor-glow" id="cursor-glow"></div>
@@ -1818,242 +1718,156 @@
         })();
 
         // ========================================
-        // 4.2 海底气泡生成 + 打字机手稿开场
+        // 4.2 高速几何碎片开场动画（Shatter & Assemble）
         // ========================================
-        (function initBubblesAndManuscript() {
-            // --- 气泡生成（海底风格，清晰边缘+水平摇晃） ---
-            var bubblesLayer = document.getElementById('bubbles-layer');
-            if (bubblesLayer) {
-                var isMobile = window.matchMedia('(max-width: 768px)').matches;
-                var count = isMobile ? 15 : 30;
-                var clusters = Math.floor(count / 5); // 聚簇数量
-                var clusterCenters = [];
-                for (var c = 0; c < clusters; c++) {
-                    clusterCenters.push(Math.random() * 90 + 5); // 5%-95%
-                }
-                for (var i = 0; i < count; i++) {
-                    var b = document.createElement('div');
-                    b.className = 'bubble';
-                    var isSmall = Math.random() < 0.7;
-                    var size = isSmall ? (15 + Math.random() * 35) : (50 + Math.random() * 70);
-                    b.style.width = size + 'px';
-                    b.style.height = size + 'px';
-                    // 聚簇分布：围绕簇中心偏移
-                    var clusterIdx = i % clusters;
-                    var centerX = clusterCenters[clusterIdx];
-                    b.style.left = (centerX + (Math.random() - 0.5) * 20) + '%';
-                    b.style.animationDuration = (isSmall ? (8 + Math.random() * 8) : (16 + Math.random() * 14)) + 's';
-                    b.style.animationDelay = (Math.random() * 25) + 's';
-                    bubblesLayer.appendChild(b);
-                }
-            }
-
-            var overlay = document.getElementById('manuscript-overlay');
-            var container = document.querySelector('.container');
+        (function initShatter() {
+            var overlay = document.getElementById('shatter-overlay');
             if (!overlay) {
-                // 非首页：直接触发入场
-                if (container) { container.classList.add('entrance-start'); }
-                if (bubblesLayer) { bubblesLayer.style.zIndex = '0'; }
+                // 非首页：直接显示
+                var c = document.querySelector('.container');
+                if (c) c.classList.add('entrance-start');
                 return;
             }
 
-            // --- 打字机引擎 ---
-            var msTitle   = document.getElementById('ms-title');
-            var msCards   = document.getElementById('ms-cards');
-            var msCursor  = document.getElementById('ms-cursor');
-            var msHint    = document.getElementById('ms-hint');
-            var workspace = document.getElementById('ms-workspace');
-            var glow      = document.getElementById('cursor-glow');
-            if (glow) glow.style.zIndex = '10001';
+            var container = document.querySelector('.container');
+            var flash = document.getElementById('shatter-flash');
+            var isMobile = window.matchMedia('(max-width: 768px)').matches;
 
-            var queue = [];
-            var timer = null;
-            var skipped = false;
-            var speed = 58;  // 基础打字速度 ms/字
-            var allDone = false;
-
-            // 将文本加入打字队列
-            function enqueue(targetEl, text, cls, onStart, onDone) {
-                for (var i = 0; i < text.length; i++) {
-                    queue.push({ el: targetEl, char: text[i], cls: cls || '', onStart: i === 0 ? onStart : null, onDone: i === text.length - 1 ? onDone : null });
-                }
-            }
-
-            // 打下一个字符
-            function typeNext() {
-                if (skipped || queue.length === 0) return;
-                var item = queue.shift();
-                if (item.onStart) item.onStart();
-
-                var span = document.createElement('span');
-                span.className = 'ms-char ' + (item.cls || '');
-                span.textContent = item.char;
-                item.el.appendChild(span);
-
-                // 随机删除线修正（15%概率，且不在标题行）
-                if (!item.cls && Math.random() < 0.12 && item.char !== ' ' && item.char !== '·') {
-                    span.classList.add('correcting');
-                    setTimeout(function() {
-                        if (span.parentNode) span.parentNode.removeChild(span);
-                        var fixed = document.createElement('span');
-                        fixed.className = 'ms-char corrected';
-                        fixed.textContent = item.char;
-                        item.el.appendChild(fixed);
-                    }, 250);
-                }
-
-                if (item.onDone) item.onDone();
-                updateCursor();
-                scheduleNext();
-            }
-
-            function updateCursor() {
-                if (msCursor) {
-                    msCursor.parentNode.insertBefore(msCursor, null); // 移到末尾
-                }
-            }
-
-            function scheduleNext() {
-                clearTimeout(timer);
-                if (skipped) return;
-                if (queue.length === 0) {
-                    if (!allDone) { allDone = true; onAllTyped(); }
-                    return;
-                }
-                timer = setTimeout(typeNext, speed);
-            }
-
-            function onAllTyped() {
-                // 所有打字完成 → 定稿
-                setTimeout(function() {
-                    if (workspace) workspace.classList.add('finalized');
-                    if (msHint) msHint.style.opacity = '0';
-                    setTimeout(function() { finishManuscript(); }, 800);
-                }, 600);
-            }
-
-            function finishManuscript() {
-                overlay.classList.add('fade-out');
-                if (glow) glow.style.zIndex = '0';
-                setTimeout(function() {
-                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                    if (bubblesLayer) bubblesLayer.style.zIndex = '0';
-                    if (container) container.classList.add('entrance-start');
-                }, 650);
-            }
-
-            // ---- 构建手稿内容 ----
-            // 标题行
-            var titleLine = document.createElement('div');
-            titleLine.className = 'ms-line';
-            msTitle.appendChild(titleLine);
-            enqueue(titleLine, '我的笔记', 'ms-title-char');
-
-            // 副标题行
-            var subLine = document.createElement('div');
-            subLine.className = 'ms-line';
-            subLine.style.fontSize = '1rem';
-            subLine.style.fontWeight = '400';
-            subLine.style.color = 'rgba(255,255,255,0.5)';
-            msTitle.appendChild(subLine);
-            enqueue(subLine, '读书 · 思考 · 诗文');
-
-            // 4张卡片
-            var cardData = [
-                { title: '史学笔记', desc: '中国史学的发展脉络与经典研读' },
-                { title: '文哲笔记', desc: '从古希腊到现代的哲学思想之旅' },
-                { title: '随笔',     desc: '随感而发，不拘一格' },
-                { title: '个人诗集', desc: '古风雅韵与现代诗篇的创作整理' }
+            // --- 碎片配置 ---
+            var shapes = [
+                'polygon(50% 0%, 0% 100%, 100% 100%)',          // 三角形
+                'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',  // 菱形
+                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', // 六边形
+                '',                                                // 圆角矩形（用 border-radius）
+                '',                                                // 圆角矩形
+                '',                                                // 圆角矩形
+                'polygon(50% 0%, 0% 100%, 100% 100%)',
+                'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+            ];
+            var colors = [
+                'rgba(74,158,255,0.92)',   // 电光蓝
+                'rgba(255,107,107,0.88)',  // 珊瑚橙
+                'rgba(255,255,255,0.85)',  // 亮白
+                'rgba(59,130,246,0.90)',   // 深蓝
+                'rgba(255,142,142,0.86)',  // 浅橙
+                'rgba(200,210,225,0.82)',  // 银白
+                'rgba(74,158,255,0.88)',
+                'rgba(255,255,255,0.90)'
             ];
 
-            cardData.forEach(function(cd) {
-                var cardDiv = document.createElement('div');
-                cardDiv.className = 'ms-card';
-                var titleDiv = document.createElement('div');
-                titleDiv.className = 'ms-card-title';
-                var descDiv = document.createElement('div');
-                descDiv.className = 'ms-card-desc';
-                cardDiv.appendChild(titleDiv);
-                cardDiv.appendChild(descDiv);
-                msCards.appendChild(cardDiv);
+            var fragCount = isMobile ? 10 : 16;
+            var fragments = [];
+            var fragmentEls = [];
 
-                enqueue(titleDiv, cd.title, 'ms-card-title-char');
-                enqueue(descDiv, cd.desc, 'ms-card-desc-char');
-            });
+            // --- 生成碎片 DOM ---
+            for (var i = 0; i < fragCount; i++) {
+                var el = document.createElement('div');
+                el.className = 'fragment';
+                var w = 40 + Math.random() * 100;
+                var h = 40 + Math.random() * 100;
+                el.style.setProperty('--frag-w', w + 'px');
+                el.style.setProperty('--frag-h', h + 'px');
 
-            updateCursor();
-            // 初始延迟后开始打字
-            setTimeout(function() { scheduleNext(); }, 200);
-
-            // ---- 键盘交互：按任意键立即打字 ----
-            var idleTimer;
-            document.addEventListener('keydown', function keyHandler(e) {
-                if (skipped || allDone) {
-                    document.removeEventListener('keydown', keyHandler);
-                    return;
+                // 随机形状
+                var shapeI = Math.floor(Math.random() * shapes.length);
+                if (shapes[shapeI]) {
+                    el.style.clipPath = shapes[shapeI];
+                } else {
+                    el.style.borderRadius = (8 + Math.random() * 20) + 'px';
                 }
-                e.preventDefault();
-                clearTimeout(timer);
-                typeNext();
-                clearTimeout(idleTimer);
-                idleTimer = setTimeout(function() { /* 用户停止按键，自动继续 */ }, 400);
-            });
 
-            // ---- 点击跳过 ----
-            overlay.addEventListener('click', function skipHandler() {
-                if (skipped) return;
-                skipped = true;
-                overlay.removeEventListener('click', skipHandler);
-                clearTimeout(timer);
-                // 瞬间打出所有剩余字符
-                while (queue.length > 0) {
-                    var item = queue.shift();
-                    var span = document.createElement('span');
-                    span.className = 'ms-char ' + (item.cls || '');
-                    span.textContent = item.char;
-                    item.el.appendChild(span);
-                }
-                updateCursor();
-                allDone = true;
+                // 随机颜色
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                // 飞入起始：屏幕外随机方向
+                var angle = Math.random() * Math.PI * 2;
+                var dist = 400 + Math.random() * 600;
+                var fromX = Math.cos(angle) * dist;
+                var fromY = Math.sin(angle) * dist;
+                el.style.setProperty('--from-x', fromX + 'px');
+                el.style.setProperty('--from-y', fromY + 'px');
+                el.style.setProperty('--from-rx', ((Math.random() - 0.5) * 360) + 'deg');
+                el.style.setProperty('--from-ry', ((Math.random() - 0.5) * 360) + 'deg');
+                el.style.setProperty('--from-rz', ((Math.random() - 0.5) * 180) + 'deg');
+
+                // 爆散方向（飞出反方向）
+                el.style.setProperty('--sc-x', (-fromX * (0.8 + Math.random() * 0.6)) + 'px');
+                el.style.setProperty('--sc-y', (-fromY * (0.8 + Math.random() * 0.6)) + 'px');
+                el.style.setProperty('--sc-rx', ((Math.random() - 0.5) * 540) + 'deg');
+                el.style.setProperty('--sc-ry', ((Math.random() - 0.5) * 540) + 'deg');
+                el.style.setProperty('--sc-rz', ((Math.random() - 0.5) * 360) + 'deg');
+
+                overlay.appendChild(el);
+                fragmentEls.push(el);
+                fragments.push({ el: el, delay: 0 });
+            }
+
+            // --- 阶段1：碎片飞入（错峰） ---
+            var staggerBase = isMobile ? 28 : 35;
+            var totalFlyIn = 0;
+            fragmentEls.forEach(function(el, i) {
+                var delay = i * staggerBase + Math.random() * 20;
+                fragments[i].delay = delay;
+                totalFlyIn = Math.max(totalFlyIn, delay + 550); // 550 = 动画时长
                 setTimeout(function() {
-                    if (workspace) workspace.classList.add('finalized');
-                    if (msHint) msHint.style.opacity = '0';
-                    setTimeout(function() { finishManuscript(); }, 500);
-                }, 300);
+                    el.classList.add('fly-in');
+                }, delay);
             });
-        })();
 
-        // ========================================
-        // 4.3 首页 Logo 微光扫过 + Bento 卡片错落入场
-        // ========================================
-        (function initHomeEntrance() {
-            // Logo 微光扫过（仅非手稿页；手稿已处理标题动画）
-            var hasOverlay = !!document.getElementById('manuscript-overlay');
-            if (!hasOverlay) {
-                var siteTitle = document.querySelector('.site-title');
-                if (siteTitle) {
-                    setTimeout(function() {
-                        siteTitle.classList.add('shimmer');
-                        setTimeout(function() {
-                            siteTitle.classList.remove('shimmer');
-                        }, 1500);
-                    }, 300);
-                }
-            }
-
-            // 首页 Bento 卡片：增大错落间隔
-            var bentoCards = document.querySelectorAll('.bento-card.reveal');
-            if (bentoCards.length > 0) {
-                bentoCards.forEach(function(card, i) {
-                    card.style.transitionDelay = (i * 0.15) + 's';
+            // --- 阶段2：聚合呼吸 ---
+            var holdStart = totalFlyIn + 80;
+            setTimeout(function() {
+                fragmentEls.forEach(function(el) {
+                    el.classList.remove('fly-in');
+                    el.classList.add('hold');
                 });
-            }
+            }, holdStart);
+
+            // --- 阶段3：爆散 + 闪光 + 过渡 ---
+            var burstAt = holdStart + 280;
+            setTimeout(function() {
+                // 爆散
+                fragmentEls.forEach(function(el, i) {
+                    el.classList.remove('hold');
+                    // 微错峰爆散
+                    setTimeout(function() {
+                        el.classList.add('scatter');
+                    }, i * 8);
+                });
+                // 闪光
+                flash.classList.add('burst');
+                // 淡出 overlay + 首页入场
+                setTimeout(function() {
+                    overlay.classList.add('fade-out');
+                    if (container) container.classList.add('entrance-start');
+                    // 清理 DOM
+                    setTimeout(function() {
+                        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    }, 400);
+                }, 200);
+            }, burstAt);
+
+            // --- 点击跳过 ---
+            overlay.style.pointerEvents = 'auto';
+            overlay.addEventListener('click', function skip() {
+                overlay.removeEventListener('click', skip);
+                overlay.style.pointerEvents = 'none';
+                // 立即爆散
+                fragmentEls.forEach(function(el, i) {
+                    el.classList.remove('fly-in', 'hold');
+                    setTimeout(function() { el.classList.add('scatter'); }, i * 6);
+                });
+                flash.classList.add('burst');
+                overlay.classList.add('fade-out');
+                if (container) container.classList.add('entrance-start');
+                setTimeout(function() {
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                }, 350);
+            });
         })();
 
         // ========================================
         // 4.3 鼠标跟随光晕
-        // ========================================
-        (function initCursorGlow() {
             var glow = document.getElementById('cursor-glow');
             if (!glow || window.matchMedia('(max-width: 768px)').matches) return;
 
