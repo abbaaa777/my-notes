@@ -8,6 +8,9 @@ url: "https://abbaaa777.github.io"
 
 # 构建设置
 markdown: kramdown
+kramdown:
+  hard_wrap: true
+  gfm_quirks: [paragraph_end]
 
 # 排除不需要处理的文件
 exclude:
