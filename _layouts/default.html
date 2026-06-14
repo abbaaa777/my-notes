@@ -424,6 +424,10 @@
             .dir-sub {
                 min-width: 110px;
             }
+            .dir-sub-sub {
+                min-width: 100px;
+                max-height: 260px;
+            }
         }
 
         /* ========================================
@@ -660,13 +664,59 @@
             border-bottom: 1px solid #f0e8d8;
         }
 
-        .dir-sub a:last-child {
+        .dir-sub a:last-child,
+        .dir-sub-sub a:last-child {
             border-bottom: none;
         }
 
-        .dir-sub a:hover {
+        .dir-sub a:hover,
+        .dir-sub-sub a:hover {
             background: #fdf6ec;
             color: #8b5e3c;
+        }
+
+        /* ---- 三级子菜单（诗名） ---- */
+        .dir-sub-cat {
+            position: relative;
+            border-bottom: 1px solid #f0e8d8;
+        }
+        .dir-sub-cat:last-child {
+            border-bottom: none;
+        }
+        .dir-sub-cat > a {
+            display: block;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            color: #6b5a4a;
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            transition: background 0.15s, color 0.15s;
+            cursor: pointer;
+        }
+        .dir-sub-cat > a:hover {
+            background: #fdf6ec;
+            color: #8b5e3c;
+        }
+
+        .dir-sub-sub {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: 0;
+            margin-right: 2px;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
+            min-width: 140px;
+            z-index: 93;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .dir-sub-cat:hover > .dir-sub-sub {
+            display: block;
         }
 
         /* ---- 搜索高亮标记 ---- */
@@ -885,8 +935,34 @@
                     <div class="dir-category" data-cat="个人诗集">
                         <span class="dir-cat-label">🎋 个人诗集</span>
                         <div class="dir-sub">
-                            <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
-                            <a href="{{ site.baseurl }}/notes/现代诗歌.html">现代诗歌</a>
+                            <div class="dir-sub-cat">
+                                <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
+                                <div class="dir-sub-sub">
+                                    <a href="{{ site.baseurl }}/notes/古代诗歌.html#小池渊">小池渊</a>
+                                    <a href="{{ site.baseurl }}/notes/古代诗歌.html#风树">风树</a>
+                                    <a href="{{ site.baseurl }}/notes/古代诗歌.html#半块瑜">半块瑜</a>
+                                </div>
+                            </div>
+                            <div class="dir-sub-cat">
+                                <a href="{{ site.baseurl }}/notes/现代诗歌.html">现代诗歌</a>
+                                <div class="dir-sub-sub">
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#不走了">不走了</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#当男人决定死亡时">当男人决定死亡时</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#一群强盗">一群强盗</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#七点三刻">七点三刻</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#半截的夏风">半截的夏风</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#平原">平原</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#我爱上一个斯柯达顿人">我爱上一个斯柯达顿人</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#水夜">水夜</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#泄">泄</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#致幻">致幻</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#花白天">花白天</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#虎视眈眈">虎视眈眈</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#蜘蛛">蜘蛛</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#远远">远远</a>
+                                    <a href="{{ site.baseurl }}/notes/现代诗歌.html#附和">附和</a>
+                                </div>
+                            </div>
                             <a href="{{ site.baseurl }}/notes/诗家理论.html">诗家理论</a>
                         </div>
                     </div>
@@ -983,76 +1059,14 @@
         }
 
         // ========================================
-        // 2.1 长文目录 + 2.4 诗歌跳转
+        // 标题 anchor ID（供搜索跳转和目录锚点使用）
         // ========================================
         var mainEl = document.querySelector('main.content');
         if (mainEl) {
             var headings = mainEl.querySelectorAll('h2, h3');
-            var isPoetry = mainEl.classList.contains('poetry');
-            var firstH1 = mainEl.querySelector('h1');
-
-            // --- 2.4 诗歌快速跳转（诗歌页面且诗 ≥ 5 首） ---
-            if (isPoetry && headings.length >= 5) {
-                var nav = document.createElement('nav');
-                nav.className = 'poem-nav';
-                headings.forEach(function(h, i) {
-                    if (h.tagName === 'H2') {
-                        var id = makeSlug(h.textContent);
-                        h.id = id;
-                        var a = document.createElement('a');
-                        a.href = '#' + id;
-                        a.textContent = h.textContent;
-                        a.addEventListener('click', function() {
-                            var all = nav.querySelectorAll('a');
-                            for (var j = 0; j < all.length; j++) all[j].classList.remove('active');
-                            a.classList.add('active');
-                        });
-                        nav.appendChild(a);
-                    }
-                });
-                if (firstH1) {
-                    firstH1.insertAdjacentElement('afterend', nav);
-                } else {
-                    mainEl.insertBefore(nav, mainEl.firstChild);
-                }
-            }
-
-            // --- 2.1 长文目录（h2 ≥ 3 且非诗歌页） ---
-            if (!isPoetry && headings.length >= 3) {
-                var h2Count = 0;
-                for (var k = 0; k < headings.length; k++) {
-                    if (headings[k].tagName === 'H2') h2Count++;
-                }
-                if (h2Count >= 3) {
-                    var card = document.createElement('div');
-                    card.className = 'toc-card';
-
-                    var title = document.createElement('div');
-                    title.className = 'toc-title';
-                    title.textContent = '\u{1F4D1} 目录';
-                    card.appendChild(title);
-
-                    var ol = document.createElement('ol');
-                    headings.forEach(function(h, i) {
-                        var id = makeSlug(h.textContent);
-                        h.id = id;
-                        var li = document.createElement('li');
-                        li.className = h.tagName === 'H3' ? 'toc-h3' : 'toc-h2';
-                        var a = document.createElement('a');
-                        a.href = '#' + id;
-                        a.textContent = h.textContent;
-                        li.appendChild(a);
-                        ol.appendChild(li);
-                    });
-                    card.appendChild(ol);
-
-                    if (firstH1) {
-                        firstH1.insertAdjacentElement('afterend', card);
-                    } else {
-                        mainEl.insertBefore(card, mainEl.firstChild);
-                    }
-                }
-            }
+            headings.forEach(function(h) {
+                if (!h.id) h.id = makeSlug(h.textContent);
+            });
         }
 
         // ========================================
