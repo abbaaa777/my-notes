@@ -1785,7 +1785,6 @@
                 clearTimeout(safetyTimer);
                 overlay.classList.add('fade-out');
                 if (container) container.classList.add('entrance-start');
-                // 显示常驻标题
                 var ht = document.getElementById('home-title');
                 if (ht) ht.classList.add('visible');
                 setTimeout(function() {
@@ -1793,6 +1792,8 @@
                 }, 600);
             }
 
+            // 确保字体就绪后再启动动画
+            function startAnimation() {
             try {
 
             // --- HanziWriter笔画路径（归一化到100×120坐标空间，用作clipPath） ---
@@ -1897,11 +1898,14 @@
                     }
                     defsEl.appendChild(filtEl);
 
-                    // clipPath
+                    // clipPath（stroke描边扩张3px，消除楷书路径与粗体字之间的缝隙）
                     var cpEl = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
                     cpEl.setAttribute('id',cpId);
                     var cpPath = document.createElementNS('http://www.w3.org/2000/svg','path');
                     cpPath.setAttribute('d',paths[si]);
+                    cpPath.setAttribute('stroke','white');
+                    cpPath.setAttribute('stroke-width','4');
+                    cpPath.setAttribute('stroke-linejoin','round');
                     cpEl.appendChild(cpPath);
                     defsEl.appendChild(cpEl);
                     svgEl.appendChild(defsEl);
@@ -2066,6 +2070,20 @@
 
             } catch(e) {
                 revealPage();
+            }
+            } // end startAnimation
+
+            // 预加载ZCOOL QingKe HuangYou字体，就绪后启动动画
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.load('1em "ZCOOL QingKe HuangYou"').then(function() {
+                    startAnimation();
+                }).catch(function() {
+                    startAnimation(); // 失败也启动（回退字体）
+                });
+                // 2秒强制超时（字体加载失败的情况）
+                setTimeout(function() { startAnimation(); }, 2000);
+            } else {
+                startAnimation();
             }
         })();
 
