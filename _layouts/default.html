@@ -176,26 +176,27 @@
            正文排版（笔记 / 诗歌页面）
            ======================================== */
         .content {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
         }
 
         .content h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: #5c3d2e;
             margin-bottom: 0.6em;
             margin-top: 0.4em;
             letter-spacing: 0.05em;
             font-weight: 700;
             line-height: 1.4;
+            text-align: center;
         }
 
         .content h2 {
             font-size: 1.5rem;
             color: #5c3d2e;
             margin: 1.8em 0 0.6em;
-            padding-bottom: 0.3em;
+            padding-bottom: 0.4em;
             border-bottom: 1px solid #e0d5c1;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             font-weight: 600;
         }
 
@@ -208,7 +209,7 @@
         }
 
         .content p {
-            margin-bottom: 1em;
+            margin-bottom: 1.2em;
             text-indent: 0;
             line-height: 2.1;
         }
@@ -286,10 +287,16 @@
             padding: 0;
         }
 
-        /* 诗歌专属：行间距更宽松 */
+        /* 诗歌专属：行间距更宽松，诗题更醒目 */
         .content.poetry p {
-            line-height: 2.2;
-            letter-spacing: 0.04em;
+            line-height: 2.4;
+            letter-spacing: 0.06em;
+        }
+
+        .content.poetry h2 {
+            color: #4a2e1e;
+            font-size: 1.55rem;
+            letter-spacing: 0.06em;
         }
 
         /* ========================================
@@ -377,7 +384,7 @@
             {% endif %}
         </header>
 
-        <main class="content">
+        <main class="content{% if page.type == 'poetry' %} poetry{% endif %}">
             {{ content }}
         </main>
 
