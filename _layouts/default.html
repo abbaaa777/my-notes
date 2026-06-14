@@ -384,10 +384,171 @@
             .content {
                 font-size: 1rem;
             }
+            .toc-card {
+                padding: 16px 18px;
+            }
+            .poem-nav {
+                gap: 8px 14px;
+            }
+            .back-to-top {
+                right: 12px;
+                bottom: 16px;
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* ========================================
+           阅读进度条
+           ======================================== */
+        .progress-bar {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c9a96e, #8b5e3c);
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* ========================================
+           返回顶部按钮
+           ======================================== */
+        .back-to-top {
+            position: fixed;
+            right: 24px;
+            bottom: 30px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #c9a96e;
+            background: #fffef9;
+            color: #8b5e3c;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(139, 94, 60, 0.15);
+            line-height: 1;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            background: #c9a96e;
+            color: #fffef9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.25);
+        }
+
+        /* ========================================
+           长文目录（TOC）
+           ======================================== */
+        .toc-card {
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-left: 3px solid #c9a96e;
+            border-radius: 6px;
+            padding: 20px 24px;
+            margin: 0 0 2em 0;
+        }
+
+        .toc-card .toc-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #5c3d2e;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .toc-card ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-card li {
+            margin-bottom: 4px;
+            line-height: 1.7;
+        }
+
+        .toc-card li.toc-h2 {
+            margin-top: 8px;
+        }
+
+        .toc-card li.toc-h2:first-child {
+            margin-top: 0;
+        }
+
+        .toc-card li.toc-h3 {
+            padding-left: 1.2em;
+            font-size: 0.9rem;
+        }
+
+        .toc-card a {
+            color: #6b5a4a;
+            text-decoration: none;
+            transition: color 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        .toc-card a:hover {
+            color: #8b5e3c;
+            text-decoration: underline;
+        }
+
+        .toc-card li.toc-h2 > a {
+            font-weight: 500;
+            color: #5c3d2e;
+        }
+
+        /* ========================================
+           诗歌快速跳转
+           ======================================== */
+        .poem-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            justify-content: center;
+            margin: 0 0 2em 0;
+            padding: 18px 22px;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+        }
+
+        .poem-nav a {
+            color: #8b7355;
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .poem-nav a:hover {
+            color: #5c3d2e;
+        }
+
+        .poem-nav a.active {
+            color: #8b5e3c;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
+    <div class="progress-bar" id="progress-bar"></div>
+    <button class="back-to-top" id="back-to-top" title="返回顶部">↑</button>
     <div class="container">
         <header>
             <div class="site-title">
@@ -419,10 +580,121 @@
         </footer>
     </div>
 
-    <!-- 著作权保护：禁用右键菜单、禁止文字选择、禁止拖拽 -->
+    <!-- 导航功能 + 著作权保护 -->
     <script>
     (function() {
         'use strict';
+
+        // ========================================
+        // 2.2 阅读进度条
+        // ========================================
+        var progressBar = document.getElementById('progress-bar');
+        function updateProgress() {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (docHeight > 0) {
+                var pct = Math.min(100, Math.round((scrollTop / docHeight) * 100));
+                progressBar.style.width = pct + '%';
+            }
+        }
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+
+        // ========================================
+        // 2.3 返回顶部按钮
+        // ========================================
+        var backBtn = document.getElementById('back-to-top');
+        function toggleBackBtn() {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > 400) {
+                backBtn.classList.add('visible');
+            } else {
+                backBtn.classList.remove('visible');
+            }
+        }
+        window.addEventListener('scroll', toggleBackBtn, { passive: true });
+        backBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        toggleBackBtn();
+
+        // ========================================
+        // 2.1 长文目录 + 2.4 诗歌跳转
+        // ========================================
+        var mainEl = document.querySelector('main.content');
+        if (mainEl) {
+            var headings = mainEl.querySelectorAll('h2, h3');
+            var isPoetry = mainEl.classList.contains('poetry');
+            var firstH1 = mainEl.querySelector('h1');
+
+            // --- 2.4 诗歌快速跳转（诗歌页面且诗 ≥ 5 首） ---
+            if (isPoetry && headings.length >= 5) {
+                var nav = document.createElement('nav');
+                nav.className = 'poem-nav';
+                headings.forEach(function(h, i) {
+                    if (h.tagName === 'H2') {
+                        var id = 'poem-' + i;
+                        h.id = id;
+                        var a = document.createElement('a');
+                        a.href = '#' + id;
+                        a.textContent = h.textContent;
+                        a.addEventListener('click', function() {
+                            // 移除所有 active
+                            var all = nav.querySelectorAll('a');
+                            for (var j = 0; j < all.length; j++) all[j].classList.remove('active');
+                            a.classList.add('active');
+                        });
+                        nav.appendChild(a);
+                    }
+                });
+                if (firstH1) {
+                    firstH1.insertAdjacentElement('afterend', nav);
+                } else {
+                    mainEl.insertBefore(nav, mainEl.firstChild);
+                }
+            }
+
+            // --- 2.1 长文目录（h2 ≥ 3 且非诗歌页） ---
+            if (!isPoetry && headings.length >= 3) {
+                var h2Count = 0;
+                for (var k = 0; k < headings.length; k++) {
+                    if (headings[k].tagName === 'H2') h2Count++;
+                }
+                if (h2Count >= 3) {
+                    var card = document.createElement('div');
+                    card.className = 'toc-card';
+
+                    var title = document.createElement('div');
+                    title.className = 'toc-title';
+                    title.textContent = '\u{1F4D1} 目录';
+                    card.appendChild(title);
+
+                    var ol = document.createElement('ol');
+                    headings.forEach(function(h, i) {
+                        var id = 'toc-' + i;
+                        h.id = id;
+                        var li = document.createElement('li');
+                        li.className = h.tagName === 'H3' ? 'toc-h3' : 'toc-h2';
+                        var a = document.createElement('a');
+                        a.href = '#' + id;
+                        a.textContent = h.textContent;
+                        li.appendChild(a);
+                        ol.appendChild(li);
+                    });
+                    card.appendChild(ol);
+
+                    if (firstH1) {
+                        firstH1.insertAdjacentElement('afterend', card);
+                    } else {
+                        mainEl.insertBefore(card, mainEl.firstChild);
+                    }
+                }
+            }
+        }
+
+        // ========================================
+        // 著作权保护
+        // ========================================
 
         // 禁止右键菜单
         document.addEventListener('contextmenu', function(e) {
