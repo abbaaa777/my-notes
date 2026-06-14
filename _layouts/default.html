@@ -1439,6 +1439,13 @@
                 0 3px 14px rgba(0,0,0,0.4),
                 0 0 0 1px rgba(255,255,255,0.25);
         }
+        /* 书图标 — SVG 无背景，柠檬黄线条 + 发光 */
+        .stroke.icon-el {
+            border-radius: 0;
+            background: none;
+            filter: drop-shadow(0 2px 6px rgba(255,229,102,0.35))
+                    drop-shadow(0 0 2px rgba(255,229,102,0.25));
+        }
 
         /* 点击提示 */
         .click-hint {
@@ -1746,8 +1753,10 @@
             try {
 
             // --- 笔画数据定义 ---
-            // 字符中心X偏移（相对整体中心）
-            var charCX = { wo: -170, de: -42, bi: 82, ji: 198 };
+            // 字符中心偏移（相对整体中心，含图标）
+            // 布局: [图标40] [间距28] [我100] [间距22] [的90] [间距22] [笔100] [间距22] [记85]
+            // 总宽≈509px, 中心=254.5px
+            var charCX = { icon: -234, wo: -136, de: -20, bi: 98, ji: 212 };
 
             function S(type, w, h, cx, cy, rz, color) {
                 return { type: type, w: w, h: h, cx: cx, cy: cy, rz: rz, color: color };
@@ -1791,6 +1800,7 @@
             ];
 
             var charGroups = [
+                { name: 'icon', strokes: [{ type: 'icon', w: 42, h: 42, cx: 0, cy: 0, rz: 0, color: 'yellow' }] },
                 { name: 'wo', strokes: strokeDefs.slice(0, 7) },
                 { name: 'de', strokes: strokeDefs.slice(7, 15) },
                 { name: 'bi', strokes: strokeDefs.slice(15, 25) },
@@ -1805,10 +1815,28 @@
             charGroups.forEach(function(cg) {
                 var cc = charCX[cg.name];
                 cg.strokes.forEach(function(sd) {
-                    var el = document.createElement('div');
-                    el.className = 'stroke ' + sd.color;
-                    el.style.width = sd.w + 'px';
-                    el.style.height = sd.h + 'px';
+                    var el;
+                    if (sd.type === 'icon') {
+                        // 书图标 — SVG元素
+                        el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        el.setAttribute('width', sd.w);
+                        el.setAttribute('height', sd.h);
+                        el.setAttribute('viewBox', '0 0 24 24');
+                        el.setAttribute('fill', 'none');
+                        el.setAttribute('stroke', '#FFE566');
+                        el.setAttribute('stroke-width', '2');
+                        el.setAttribute('stroke-linecap', 'round');
+                        el.setAttribute('stroke-linejoin', 'round');
+                        el.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
+                        el.classList.add('stroke', 'icon-el');
+                        el.style.width = sd.w + 'px';
+                        el.style.height = sd.h + 'px';
+                    } else {
+                        el = document.createElement('div');
+                        el.className = 'stroke ' + sd.color;
+                        el.style.width = sd.w + 'px';
+                        el.style.height = sd.h + 'px';
+                    }
 
                     var endX = cc + sd.cx;
                     var endY = sd.cy;
@@ -1822,7 +1850,7 @@
                     var startRY = (Math.random() - 0.5) * 360;
                     var startRZ = (Math.random() - 0.5) * 200;
 
-                    // 贝塞尔控制点（随机化使每条路径不同）
+                    // 贝塞尔控制点
                     var cp1x = startX + (endX - startX) * (0.28 + Math.random() * 0.18);
                     var cp1y = startY + (endY - startY) * (0.28 + Math.random() * 0.18);
                     var cp1z = startZ * (0.3 + Math.random() * 0.35);
@@ -1830,8 +1858,8 @@
                     var cp2y = startY + (endY - startY) * (0.62 + Math.random() * 0.18);
                     var cp2z = startZ * (-0.2 + Math.random() * 0.4);
 
-                    var serpAmp = 10 + Math.random() * 16;
-                    var serpFreq = 1.4 + Math.random() * 1.8;
+                    var serpAmp = sd.type === 'icon' ? 6 : 10 + Math.random() * 16;
+                    var serpFreq = sd.type === 'icon' ? 2.0 : 1.4 + Math.random() * 1.8;
 
                     var data = {
                         el: el,
@@ -1841,8 +1869,8 @@
                         cp1:    { x: cp1x, y: cp1y, z: cp1z, rx: startRX*0.55, ry: startRY*0.55, rz: startRZ*0.55, scale: 0.4 },
                         cp2:    { x: cp2x, y: cp2y, z: cp2z, rx: startRX*0.15, ry: startRY*0.15, rz: endRZ*1.6, scale: 0.85 },
                         serp:   { amp: serpAmp, freq: serpFreq },
-                        duration: isMobile ? 450 + Math.random() * 250 : 600 + Math.random() * 380,
-                        delay: Math.random() * (isMobile ? 300 : 500),
+                        duration: sd.type === 'icon' ? 500 : (isMobile ? 450 + Math.random() * 250 : 600 + Math.random() * 380),
+                        delay: sd.type === 'icon' ? (isMobile ? 600 : 1000) : Math.random() * (isMobile ? 300 : 500),
                         settled: false
                     };
 
