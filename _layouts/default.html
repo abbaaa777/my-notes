@@ -1777,7 +1777,7 @@
             // Canvas 测量字母宽度
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
-            var baseFontSize = isMobile ? 80 : 130;
+            var baseFontSize = Math.max(80, Math.round(screenW * 0.11)); // 11vw, mobile min 80px
             ctx.font = 'bold ' + baseFontSize + 'px "Quicksand", sans-serif';
             var spaceW = ctx.measureText(' ').width;
             var letterMetrics = GLYPHS.map(function(g) {
@@ -1786,27 +1786,21 @@
                 return { letter: g, w: m.width };
             });
 
-            // 布局：图标 + 间距 + 字母依次排列
-            var iconSize = Math.round(baseFontSize * 0.48);
-            var gapIcon = Math.round(baseFontSize * 0.2);
-            var totalW = iconSize + gapIcon;
+            // 布局：字母居中排列
+            var totalW = 0;
             for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
             var mobileScale = isMobile ? Math.min(1, (screenW * 0.9) / totalW) : 1;
             var fs = Math.round(baseFontSize * mobileScale);
 
-            iconSize = Math.round(iconSize * mobileScale);
-            gapIcon = Math.round(gapIcon * mobileScale);
             for (var i = 0; i < letterMetrics.length; i++) { letterMetrics[i].w = Math.round(letterMetrics[i].w * mobileScale); }
-            totalW = iconSize + gapIcon;
+            totalW = 0;
             for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
 
             var startX = (screenW - totalW) / 2;
-            var iconX = startX;
-            var iconY = centerY - iconSize / 2;
 
             // 计算每个字母的目标位置
             var letterPositions = [];
-            var curX = startX + iconSize + gapIcon;
+            var curX = startX;
             for (var i = 0; i < letterMetrics.length; i++) {
                 if (letterMetrics[i].letter) {
                     letterPositions.push({ letter: letterMetrics[i].letter, x: curX, w: letterMetrics[i].w, idx: i });
@@ -1819,7 +1813,7 @@
 
             // --- 核心动画函数 ---
             var allStrokes = [];
-            var _ts = letterPositions.length + 1; // 字母 + 图标
+            var _ts = letterPositions.length; // 仅字母，无图标
             var gIdx = 0, idCtr = 0;
             function nid() { return 'c' + (idCtr++); }
 
@@ -1885,21 +1879,6 @@
                 gIdx++;
             });
 
-            // 书图标
-            var icon = document.createElementNS(svgNS, 'svg');
-            icon.setAttribute('width', iconSize); icon.setAttribute('height', iconSize); icon.setAttribute('viewBox', '0 0 24 24');
-            icon.setAttribute('fill', 'none'); icon.setAttribute('stroke', '#FFE566'); icon.setAttribute('stroke-width', '2.5');
-            icon.setAttribute('stroke-linecap', 'round'); icon.setAttribute('stroke-linejoin', 'round');
-            icon.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
-            icon.classList.add('stroke-svg'); icon.style.width = iconSize + 'px'; icon.style.height = iconSize + 'px'; icon.style.overflow = 'visible';
-            icon.style.filter = 'drop-shadow(0 2px 6px rgba(255,229,102,0.35)) drop-shadow(0 0 2px rgba(255,229,102,0.25))';
-            var ie = entry(gIdx, _ts, screenW, screenH);
-            var it = traj(ie, {x: iconX, y: iconY});
-            icon.style.transform = 'translate(' + ie.x.toFixed(2) + 'px,' + ie.y.toFixed(2) + 'px) scale(0.25)';
-            icon.style.opacity = '0';
-            overlay.appendChild(icon);
-            allStrokes.push({el: icon, endX: iconX, endY: iconY, traj: it, df: gIdx * 0.004, colorKey: 'yellow', settled: false, isIcon: true});
-
             // 常驻标题（含副标题）
             var homeTitle = document.createElement('div');
             homeTitle.id = 'home-title'; homeTitle.className = 'home-title';
@@ -1946,7 +1925,7 @@
                 overlay.style.pointerEvents = 'none'; overlay.style.cursor = 'default';
                 if (hint) hint.classList.remove('visible');
                 var cx = 0, cy = 0, ct = 0;
-                allStrokes.forEach(function(s) { if (!s.isIcon) { cx += s.endX; cy += s.endY; ct++; } });
+                allStrokes.forEach(function(s) { cx += s.endX; cy += s.endY; ct++; });
                 cx /= ct; cy /= ct;
                 var ttx = screenW / 2 - (totalW * titleScale) / 2;
                 var tty = titleTargetY;
