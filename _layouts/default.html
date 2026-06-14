@@ -405,6 +405,25 @@
                 width: 36px;
                 height: 36px;
             }
+            .search-bar {
+                padding: 8px 12px;
+            }
+            .search-input {
+                padding: 8px 12px;
+                font-size: 0.88rem;
+            }
+            .dir-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+            .dir-dropdown {
+                right: 12px;
+            }
+            .dir-sub {
+                left: auto;
+                right: 100%;
+            }
         }
 
         /* ========================================
@@ -419,6 +438,245 @@
             z-index: 100;
             width: 0%;
             transition: width 0.1s linear;
+        }
+
+        /* ========================================
+           搜索栏（鼠标移到顶部浮现）
+           ======================================== */
+        .search-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            background: rgba(253, 246, 236, 0.97);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e0d5c1;
+            box-shadow: 0 2px 16px rgba(139, 94, 60, 0.08);
+            padding: 12px 24px;
+        }
+
+        .search-bar.visible {
+            transform: translateY(0);
+        }
+
+        .search-bar-inner {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: 1px solid #d4c5a9;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+            background: #fffef9;
+            color: #3d3226;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #c9a96e;
+            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+        }
+
+        .search-input::placeholder {
+            color: #b0a090;
+        }
+
+        .dir-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            border: 1px solid #d4c5a9;
+            background: #fffef9;
+            cursor: pointer;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dir-btn:hover {
+            border-color: #c9a96e;
+            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+        }
+
+        /* ---- 搜索结果面板 ---- */
+        .search-results {
+            display: none;
+            max-width: 720px;
+            margin: 10px auto 0;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            max-height: 360px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(139, 94, 60, 0.1);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results .result-group {
+            padding: 10px 16px 4px;
+            font-size: 0.78rem;
+            color: #b0a090;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .search-results .result-item {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: #5c3d2e;
+            font-size: 0.92rem;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid #f0e8d8;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .search-results .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-results .result-item:hover {
+            background: #fdf6ec;
+        }
+
+        .search-results .result-item .result-heading {
+            font-size: 0.82rem;
+            color: #8b7355;
+            margin-top: 2px;
+        }
+
+        .search-results .result-item .result-excerpt {
+            font-size: 0.82rem;
+            color: #9b8b7a;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .search-results .result-empty {
+            padding: 24px 16px;
+            text-align: center;
+            color: #b0a090;
+            font-size: 0.9rem;
+        }
+
+        /* ---- 目录下拉 ---- */
+        .dir-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 24px;
+            margin-top: 4px;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(139, 94, 60, 0.12);
+            min-width: 180px;
+            z-index: 91;
+        }
+
+        .dir-dropdown.active {
+            display: block;
+        }
+
+        .dir-category {
+            position: relative;
+            border-bottom: 1px solid #f0e8d8;
+        }
+
+        .dir-category:last-child {
+            border-bottom: none;
+        }
+
+        .dir-cat-label {
+            display: block;
+            padding: 12px 16px;
+            font-size: 0.92rem;
+            color: #5c3d2e;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .dir-category:hover > .dir-cat-label {
+            background: #fdf6ec;
+            color: #8b5e3c;
+        }
+
+        .dir-sub {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: #fffef9;
+            border: 1px solid #e8ddcc;
+            border-radius: 6px;
+            box-shadow: 0 4px 14px rgba(139, 94, 60, 0.1);
+            min-width: 140px;
+            z-index: 92;
+        }
+
+        .dir-category:hover > .dir-sub {
+            display: block;
+        }
+
+        .dir-sub a {
+            display: block;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            color: #6b5a4a;
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            transition: background 0.15s, color 0.15s;
+            border-bottom: 1px solid #f0e8d8;
+        }
+
+        .dir-sub a:last-child {
+            border-bottom: none;
+        }
+
+        .dir-sub a:hover {
+            background: #fdf6ec;
+            color: #8b5e3c;
+        }
+
+        /* ---- 搜索高亮标记 ---- */
+        mark.search-highlight {
+            background: #f5e6c8;
+            color: #3d3226;
+            padding: 1px 3px;
+            border-radius: 2px;
+            animation: highlight-fade 2.5s ease forwards;
+        }
+
+        @keyframes highlight-fade {
+            0% { background: #e8c876; }
+            60% { background: #f5e6c8; }
+            100% { background: transparent; }
         }
 
         /* ========================================
@@ -599,6 +857,38 @@
     </style>
 </head>
 <body>
+    <!-- 搜索栏（鼠标移到顶部浮现） -->
+    <div class="search-bar" id="search-bar">
+        <div class="search-bar-inner">
+            <input type="text" class="search-input" id="search-input" placeholder="🔍 搜索诗歌、文章..." autocomplete="off">
+            <button class="dir-btn" id="dir-btn" title="目录">📑</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+        <div class="dir-dropdown" id="dir-dropdown">
+            <div class="dir-category" data-cat="史学笔记">
+                <span class="dir-cat-label">📜 史学笔记</span>
+                <div class="dir-sub">
+                    <a href="{{ site.baseurl }}/notes/中国史学史.html">中国史学史</a>
+                </div>
+            </div>
+            <div class="dir-category" data-cat="文哲笔记">
+                <span class="dir-cat-label">🏛️ 文哲笔记</span>
+                <div class="dir-sub">
+                    <a href="{{ site.baseurl }}/notes/西方哲学史.html">西方哲学史</a>
+                    <a href="{{ site.baseurl }}/notes/文学理论.html">文学理论</a>
+                </div>
+            </div>
+            <div class="dir-category" data-cat="个人诗集">
+                <span class="dir-cat-label">🎋 个人诗集</span>
+                <div class="dir-sub">
+                    <a href="{{ site.baseurl }}/notes/古代诗歌.html">古代诗歌</a>
+                    <a href="{{ site.baseurl }}/notes/现代诗歌.html">现代诗歌</a>
+                    <a href="{{ site.baseurl }}/notes/诗家理论.html">诗家理论</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="progress-bar" id="progress-bar"></div>
     <button class="back-nav{% if page.is_home %} home-hidden{% endif %}" id="back-nav" title="返回上级" onclick="window.history.length > 1 ? history.back() : location.href='{{ site.baseurl }}/'">←</button>
     <button class="back-to-top" id="back-to-top" title="返回顶部">↑</button>
@@ -836,6 +1126,238 @@
                 }, 300);
             }, 2000);
         }
+
+        // ========================================
+        // 搜索栏（鼠标移到顶部浮现）
+        // ========================================
+        var searchBar = document.getElementById('search-bar');
+        var searchInput = document.getElementById('search-input');
+        var searchResults = document.getElementById('search-results');
+        var dirBtn = document.getElementById('dir-btn');
+        var dirDropdown = document.getElementById('dir-dropdown');
+        var barTimer = null;
+        var searchIndex = null;
+
+        // 搜索栏显隐
+        function showSearchBar() {
+            clearTimeout(barTimer);
+            searchBar.classList.add('visible');
+        }
+        function hideSearchBar() {
+            barTimer = setTimeout(function() {
+                if (!searchInput.matches(':focus') && !dirDropdown.classList.contains('active') && !searchResults.classList.contains('active')) {
+                    searchBar.classList.remove('visible');
+                }
+            }, 600);
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            if (e.clientY < 60) {
+                showSearchBar();
+            }
+        });
+
+        searchBar.addEventListener('mouseenter', function() { clearTimeout(barTimer); });
+        searchBar.addEventListener('mouseleave', hideSearchBar);
+
+        // 目录按钮悬停
+        dirBtn.addEventListener('mouseenter', function() {
+            dirDropdown.classList.add('active');
+        });
+        dirBtn.addEventListener('mouseleave', function() {
+            setTimeout(function() {
+                if (!dirDropdown.matches(':hover')) {
+                    dirDropdown.classList.remove('active');
+                }
+            }, 200);
+        });
+        dirDropdown.addEventListener('mouseleave', function() {
+            dirDropdown.classList.remove('active');
+        });
+
+        // 加载搜索索引
+        function loadSearchIndex(cb) {
+            if (searchIndex) { cb(searchIndex); return; }
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '{{ site.baseurl }}/assets/search-index.json', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        searchIndex = JSON.parse(xhr.responseText);
+                        cb(searchIndex);
+                    } catch(e) { cb(null); }
+                } else { cb(null); }
+            };
+            xhr.onerror = function() { cb(null); };
+            xhr.send();
+        }
+
+        // 搜索
+        var searchTimer = null;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            var query = searchInput.value.trim();
+            if (!query) {
+                searchResults.classList.remove('active');
+                searchResults.innerHTML = '';
+                return;
+            }
+            if (query.length < 1) return;
+
+            searchTimer = setTimeout(function() {
+                loadSearchIndex(function(idx) {
+                    if (!idx) {
+                        searchResults.innerHTML = '<div class="result-empty">搜索索引加载失败</div>';
+                        searchResults.classList.add('active');
+                        return;
+                    }
+
+                    var titleMatches = [];
+                    var contentMatches = [];
+                    var q = query.toLowerCase();
+
+                    idx.forEach(function(page) {
+                        // 标题匹配
+                        if (page.title.toLowerCase().indexOf(q) !== -1) {
+                            titleMatches.push({ page: page, heading: null, excerpt: null });
+                        }
+                        // 内容匹配
+                        if (page.sections) {
+                            page.sections.forEach(function(sec) {
+                                var textIdx = sec.text.toLowerCase().indexOf(q);
+                                if (textIdx !== -1) {
+                                    var start = Math.max(0, textIdx - 30);
+                                    var end = Math.min(sec.text.length, textIdx + query.length + 30);
+                                    var excerpt = (start > 0 ? '...' : '') + sec.text.substring(start, end).trim() + (end < sec.text.length ? '...' : '');
+                                    // 避免重复添加同一 heading
+                                    var dup = false;
+                                    for (var i = 0; i < contentMatches.length; i++) {
+                                        if (contentMatches[i].page.url === page.url && contentMatches[i].heading === sec.heading) { dup = true; break; }
+                                    }
+                                    if (!dup) {
+                                        contentMatches.push({ page: page, heading: sec.heading, excerpt: excerpt });
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    // 渲染结果
+                    var html = '';
+                    if (titleMatches.length > 0) {
+                        html += '<div class="result-group">标题匹配</div>';
+                        titleMatches.forEach(function(m) {
+                            html += '<a class="result-item" href="' + m.page.url + '?hl=' + encodeURIComponent(query) + '">'
+                                + '<div>' + m.page.title + '</div>'
+                                + '<div class="result-heading">' + m.page.category + '</div>'
+                                + '</a>';
+                        });
+                    }
+                    if (contentMatches.length > 0) {
+                        html += '<div class="result-group">内容匹配</div>';
+                        contentMatches.forEach(function(m) {
+                            html += '<a class="result-item" href="' + m.page.url + '?hl=' + encodeURIComponent(query) + '#' + encodeURIComponent(m.heading) + '">'
+                                + '<div>' + m.page.title + ' · ' + m.heading + '</div>'
+                                + '<div class="result-excerpt">' + escapeHTML(m.excerpt) + '</div>'
+                                + '</a>';
+                        });
+                    }
+                    if (!html) {
+                        html = '<div class="result-empty">未找到匹配内容</div>';
+                    }
+                    searchResults.innerHTML = html;
+                    searchResults.classList.add('active');
+                });
+            }, 250);
+        });
+
+        // 点击页面其他地方关闭搜索结果
+        document.addEventListener('click', function(e) {
+            if (!searchBar.contains(e.target)) {
+                searchResults.classList.remove('active');
+                searchResults.innerHTML = '';
+                searchInput.value = '';
+            }
+        });
+
+        // 回车键跳转到第一个结果
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                var firstResult = searchResults.querySelector('.result-item');
+                if (firstResult) {
+                    firstResult.click();
+                }
+            }
+        });
+
+        function escapeHTML(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ========================================
+        // 搜索结果高亮（目标页面）
+        // ========================================
+        (function applyHighlight() {
+            var params = new URLSearchParams(window.location.search);
+            var hl = params.get('hl');
+            if (!hl || hl.length < 2) return;
+
+            function highlightText(root) {
+                var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+                var textNodes = [];
+                while (walker.nextNode()) {
+                    var n = walker.currentNode;
+                    // 跳过搜索栏内的文本
+                    if (n.parentElement && n.parentElement.closest('#search-bar')) continue;
+                    // 跳过已标记的
+                    if (n.parentElement && n.parentElement.tagName === 'MARK') continue;
+                    textNodes.push(n);
+                }
+                for (var i = 0; i < textNodes.length; i++) {
+                    var node = textNodes[i];
+                    var text = node.textContent;
+                    var idx = text.toLowerCase().indexOf(hl.toLowerCase());
+                    if (idx === -1) continue;
+
+                    var span = document.createElement('span');
+                    var before = text.substring(0, idx);
+                    var match = text.substring(idx, idx + hl.length);
+                    var after = text.substring(idx + hl.length);
+
+                    var mark = document.createElement('mark');
+                    mark.className = 'search-highlight';
+                    mark.textContent = match;
+
+                    span.appendChild(document.createTextNode(before));
+                    span.appendChild(mark);
+                    span.appendChild(document.createTextNode(after));
+                    node.parentNode.replaceChild(span, node);
+                    break; // 只高亮第一处
+                }
+            }
+
+            // 尝试先滚动到 URL hash 指定的位置，再高亮
+            if (window.location.hash) {
+                var target = document.querySelector(window.location.hash);
+                if (target) {
+                    setTimeout(function() {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(function() { highlightText(document.querySelector('main.content') || document.body); }, 600);
+                    }, 400);
+                    return;
+                }
+            }
+            setTimeout(function() {
+                highlightText(document.querySelector('main.content') || document.body);
+                // 找到第一个 mark 并滚动到它
+                var firstMark = document.querySelector('mark.search-highlight');
+                if (firstMark) {
+                    firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 400);
+        })();
     })();
     </script>
 </body>
