@@ -92,7 +92,7 @@
             --text-muted: #cbd5e1;
             --text-faint: #cbd5e1;
             --text-placeholder: #94a3b8;
-            --text-accent: #93c5fd;
+            --text-accent: #ffffff;
 
             --accent: #5b8cb8;
             --accent-light: #4a7dab;
@@ -102,6 +102,7 @@
             --accent-glow: rgba(var(--accent-rgb), 0.12);
             --deco-muted: #4a6080;
             --deco-highlight-start: #3d6a94;
+            --poetry-first-color: #e2e8f0;
 
             --border-light: #273549;
             --border-subtle: #1e314f;
@@ -446,6 +447,13 @@
             background: var(--accent);
             margin: 18px auto 0;
             border-radius: 1px;
+        }
+
+        /* 暗色模式：h1 渐变改为白色调 */
+        [data-theme="dark"] .content h1 {
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            background-clip: text;
         }
 
         .content h2 {
