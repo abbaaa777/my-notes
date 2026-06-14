@@ -1386,8 +1386,8 @@
             opacity: 0;
         }
 
-        /* 笔画 — 3D空间中 */
-        .stroke {
+        /* 笔画 / 字符切片 — 3D空间中 */
+        .stroke, .char-strip {
             position: absolute;
             top: 0; left: 0;
             transform-origin: center center;
@@ -1397,8 +1397,13 @@
             pointer-events: none;
             border-radius: 4px;
         }
+        .char-strip {
+            border-radius: 2px;
+            background: rgba(255,255,255,0.03);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.08), 0 2px 10px rgba(0,0,0,0.35);
+        }
         /* 玻璃反光扫过 */
-        .stroke.glazed {
+        .stroke.glazed, .char-strip.glazed {
             animation: glaze-sweep 0.7s ease-out forwards;
         }
         @keyframes glaze-sweep {
@@ -1407,7 +1412,7 @@
             100% { filter: brightness(1); }
         }
         /* 待命呼吸 */
-        .stroke.breathe {
+        .stroke.breathe, .char-strip.breathe {
             animation: stroke-breathe 2.8s ease-in-out infinite;
         }
         @keyframes stroke-breathe {
@@ -1440,7 +1445,7 @@
                 0 0 0 1px rgba(255,255,255,0.25);
         }
         /* 书图标 — SVG 无背景，柠檬黄线条 + 发光 */
-        .stroke.icon-el {
+        .stroke.icon-el, .char-strip.icon-el {
             border-radius: 0;
             background: none;
             filter: drop-shadow(0 2px 6px rgba(255,229,102,0.35))
@@ -1752,138 +1757,104 @@
 
             try {
 
-            // --- 笔画数据定义 ---
-            // 字符中心偏移（相对整体中心，含图标）
-            // 布局: [图标40] [间距28] [我100] [间距22] [的90] [间距22] [笔100] [间距22] [记85]
-            // 总宽≈509px, 中心=254.5px
-            var charCX = { icon: -234, wo: -136, de: -20, bi: 98, ji: 212 };
-
-            function S(type, w, h, cx, cy, rz, color) {
-                return { type: type, w: w, h: h, cx: cx, cy: cy, rz: rz, color: color };
-            }
-
-            var strokeDefs = [
-                // 我 (7笔)
-                S('p', 10, 72, -22, -18, -34, 'yellow'),
-                S('h', 68, 10, 8, -32, 4, 'white'),
-                S('g', 10, 78, -8, 5, 2, 'yellow'),
-                S('p', 8, 42, -30, 22, -46, 'white'),
-                S('g', 10, 82, 14, -5, 8, 'yellow'),
-                S('p', 8, 36, 16, -20, -22, 'white'),
-                S('d', 13, 15, 24, -26, -14, 'yellow'),
-                // 的 (8笔)
-                S('p', 10, 62, -16, -20, -30, 'white'),
-                S('v', 9, 60, -26, 5, 0, 'yellow'),
-                S('g', 10, 64, 6, -10, 0, 'white'),
-                S('h', 34, 9, 8, -18, 0, 'yellow'),
-                S('h', 32, 8, 8, 0, 0, 'white'),
-                S('g', 10, 36, 20, -4, 0, 'yellow'),
-                S('h', 30, 8, 8, 20, 0, 'white'),
-                S('d', 12, 15, 24, -20, -10, 'yellow'),
-                // 笔 (10笔)
-                S('p', 10, 64, -16, -24, -30, 'yellow'),
-                S('h', 54, 10, 6, -34, 2, 'white'),
-                S('d', 12, 14, 20, -32, -12, 'yellow'),
-                S('p', 9, 58, -20, -5, -24, 'white'),
-                S('h', 50, 9, 8, -14, 0, 'yellow'),
-                S('h', 48, 8, 8, 0, -2, 'white'),
-                S('v', 9, 54, 8, 12, 0, 'yellow'),
-                S('g', 10, 52, 2, 18, 0, 'white'),
-                S('h', 42, 8, 2, 32, 0, 'yellow'),
-                S('g', 9, 50, 24, 6, 5, 'white'),
-                // 记 (5笔)
-                S('g', 10, 54, -12, -5, -3, 'white'),
-                S('h', 38, 8, 6, -5, 0, 'yellow'),
-                S('v', 8, 48, 0, 12, -2, 'white'),
-                S('h', 38, 8, 6, 30, 0, 'yellow'),
-                S('g', 9, 48, 28, 4, 8, 'white')
+            // --- 字符切片方案：真实字体渲染 → 水平切片 → 独立动画 ---
+            // 布局: [图标42] [间距28] [我100] [间距22] [的90] [间距22] [笔100] [间距22] [记85]
+            var chars = [
+                { text: '我', cx: -136, cw: 100, ch: 120 },
+                { text: '的', cx: -20,  cw: 90,  ch: 120 },
+                { text: '笔', cx: 98,   cw: 100, ch: 120 },
+                { text: '记', cx: 212,  cw: 85,  ch: 120 }
             ];
+            var iconCX = -234;
+            var stripsPerChar = isMobile ? 5 : 7;
+            var fontSize = isMobile ? 80 : 110;
 
-            var charGroups = [
-                { name: 'icon', strokes: [{ type: 'icon', w: 42, h: 42, cx: 0, cy: 0, rz: 0, color: 'yellow' }] },
-                { name: 'wo', strokes: strokeDefs.slice(0, 7) },
-                { name: 'de', strokes: strokeDefs.slice(7, 15) },
-                { name: 'bi', strokes: strokeDefs.slice(15, 25) },
-                { name: 'ji', strokes: strokeDefs.slice(25, 30) }
-            ];
-
-            // --- 创建笔画DOM + 运动参数 ---
             var allStrokes = [];
             var screenW = window.innerWidth;
             var screenH = window.innerHeight;
 
-            charGroups.forEach(function(cg) {
-                var cc = charCX[cg.name];
-                cg.strokes.forEach(function(sd) {
-                    var el;
-                    if (sd.type === 'icon') {
-                        // 书图标 — SVG元素
-                        el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                        el.setAttribute('width', sd.w);
-                        el.setAttribute('height', sd.h);
-                        el.setAttribute('viewBox', '0 0 24 24');
-                        el.setAttribute('fill', 'none');
-                        el.setAttribute('stroke', '#FFE566');
-                        el.setAttribute('stroke-width', '2');
-                        el.setAttribute('stroke-linecap', 'round');
-                        el.setAttribute('stroke-linejoin', 'round');
-                        el.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
-                        el.classList.add('stroke', 'icon-el');
-                        el.style.width = sd.w + 'px';
-                        el.style.height = sd.h + 'px';
-                    } else {
-                        el = document.createElement('div');
-                        el.className = 'stroke ' + sd.color;
-                        el.style.width = sd.w + 'px';
-                        el.style.height = sd.h + 'px';
-                    }
+            function makeStripData(el, endX, endY, endRZ, isIcon) {
+                var startX = screenW/2 + (Math.random() - 0.5) * screenW * 1.3;
+                var startY = screenH/2 + (Math.random() - 0.5) * screenH * 1.3;
+                var startZ = (Math.random() - 0.5) * 500;
+                var startRX = (Math.random() - 0.5) * 360;
+                var startRY = (Math.random() - 0.5) * 360;
+                var startRZ = (Math.random() - 0.5) * 200;
+                var cp1x = startX + (endX - startX) * (0.28 + Math.random() * 0.18);
+                var cp1y = startY + (endY - startY) * (0.28 + Math.random() * 0.18);
+                var cp1z = startZ * (0.3 + Math.random() * 0.35);
+                var cp2x = startX + (endX - startX) * (0.62 + Math.random() * 0.18);
+                var cp2y = startY + (endY - startY) * (0.62 + Math.random() * 0.18);
+                var cp2z = startZ * (-0.2 + Math.random() * 0.4);
+                var serpAmp = isIcon ? 6 : 8 + Math.random() * 14;
+                var serpFreq = isIcon ? 2.0 : 1.4 + Math.random() * 1.6;
+                return {
+                    el: el, endX: endX, endY: endY, endRZ: endRZ,
+                    start:  { x: startX, y: startY, z: startZ, rx: startRX, ry: startRY, rz: startRZ, scale: 0.25 },
+                    end:    { x: endX, y: endY, z: 0, rx: 0, ry: 0, rz: endRZ, scale: 1 },
+                    cp1:    { x: cp1x, y: cp1y, z: cp1z, rx: startRX*0.55, ry: startRY*0.55, rz: startRZ*0.55, scale: 0.4 },
+                    cp2:    { x: cp2x, y: cp2y, z: cp2z, rx: startRX*0.15, ry: startRY*0.15, rz: endRZ*1.6, scale: 0.85 },
+                    serp:   { amp: serpAmp, freq: serpFreq },
+                    duration: isIcon ? 500 : (isMobile ? 420 + Math.random() * 220 : 580 + Math.random() * 360),
+                    delay: isIcon ? (isMobile ? 500 : 900) : Math.random() * (isMobile ? 280 : 480),
+                    settled: false
+                };
+            }
 
-                    var endX = screenW / 2 + cc + sd.cx;
-                    var endY = screenH / 2 + sd.cy;
-                    var endRZ = sd.rz;
+            // 生成每个字符的水平切片
+            chars.forEach(function(ch) {
+                var stripH = Math.ceil(ch.ch / stripsPerChar);
+                for (var si = 0; si < stripsPerChar; si++) {
+                    var yOff = si * stripH;
+                    var wrapper = document.createElement('div');
+                    wrapper.className = 'char-strip';
+                    wrapper.style.width = ch.cw + 'px';
+                    wrapper.style.height = stripH + 'px';
+                    wrapper.style.overflow = 'hidden';
+                    var inner = document.createElement('span');
+                    inner.textContent = ch.text;
+                    inner.style.cssText = [
+                        'font-size:' + fontSize + 'px',
+                        'font-family:"Noto Serif SC","Source Han Serif SC","STSong","SimSun","Songti SC",Georgia,serif',
+                        'font-weight:700',
+                        'line-height:1',
+                        'position:absolute',
+                        'top:' + (-yOff) + 'px',
+                        'left:0'
+                    ].join(';');
+                    // 黄白交替
+                    inner.style.color = (si % 2 === 0) ? '#FFE566' : '#ffffff';
+                    wrapper.appendChild(inner);
 
-                    // 全视口随机散布（以屏幕中心为基准）
-                    var startX = screenW/2 + (Math.random() - 0.5) * screenW * 1.3;
-                    var startY = screenH/2 + (Math.random() - 0.5) * screenH * 1.3;
-                    var startZ = (Math.random() - 0.5) * 500;
-                    var startRX = (Math.random() - 0.5) * 360;
-                    var startRY = (Math.random() - 0.5) * 360;
-                    var startRZ = (Math.random() - 0.5) * 200;
-
-                    // 贝塞尔控制点
-                    var cp1x = startX + (endX - startX) * (0.28 + Math.random() * 0.18);
-                    var cp1y = startY + (endY - startY) * (0.28 + Math.random() * 0.18);
-                    var cp1z = startZ * (0.3 + Math.random() * 0.35);
-                    var cp2x = startX + (endX - startX) * (0.62 + Math.random() * 0.18);
-                    var cp2y = startY + (endY - startY) * (0.62 + Math.random() * 0.18);
-                    var cp2z = startZ * (-0.2 + Math.random() * 0.4);
-
-                    var serpAmp = sd.type === 'icon' ? 6 : 10 + Math.random() * 16;
-                    var serpFreq = sd.type === 'icon' ? 2.0 : 1.4 + Math.random() * 1.8;
-
-                    var data = {
-                        el: el,
-                        endX: endX, endY: endY, endRZ: endRZ,
-                        start:  { x: startX, y: startY, z: startZ, rx: startRX, ry: startRY, rz: startRZ, scale: 0.25 },
-                        end:    { x: endX, y: endY, z: 0, rx: 0, ry: 0, rz: endRZ, scale: 1 },
-                        cp1:    { x: cp1x, y: cp1y, z: cp1z, rx: startRX*0.55, ry: startRY*0.55, rz: startRZ*0.55, scale: 0.4 },
-                        cp2:    { x: cp2x, y: cp2y, z: cp2z, rx: startRX*0.15, ry: startRY*0.15, rz: endRZ*1.6, scale: 0.85 },
-                        serp:   { amp: serpAmp, freq: serpFreq },
-                        duration: sd.type === 'icon' ? 500 : (isMobile ? 450 + Math.random() * 250 : 600 + Math.random() * 380),
-                        delay: sd.type === 'icon' ? (isMobile ? 600 : 1000) : Math.random() * (isMobile ? 300 : 500),
-                        settled: false
-                    };
-
-                    // 初始散布位置
-                    el.style.transform =
-                        'translate3d(' + startX + 'px, ' + startY + 'px, ' + startZ + 'px) ' +
-                        'rotateX(' + startRX + 'deg) rotateY(' + startRY + 'deg) rotateZ(' + startRZ + 'deg) scale(0.25)';
-                    el.style.opacity = '0';
-
-                    overlay.appendChild(el);
+                    var endX = screenW/2 + ch.cx;
+                    var endY = screenH/2 - ch.ch/2 + yOff + stripH/2;
+                    var data = makeStripData(wrapper, endX, endY, 0, false);
+                    wrapper.style.transform =
+                        'translate3d(' + data.start.x + 'px, ' + data.start.y + 'px, ' + data.start.z + 'px) ' +
+                        'rotateX(' + data.start.rx + 'deg) rotateY(' + data.start.ry + 'deg) rotateZ(' + data.start.rz + 'deg) scale(0.25)';
+                    wrapper.style.opacity = '0';
+                    overlay.appendChild(wrapper);
                     allStrokes.push(data);
-                });
+                }
             });
+
+            // 书图标 SVG
+            var iconSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            iconSVG.setAttribute('width','42'); iconSVG.setAttribute('height','42');
+            iconSVG.setAttribute('viewBox','0 0 24 24');
+            iconSVG.setAttribute('fill','none'); iconSVG.setAttribute('stroke','#FFE566');
+            iconSVG.setAttribute('stroke-width','2');
+            iconSVG.setAttribute('stroke-linecap','round'); iconSVG.setAttribute('stroke-linejoin','round');
+            iconSVG.innerHTML = '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/>';
+            iconSVG.classList.add('char-strip','icon-el');
+            iconSVG.style.width = '42px'; iconSVG.style.height = '42px';
+            var iconData = makeStripData(iconSVG, screenW/2 + iconCX, screenH/2, 0, true);
+            iconSVG.style.transform =
+                'translate3d(' + iconData.start.x + 'px, ' + iconData.start.y + 'px, ' + iconData.start.z + 'px) ' +
+                'rotateX(' + iconData.start.rx + 'deg) rotateY(' + iconData.start.ry + 'deg) rotateZ(' + iconData.start.rz + 'deg) scale(0.25)';
+            iconSVG.style.opacity = '0';
+            overlay.appendChild(iconSVG);
+            allStrokes.push(iconData);
 
             // --- 3D贝塞尔插值 ---
             function lerp3D(p0, p1, p2, p3, t) {
