@@ -1769,146 +1769,396 @@
             document.fonts.load('bold 130px "Quicksand"').then(function() { startAnimation(); });
             function startAnimation() {
 
-            // --- 思源宋体 Bold "My Notes" 字母动画 ---
-            var GLYPHS = ['M','y',null,'N','o','t','e','s']; // null=空格
+            // ═══════════════════════════════════════════
+            //  计划二：笔画滑块动画 — 流水成形的路径美学
+            // ═══════════════════════════════════════════
+
+            // --- Apple 设计语言缓动函数 ---
+            // cubic-bezier 求值器：Newton 法解 t 使得 x(t)=targetX，返回 y(t)
+            function _cbx(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*t*x1+3*u*t*t*x2+t*t*t;}
+            function _cby(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*t*y1+3*u*t*t*y2+t*t*t;}
+            function _cbd(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*x1+6*u*t*(x2-x1)+3*t*t*(1-x2);}
+            function _sbt(x1,y1,x2,y2,tx){var t=tx;for(var i=0;i<8;i++){var d=_cbd(x1,y1,x2,y2,t);if(Math.abs(d)<1e-8)break;t-=(_cbx(x1,y1,x2,y2,t)-tx)/d;t=Math.max(0,Math.min(1,t));}return t;}
+            function _mke(x1,y1,x2,y2){return function(t){if(t<=0)return 0;if(t>=1)return 1;return _cby(x1,y1,x2,y2,_sbt(x1,y1,x2,y2,t));};}
+            var easeHorizontal = _mke(0.25,0.1,0.25,1);   // 视觉匀速
+            var easeBend       = _mke(0.16,1,0.3,1);      // 快触发、丝滑制动
+            var easeConverge   = _mke(0.16,1,0.3,1);      // 收束归位
+
+            // --- 屏幕参数 ---
             var screenW = window.innerWidth, screenH = window.innerHeight;
             var centerY = screenH / 2;
 
-            // Canvas 测量字母宽度
+            // --- Canvas 测量字母宽度（用于布局，不再渲染文字）---
+            var LETTERS = ['M','y','N','o','t','e','s'];
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
             var baseFontSize = Math.max(80, Math.round(screenW * 0.12)); // 12vw, mobile min 80px
             ctx.font = 'bold ' + baseFontSize + 'px "Quicksand", sans-serif';
             var spaceW = ctx.measureText(' ').width;
-            var letterMetrics = GLYPHS.map(function(g) {
-                if (!g) return { letter: null, w: spaceW * 0.85 };
-                var m = ctx.measureText(g);
-                return { letter: g, w: m.width };
-            });
 
-            // 布局：字母居中排列
-            var totalW = 0;
-            for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
-            var mobileScale = isMobile ? Math.min(1, (screenW * 0.9) / totalW) : 1;
-            var fs = Math.round(baseFontSize * mobileScale);
-
-            for (var i = 0; i < letterMetrics.length; i++) { letterMetrics[i].w = Math.round(letterMetrics[i].w * mobileScale); }
-            totalW = 0;
-            for (var i = 0; i < letterMetrics.length; i++) { totalW += letterMetrics[i].w; }
-
-            var startX = (screenW - totalW) / 2;
-
-            // 计算每个字母的目标位置
-            var letterPositions = [];
-            var curX = startX;
-            for (var i = 0; i < letterMetrics.length; i++) {
-                if (letterMetrics[i].letter) {
-                    letterPositions.push({ letter: letterMetrics[i].letter, x: curX, w: letterMetrics[i].w, idx: i });
-                }
-                curX += letterMetrics[i].w;
+            // 测量 7 个字母宽度
+            var lw = []; // letter widths
+            for (var i = 0; i < LETTERS.length; i++) {
+                lw.push(Math.round(ctx.measureText(LETTERS[i]).width));
             }
 
-            var titleScale = isMobile ? mobileScale * 0.32 : 0.32;
-            var titleTargetY = isMobile ? Math.round(44 * mobileScale) : 44;
+            // --- 布局：字母居中（y 和 N 之间插入空格）---
+            var mobileScale = isMobile ? Math.min(1, (screenW * 0.88) / (lw.reduce(function(a,b){return a+b;},0) + spaceW * 0.85)) : 1;
+            var fs = Math.round(baseFontSize * mobileScale); // 实际渲染字号
+            var strokeW = Math.max(5, Math.round(fs * 0.055)); // 描边宽度 ~13px桌面/5px移动端
+            for (var i = 0; i < lw.length; i++) lw[i] = Math.round(lw[i] * mobileScale);
+            var gapW = Math.round(spaceW * 0.85 * mobileScale);
+            var totalW = lw[0] + lw[1] + gapW + lw[2] + lw[3] + lw[4] + lw[5] + lw[6];
+            var startX = (screenW - totalW) / 2;
 
-            // --- 核心动画函数 ---
+            // 7 个字母的屏幕坐标 {letter, x, w}
+            var letterPos = [];
+            var curX = startX;
+            for (var i = 0; i < LETTERS.length; i++) {
+                letterPos.push({ letter: LETTERS[i], x: curX, w: lw[i] });
+                curX += lw[i];
+                if (i === 1) curX += gapW; // "My" 和 "Notes" 之间的空格
+            }
+
+            // --- 笔画定义（分数坐标 0..1，相对于字母包围盒）---
+            // 字母包围盒: 宽=letterW, 高=fs, 原点在字母左上角
+            // hasBend=true: 竖笔，主阶段弯折下落
+            // hasBend=false: 斜笔/横笔，收束阶段归位
+            var STROKE_DEFS = [
+                // M (index 0)
+                {li:0, id:'M-lt', sx:0.08, sy:0.05, ex:0.08, ey:0.95, entry:'left',  bend:true},
+                {li:0, id:'M-ld', sx:0.08, sy:0.05, ex:0.47, ey:0.55, entry:'left',  bend:false},
+                {li:0, id:'M-rd', sx:0.53, sy:0.55, ex:0.92, ey:0.05, entry:'right', bend:false},
+                {li:0, id:'M-rt', sx:0.92, sy:0.05, ex:0.92, ey:0.95, entry:'right', bend:true},
+                // y (index 1)
+                {li:1, id:'y-la', sx:0.08, sy:0.05, ex:0.45, ey:0.50, entry:'left',  bend:false},
+                {li:1, id:'y-ra', sx:0.55, sy:0.50, ex:0.92, ey:0.05, entry:'right', bend:false},
+                {li:1, id:'y-ds', sx:0.50, sy:0.50, ex:0.50, ey:1.08, entry:'left',  bend:true},
+                // N (index 2)
+                {li:2, id:'N-lt', sx:0.08, sy:0.05, ex:0.08, ey:0.95, entry:'left',  bend:true},
+                {li:2, id:'N-di', sx:0.08, sy:0.05, ex:0.92, ey:0.95, entry:'left',  bend:false},
+                {li:2, id:'N-rt', sx:0.92, sy:0.05, ex:0.92, ey:0.95, entry:'right', bend:true},
+                // o (index 3)
+                {li:3, id:'o-la', sx:0.15, sy:0.50, ex:0.15, ey:0.90, entry:'left',  bend:true},
+                {li:3, id:'o-ra', sx:0.85, sy:0.50, ex:0.85, ey:0.90, entry:'right', bend:true},
+                // t (index 4)
+                {li:4, id:'t-st', sx:0.50, sy:0.15, ex:0.50, ey:0.95, entry:'left',  bend:true},
+                {li:4, id:'t-cr', sx:0.20, sy:0.30, ex:0.80, ey:0.30, entry:'right', bend:false},
+                // e (index 5)
+                {li:5, id:'e-st', sx:0.10, sy:0.30, ex:0.10, ey:0.80, entry:'left',  bend:true},
+                {li:5, id:'e-tb', sx:0.10, sy:0.30, ex:0.78, ey:0.30, entry:'left',  bend:false},
+                {li:5, id:'e-bc', sx:0.10, sy:0.80, ex:0.72, ey:0.80, entry:'left',  bend:false},
+                // s (index 6)
+                {li:6, id:'s-tc', sx:0.78, sy:0.25, ex:0.22, ey:0.25, entry:'right', bend:false},
+                {li:6, id:'s-md', sx:0.22, sy:0.25, ex:0.78, ey:0.75, entry:'right', bend:false},
+                {li:6, id:'s-bc', sx:0.78, sy:0.75, ex:0.22, ey:0.75, entry:'right', bend:false}
+            ];
+
+            // --- 为每个笔画计算屏幕坐标和轨迹 ---
             var allStrokes = [];
-            var _ts = letterPositions.length; // 仅字母，无图标
-            var gIdx = 0, idCtr = 0;
-            function nid() { return 'c' + (idCtr++); }
+            var margin = Math.max(60, Math.round(screenW * 0.06)); // 屏幕外距离
+            var bandTop = centerY - fs * 0.5; // 字母带顶部
+            var nStrokes = STROKE_DEFS.length; // 20
 
-            function cBez(p0,p1,p2,p3,t){var u=1-t,uu=u*u,uuu=uu*u,tt=t*t,ttt=tt*t;return{x:uuu*p0.x+3*uu*t*p1.x+3*u*tt*p2.x+ttt*p3.x,y:uuu*p0.y+3*uu*t*p1.y+3*u*tt*p2.y+ttt*p3.y};}
-            function bTang(p0,p1,p2,p3,t){var u=1-t;var tx=3*u*u*(p1.x-p0.x)+6*u*t*(p2.x-p1.x)+3*t*t*(p3.x-p2.x);var ty=3*u*u*(p1.y-p0.y)+6*u*t*(p2.y-p1.y)+3*t*t*(p3.y-p2.y);var l=Math.sqrt(tx*tx+ty*ty)||1e-6;return{x:tx/l,y:ty/l};}
-            function bCurv(p0,p1,p2,p3,t){var u=1-t;var x1=3*u*u*(p1.x-p0.x)+6*u*t*(p2.x-p1.x)+3*t*t*(p3.x-p2.x);var y1=3*u*u*(p1.y-p0.y)+6*u*t*(p2.y-p1.y)+3*t*t*(p3.y-p2.y);var x2=6*u*(p2.x-2*p1.x+p0.x)+6*t*(p3.x-2*p2.x+p1.x);var y2=6*u*(p2.y-2*p1.y+p0.y)+6*t*(p3.y-2*p2.y+p1.y);var d=Math.pow(x1*x1+y1*y1,1.5);if(d<1e-6)return 0;return(x1*y2-y1*x2)/d;}
-            function ease(t){if(t<=0)return 0;if(t>=1)return 1;if(t<0.15){var p=t/0.15;return 0.08*p*p*p;}else if(t<0.60){var p=(t-0.15)/0.45;return 0.08+0.87*p*p*(3-2*p);}else if(t<0.92){var p=(t-0.60)/0.32;return 0.95+0.08*Math.sin(p*Math.PI)*(1-p);}else{var p=(t-0.92)/0.08;return 1.0-0.03*Math.exp(-6*p)*Math.cos(10*Math.PI*p);}}
-            function entry(idx,total,sw,sh){var edges=['top','right','bottom','left'];var e=edges[idx%4];var f=idx/Math.max(1,total-1);var m=isMobile?60:100;switch(e){case'top':return{x:sw*(0.15+f*0.7),y:-m};case'right':return{x:sw+m,y:sh*(0.15+f*0.7)};case'bottom':return{x:sw*(0.15+f*0.7),y:sh+m};default:return{x:-m,y:sh*(0.15+f*0.7)};}}
-            function traj(s,e){var dx=e.x-s.x,dy=e.y-s.y;var dist=Math.sqrt(dx*dx+dy*dy)||1;var px=-dy/dist,py=dx/dist;var arc=dist*(0.18+Math.random()*0.28);if(Math.random()>0.5){px=-px;py=-py;}return{start:s,cp1:{x:s.x+dx*0.30+px*arc,y:s.y+dy*0.30+py*arc},cp2:{x:s.x+dx*0.70-px*arc*0.5,y:s.y+dy*0.70-py*arc*0.5},end:e};}
-            var BEND = 22;
-            function xform(tr,t){var p=cBez(tr.start,tr.cp1,tr.cp2,tr.end,t);var tn=bTang(tr.start,tr.cp1,tr.cp2,tr.end,t);var cv=bCurv(tr.start,tr.cp1,tr.cp2,tr.end,t);var env=Math.sin(t*Math.PI);if(t>0.92)env*=(1-(t-0.92)/0.08);var sk=cv*env*BEND;sk=Math.max(-35,Math.min(35,sk));var pa=Math.atan2(tn.y,tn.x)*180/Math.PI;var sc=0.25+t*0.75;return{x:p.x,y:p.y,transform:'translate('+p.x.toFixed(2)+'px,'+p.y.toFixed(2)+'px) rotate('+pa.toFixed(4)+'deg) skewX('+sk.toFixed(4)+'deg) scale('+sc.toFixed(4)+')'};}
+            for (var i = 0; i < nStrokes; i++) {
+                var d = STROKE_DEFS[i];
+                var lp = letterPos[d.li]; // 所属字母
+                var letterTopY = centerY - fs / 2;
 
-            // 为每个字母创建 SVG text 元素
-            var svgNS = 'http://www.w3.org/2000/svg';
-            letterPositions.forEach(function(lp) {
-                var colorKey = (gIdx % 2 === 0) ? 'yellow' : 'white';
-                var gid = nid(), fid = nid();
+                // 最终笔画坐标（屏幕像素）
+                var sx = lp.x + d.sx * lp.w;
+                var sy = letterTopY + d.sy * fs;
+                var ex = lp.x + d.ex * lp.w;
+                var ey = letterTopY + d.ey * fs;
 
+                // 轨道 Y（均匀分布在字母带内）
+                var trackY = bandTop + (i / (nStrokes - 1)) * fs;
+
+                // 入口 X
+                var entryX;
+                if (d.entry === 'left') {
+                    entryX = -margin;
+                } else {
+                    entryX = screenW + margin;
+                }
+
+                // 水平总行程
+                var totalDX = Math.abs(ex - entryX);
+
+                // 弯折触发 X（竖笔弯折点，设在水平行程 72% 处）
+                var bendTriggerP = d.bend ? 0.72 : 0;
+                var triggerX = 0;
+                if (d.bend) {
+                    if (d.entry === 'left') {
+                        triggerX = entryX + totalDX * bendTriggerP; // entryX < finalX，向右触发
+                    } else {
+                        triggerX = entryX - totalDX * bendTriggerP; // entryX > finalX，向左触发
+                    }
+                }
+
+                // 最终笔画路径（仅笔画本身）
+                var finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+
+                // 创建独立 SVG 元素（viewBox 覆盖全屏，路径坐标即屏幕坐标）
+                var svgNS = 'http://www.w3.org/2000/svg';
                 var svg = document.createElementNS(svgNS, 'svg');
-                svg.setAttribute('viewBox', '0 0 ' + lp.w + ' ' + fs);
-                svg.setAttribute('width', lp.w);
-                svg.setAttribute('height', fs);
+                svg.setAttribute('viewBox', '0 0 ' + screenW + ' ' + screenH);
+                svg.setAttribute('width', screenW);
+                svg.setAttribute('height', screenH);
                 svg.classList.add('stroke-svg');
-                svg.style.width = lp.w + 'px';
-                svg.style.height = fs + 'px';
+                svg.style.width = screenW + 'px';
+                svg.style.height = screenH + 'px';
                 svg.style.overflow = 'visible';
-
-                var defs = document.createElementNS(svgNS, 'defs');
-                // 本地渐变
-                var grad = document.createElementNS(svgNS, 'linearGradient');
-                grad.setAttribute('id', gid); grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%'); grad.setAttribute('x2', '100%'); grad.setAttribute('y2', '100%');
-                grad.innerHTML = colorKey === 'yellow' ?
-                    '<stop offset="0%" stop-color="rgba(255,245,175,0.95)"/><stop offset="20%" stop-color="rgba(255,235,120,0.72)"/><stop offset="45%" stop-color="rgba(255,225,90,0.55)"/><stop offset="55%" stop-color="rgba(255,240,140,0.82)"/><stop offset="80%" stop-color="rgba(245,215,75,0.65)"/><stop offset="100%" stop-color="rgba(255,238,155,0.9)"/>' :
-                    '<stop offset="0%" stop-color="rgba(255,255,255,0.96)"/><stop offset="20%" stop-color="rgba(250,250,255,0.68)"/><stop offset="45%" stop-color="rgba(235,235,245,0.52)"/><stop offset="55%" stop-color="rgba(252,252,255,0.85)"/><stop offset="80%" stop-color="rgba(230,230,240,0.62)"/><stop offset="100%" stop-color="rgba(248,248,255,0.9)"/>';
-                defs.appendChild(grad);
-                // 本地滤镜
-                var filt = document.createElementNS(svgNS, 'filter');
-                filt.setAttribute('id', fid); filt.setAttribute('x', '-20%'); filt.setAttribute('y', '-20%'); filt.setAttribute('width', '140%'); filt.setAttribute('height', '140%');
-                filt.innerHTML = colorKey === 'yellow' ?
-                    '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.55)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(200,160,40,0.25)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,240,120,0.25)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,229,102,0.12)"/>' :
-                    '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/><feDropShadow dx="0" dy="-0.5" stdDeviation="0.8" flood-color="rgba(180,180,200,0.18)"/><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/><feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(255,255,255,0.3)"/><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
-                defs.appendChild(filt);
-                svg.appendChild(defs);
-
-                var text = document.createElementNS(svgNS, 'text');
-                text.setAttribute('x', '0');
-                text.setAttribute('y', fs * 0.78);
-                text.setAttribute('font-family', '"Quicksand", sans-serif');
-                text.setAttribute('font-weight', '700');
-                text.setAttribute('font-size', fs + 'px');
-                text.setAttribute('fill', 'url(#' + gid + ')');
-                text.setAttribute('filter', 'url(#' + fid + ')');
-                text.textContent = lp.letter;
-                svg.appendChild(text);
-
-                var endX = lp.x, endY = centerY - fs / 2;
-                var ent = entry(gIdx, _ts, screenW, screenH);
-                var tr = traj(ent, {x: endX, y: endY});
-                svg.style.transform = 'translate(' + ent.x.toFixed(2) + 'px,' + ent.y.toFixed(2) + 'px) scale(0.25)';
                 svg.style.opacity = '0';
-                overlay.appendChild(svg);
-                allStrokes.push({el: svg, endX: endX, endY: endY, traj: tr, df: gIdx * 0.004, colorKey: colorKey, settled: false});
-                gIdx++;
-            });
+                // transform-origin 设为字母组中心（用于 breathe/glaze 缩放）
+                svg.style.transformOrigin = (startX + totalW/2).toFixed(0) + 'px ' + centerY.toFixed(0) + 'px';
 
-            // 常驻标题（含副标题）
+                // 统一白色滤镜
+                var fid = 'f' + i;
+                var filt = document.createElementNS(svgNS, 'filter');
+                filt.setAttribute('id', fid);
+                filt.setAttribute('x', '-20%'); filt.setAttribute('y', '-20%');
+                filt.setAttribute('width', '140%'); filt.setAttribute('height', '140%');
+                filt.innerHTML = '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/>' +
+                    '<feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/>' +
+                    '<feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
+                svg.appendChild(filt);
+
+                // 创建路径元素
+                var path = document.createElementNS(svgNS, 'path');
+                path.setAttribute('stroke', 'white');
+                path.setAttribute('stroke-width', strokeW);
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('filter', 'url(#' + fid + ')');
+                // 初始路径：入口点（一个点）
+                path.setAttribute('d', 'M ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1) + ' L ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1));
+                svg.appendChild(path);
+
+                overlay.appendChild(svg);
+
+                // 存入 allStrokes
+                allStrokes.push({
+                    el: svg,
+                    path: path,
+                    entryX: entryX,
+                    trackY: trackY,
+                    finalX: ex,
+                    finalY: ey,
+                    startX: sx,
+                    startY: sy,
+                    endX: ex,
+                    endY: ey,
+                    triggerX: triggerX,
+                    totalDX: totalDX,
+                    hasBend: d.bend,
+                    bendState: 'idle',     // 'idle' | 'active' | 'done'
+                    bendStartTime: 0,
+                    bendTriggerP: bendTriggerP,
+                    frozenP: 0,
+                    entry: d.entry,
+                    finalD: finalD,
+                    curEndX: entryX,       // 当前视觉端点 X（每帧更新）
+                    curEndY: trackY,       // 当前视觉端点 Y
+                    settled: false,
+                    converged: false
+                });
+            }
+
+            // --- 常驻标题（含副标题）---
             var homeTitle = document.createElement('div');
             homeTitle.id = 'home-title'; homeTitle.className = 'home-title';
             homeTitle.innerHTML = '<span class="home-title-main">My Notes</span><span class="home-title-sub">读书 · 思考 · 诗文</span>';
             if (container) { var fc = container.firstChild; if (fc) container.insertBefore(homeTitle, fc); else container.appendChild(homeTitle); }
 
-            var DUR = isMobile ? 1000 : 1300, allSettled = false, animStart = performance.now(), dismissed = false;
+            // --- 动画时间常量（ms）---
+            var MAIN_DUR = 2700;       // 主阶段时长
+            var BEND_DUR = 300;        // 单次弯折时长
+            var CONVERGE_DUR = 100;    // 收束时长
+            var TOTAL_DUR = 2800;      // 总时长
+
+            var allSettled = false, animStart = performance.now(), dismissed = false;
+            var converged = false, convergeStart = 0;
 
             function frame(now) {
-                var allDone = true;
-                var gT = (now - animStart) / DUR; if (gT > 1.08) gT = 1.08;
-                for (var i = 0; i < allStrokes.length; i++) {
-                    var s = allStrokes[i]; if (s.settled) continue;
-                    var lt = Math.max(0, Math.min(1, (gT - s.df) / (1.0 - s.df)));
-                    if (lt <= 0) { allDone = false; continue; }
-                    var et = ease(lt);
-                    var tf = xform(s.traj, Math.min(1, et));
-                    s.el.style.transform = tf.transform;
-                    s.el.style.opacity = Math.min(1, lt * 3.5);
-                    if (lt >= 1) {
-                        s.settled = true;
-                        s.el.style.transform = 'translate(' + s.endX.toFixed(2) + 'px,' + s.endY.toFixed(2) + 'px) rotate(0deg) skewX(0deg) scale(1)';
-                        s.el.style.opacity = '1';
-                        s.el.style.setProperty('--bx', s.endX.toFixed(2) + 'px');
-                        s.el.style.setProperty('--by', s.endY.toFixed(2) + 'px');
-                        s.el.style.setProperty('--brz', '0deg');
-                    } else { allDone = false; }
+                if (dismissed) return;
+                var elapsed = now - animStart;
+
+                // --- 收束阶段（2.7s - 2.8s）---
+                if (elapsed >= MAIN_DUR && !converged) {
+                    converged = true;
+                    convergeStart = now;
+                    // 进入收束：所有未完成弯折的滑块立即标记弯折完成
+                    for (var i = 0; i < allStrokes.length; i++) {
+                        var s = allStrokes[i];
+                        if (s.hasBend && s.bendState === 'active') {
+                            s.bendState = 'done';
+                        }
+                    }
                 }
-                if (!allDone) requestAnimationFrame(frame);
-                else if (!allSettled) { allSettled = true; onAllSettled(); }
+
+                if (converged) {
+                    var convergeElapsed = now - convergeStart;
+                    var convergeP = easeConverge(Math.min(1, convergeElapsed / CONVERGE_DUR));
+
+                    for (var i = 0; i < allStrokes.length; i++) {
+                        var s = allStrokes[i];
+                        if (s.converged) continue;
+
+                        // 使用追踪的当前端点（不用解析 path d）
+                        var curX = s.curEndX, curY = s.curEndY;
+
+                        // 插值到最终位置
+                        var tx = curX + (s.finalX - curX) * convergeP;
+                        var ty = curY + (s.finalY - curY) * convergeP;
+
+                        // Scale 呼吸：1.0 → 1.01 → 1.0（半个收敛周期完成呼吸）
+                        var breathP = Math.min(1, convergeElapsed / (CONVERGE_DUR * 0.5));
+                        var sc = 1 + 0.01 * Math.sin(breathP * Math.PI);
+
+                        // 应用 transform：偏移到插值位置 + scale
+                        var offX = tx - curX, offY = ty - curY;
+                        s.el.style.transform = 'translate(' + offX.toFixed(2) + 'px,' + offY.toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')';
+
+                        if (convergeP >= 1) {
+                            // 收束完成
+                            s.converged = true;
+                            // 裁剪路径为最终笔画
+                            s.path.setAttribute('d', s.finalD);
+                            // 清除 transform，路径已在屏幕坐标正确位置
+                            s.el.style.transform = '';
+                            s.el.style.opacity = '1';
+                            // 呼吸动画 CSS 变量：--bx=0，路径已是屏幕坐标，无需 translate
+                            s.el.style.setProperty('--bx', '0px');
+                            s.el.style.setProperty('--by', '0px');
+                            s.el.style.setProperty('--brz', '0deg');
+                        }
+                    }
+
+                    // 检查收束是否全部完成
+                    var allConv = true;
+                    for (var i = 0; i < allStrokes.length; i++) {
+                        if (!allStrokes[i].converged) { allConv = false; break; }
+                    }
+                    if (allConv && !allSettled) {
+                        allSettled = true;
+                        onAllSettled();
+                    }
+                    if (elapsed < TOTAL_DUR + 200) requestAnimationFrame(frame);
+                    return;
+                }
+
+                // --- 主阶段（0 - 2.7s）---
+                var globalP = easeHorizontal(Math.min(1, elapsed / MAIN_DUR));
+
+                for (var i = 0; i < allStrokes.length; i++) {
+                    var s = allStrokes[i];
+                    if (s.settled) continue;
+
+                    // 处理正在弯折的滑块
+                    if (s.hasBend && s.bendState === 'active') {
+                        var bendElapsed = now - s.bendStartTime;
+                        if (bendElapsed >= BEND_DUR) {
+                            // 弯折完成
+                            s.bendState = 'done';
+                            // 更新路径：入口 → 触发点（水平）→ 最终位置（垂直落下）
+                            var dDone = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                        ' L ' + s.finalX.toFixed(1) + ' ' + s.finalY.toFixed(1);
+                            s.path.setAttribute('d', dDone);
+                            s.curEndX = s.finalX;
+                            s.curEndY = s.finalY;
+                        } else {
+                            // 弯折进行中：Y 从 trackY 弧线下落到 finalY
+                            var bendP = easeBend(bendElapsed / BEND_DUR);
+                            var curY = s.trackY + (s.finalY - s.trackY) * bendP;
+                            var dBending = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                           ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                           ' L ' + s.triggerX.toFixed(1) + ' ' + curY.toFixed(1);
+                            s.path.setAttribute('d', dBending);
+                            s.curEndX = s.triggerX;
+                            s.curEndY = curY;
+                            s.el.style.opacity = Math.min(1, (elapsed - s.bendStartTime + 200) / 400);
+                        }
+                        continue;
+                    }
+
+                    // 计算当前 X（基于全局进度 P）
+                    // 如果该滑块已完成弯折，使用冻结的 P（保持偏移）
+                    var effectiveP;
+                    if (s.hasBend && s.bendState === 'done') {
+                        effectiveP = Math.min(1, s.frozenP + (globalP - s.frozenP) * 1); // 跟随全局速度但从冻结P出发
+                        // 实际上：让滑块继续使用全局P但以较慢速度追赶
+                        // 简化：使用 globalP，但 capped at finalX
+                        effectiveP = globalP;
+                    } else {
+                        effectiveP = globalP;
+                    }
+
+                    var curX = s.entryX + s.totalDX * effectiveP;
+                    // 确保不超出范围
+                    if (s.entry === 'left') curX = Math.min(curX, s.triggerX || s.finalX);
+                    else curX = Math.max(curX, s.triggerX || s.finalX);
+
+                    // 检查弯折触发
+                    if (s.hasBend && s.bendState === 'idle') {
+                        var triggered = (s.entry === 'left' && curX >= s.triggerX) ||
+                                        (s.entry === 'right' && curX <= s.triggerX);
+                        if (triggered) {
+                            s.bendState = 'active';
+                            s.bendStartTime = now;
+                            s.frozenP = effectiveP;
+                            // 立即绘制到触发点的水平段
+                            var dTrig = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1);
+                            s.path.setAttribute('d', dTrig);
+                            continue;
+                        }
+                    }
+
+                    // 正常水平行进（无弯折或弯折已完成）
+                    if (!s.hasBend || s.bendState === 'done') {
+                        if (s.hasBend && s.bendState === 'done') {
+                            // 弯折已完成，继续水平行进：从 triggerX 到 finalX（在 finalY 高度）
+                            var postBendX;
+                            var remP = Math.max(0, Math.min(1, (effectiveP - s.frozenP) / (1 - s.frozenP))); // 剩余行程进度
+                            if (s.entry === 'left') {
+                                postBendX = s.triggerX + (s.finalX - s.triggerX) * remP;
+                            } else {
+                                postBendX = s.triggerX - (s.triggerX - s.finalX) * remP;
+                            }
+                            var dPost = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.finalY.toFixed(1) +
+                                        ' L ' + postBendX.toFixed(1) + ' ' + s.finalY.toFixed(1);
+                            s.path.setAttribute('d', dPost);
+                            s.curEndX = postBendX;
+                            s.curEndY = s.finalY;
+                        } else {
+                            // 无弯折滑块：持续更新水平位置
+                            var dHoriz = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
+                                         ' L ' + curX.toFixed(1) + ' ' + s.trackY.toFixed(1);
+                            s.path.setAttribute('d', dHoriz);
+                            s.curEndX = curX;
+                            s.curEndY = s.trackY;
+                        }
+                    }
+
+                    // 透明度淡入
+                    s.el.style.opacity = Math.min(1, elapsed / 400);
+                }
+
+                // 继续主循环
+                if (elapsed < MAIN_DUR + 200) requestAnimationFrame(frame);
+                else if (!allSettled) {
+                    // 超时保护：如果主阶段结束但未触发收束
+                    if (!converged) {
+                        converged = true;
+                        convergeStart = now;
+                    }
+                    requestAnimationFrame(frame);
+                }
             }
 
             function onAllSettled() {
@@ -1920,29 +2170,27 @@
                 }, 1200);
             }
 
+            // --- 点击退场：就近原则 ---
             overlay.addEventListener('click', function() {
                 if (dismissed) return; dismissed = true;
                 overlay.style.pointerEvents = 'none'; overlay.style.cursor = 'default';
                 if (hint) hint.classList.remove('visible');
-                var cx = 0, cy = 0, ct = 0;
-                allStrokes.forEach(function(s) { cx += s.endX; cy += s.endY; ct++; });
-                cx /= ct; cy /= ct;
-                var ttx = screenW / 2 - (totalW * titleScale) / 2;
-                var tty = titleTargetY;
+
                 allStrokes.forEach(function(s, i) {
                     s.el.classList.remove('breathe', 'glazed');
-                    var dx = s.endX - cx, dy = s.endY - cy;
-                    var tx = ttx + dx * titleScale + (totalW * titleScale) / 2;
-                    var ty = tty + dy * titleScale + fs * 0.5;
-                    s.el.style.transition = 'all 0.8s cubic-bezier(0.22,0.61,0.36,1)';
+                    var distLeft = s.finalX;
+                    var distRight = screenW - s.finalX;
+                    var exitX = distLeft < distRight ? -screenW * 0.35 : screenW * 1.35;
+                    s.el.style.transition = 'transform 0.55s cubic-bezier(0.4,0,1,1), opacity 0.4s ease';
                     s.el.style.transitionDelay = (i * 0.005) + 's';
-                    s.el.style.transform = 'translate(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px) rotate(0deg) skewX(0deg) scale(' + titleScale.toFixed(3) + ')';
-                    s.el.style.opacity = '0.55';
+                    s.el.style.transform = 'translate(' + exitX.toFixed(0) + 'px,' + s.finalY.toFixed(0) + 'px) scale(1)';
+                    s.el.style.opacity = '0.25';
                     s.el.style.removeProperty('--bx'); s.el.style.removeProperty('--by'); s.el.style.removeProperty('--brz');
                 });
-                setTimeout(function() { var ht = document.getElementById('home-title'); if (ht) ht.classList.add('visible'); }, 500);
+
+                setTimeout(function() { var ht = document.getElementById('home-title'); if (ht) ht.classList.add('visible'); }, 400);
                 setTimeout(function() { overlay.classList.add('fade-out'); if (container) container.classList.add('entrance-start'); }, 650);
-                setTimeout(function() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 1300);
+                setTimeout(function() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 1200);
             });
 
             requestAnimationFrame(frame);
