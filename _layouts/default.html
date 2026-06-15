@@ -1778,7 +1778,7 @@
             function _cbx(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*t*x1+3*u*t*t*x2+t*t*t;}
             function _cby(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*t*y1+3*u*t*t*y2+t*t*t;}
             function _cbd(x1,y1,x2,y2,t){var u=1-t;return 3*u*u*x1+6*u*t*(x2-x1)+3*t*t*(1-x2);}
-            function _sbt(x1,y1,x2,y2,tx){var t=tx;for(var i=0;i<8;i++){var d=_cbd(x1,y1,x2,y2,t);if(Math.abs(d)<1e-8)break;t-=(_cbx(x1,y1,x2,y2,t)-tx)/d;t=Math.max(0,Math.min(1,t));}return t;}
+            function _sbt(x1,y1,x2,y2,tx){var t=tx;for(var j=0;j<8;j++){var dd=_cbd(x1,y1,x2,y2,t);if(Math.abs(dd)<1e-8)break;t-=(_cbx(x1,y1,x2,y2,t)-tx)/dd;t=Math.max(0,Math.min(1,t));}return t;}
             function _mke(x1,y1,x2,y2){return function(t){if(t<=0)return 0;if(t>=1)return 1;return _cby(x1,y1,x2,y2,_sbt(x1,y1,x2,y2,t));};}
             var easeHorizontal = _mke(0.25,0.1,0.25,1);   // 视觉匀速
             var easeBend       = _mke(0.16,1,0.3,1);      // 快触发、丝滑制动
@@ -1798,15 +1798,16 @@
 
             // 测量 7 个字母宽度
             var lw = []; // letter widths
-            for (var i = 0; i < LETTERS.length; i++) {
-                lw.push(Math.round(ctx.measureText(LETTERS[i]).width));
+            for (var ii = 0; ii < LETTERS.length; ii++) {
+                lw.push(Math.round(ctx.measureText(LETTERS[ii]).width));
             }
 
             // --- 布局：字母居中（y 和 N 之间插入空格）---
-            var mobileScale = isMobile ? Math.min(1, (screenW * 0.88) / (lw.reduce(function(a,b){return a+b;},0) + spaceW * 0.85)) : 1;
+            var sumLw = 0; for (var ii = 0; ii < lw.length; ii++) sumLw += lw[ii];
+            var mobileScale = isMobile ? Math.min(1, (screenW * 0.88) / (sumLw + spaceW * 0.85)) : 1;
             var fs = Math.round(baseFontSize * mobileScale); // 实际渲染字号
             var strokeW = Math.max(5, Math.round(fs * 0.055)); // 描边宽度 ~13px桌面/5px移动端
-            for (var i = 0; i < lw.length; i++) lw[i] = Math.round(lw[i] * mobileScale);
+            for (var ii = 0; ii < lw.length; ii++) lw[ii] = Math.round(lw[ii] * mobileScale);
             var gapW = Math.round(spaceW * 0.85 * mobileScale);
             var totalW = lw[0] + lw[1] + gapW + lw[2] + lw[3] + lw[4] + lw[5] + lw[6];
             var startX = (screenW - totalW) / 2;
@@ -1814,16 +1815,17 @@
             // 7 个字母的屏幕坐标 {letter, x, w}
             var letterPos = [];
             var curX = startX;
-            for (var i = 0; i < LETTERS.length; i++) {
-                letterPos.push({ letter: LETTERS[i], x: curX, w: lw[i] });
-                curX += lw[i];
-                if (i === 1) curX += gapW; // "My" 和 "Notes" 之间的空格
+            for (var ii = 0; ii < LETTERS.length; ii++) {
+                letterPos.push({ letter: LETTERS[ii], x: curX, w: lw[ii] });
+                curX += lw[ii];
+                if (ii === 1) curX += gapW; // "My" 和 "Notes" 之间的空格
             }
 
+            // "My Notes" 整体中心（用于 breathe 缩放原点）
+            var notesCenterX = startX + totalW / 2;
+            var notesCenterY = centerY;
+
             // --- 笔画定义（分数坐标 0..1，相对于字母包围盒）---
-            // 字母包围盒: 宽=letterW, 高=fs, 原点在字母左上角
-            // hasBend=true: 竖笔，主阶段弯折下落
-            // hasBend=false: 斜笔/横笔，收束阶段归位
             var STROKE_DEFS = [
                 // M (index 0)
                 {li:0, id:'M-lt', sx:0.08, sy:0.05, ex:0.08, ey:0.95, entry:'left',  bend:true},
@@ -1860,23 +1862,23 @@
             var bandTop = centerY - fs * 0.5; // 字母带顶部
             var nStrokes = STROKE_DEFS.length; // 20
 
-            for (var i = 0; i < nStrokes; i++) {
-                var d = STROKE_DEFS[i];
-                var lp = letterPos[d.li]; // 所属字母
+            for (var si = 0; si < nStrokes; si++) {
+                var sd = STROKE_DEFS[si];
+                var lp = letterPos[sd.li]; // 所属字母
                 var letterTopY = centerY - fs / 2;
 
                 // 最终笔画坐标（屏幕像素）
-                var sx = lp.x + d.sx * lp.w;
-                var sy = letterTopY + d.sy * fs;
-                var ex = lp.x + d.ex * lp.w;
-                var ey = letterTopY + d.ey * fs;
+                var sx = lp.x + sd.sx * lp.w;
+                var sy = letterTopY + sd.sy * fs;
+                var ex = lp.x + sd.ex * lp.w;
+                var ey = letterTopY + sd.ey * fs;
 
                 // 轨道 Y（均匀分布在字母带内）
-                var trackY = bandTop + (i / (nStrokes - 1)) * fs;
+                var trackY = bandTop + (si / (nStrokes - 1)) * fs;
 
                 // 入口 X
                 var entryX;
-                if (d.entry === 'left') {
+                if (sd.entry === 'left') {
                     entryX = -margin;
                 } else {
                     entryX = screenW + margin;
@@ -1886,43 +1888,33 @@
                 var totalDX = Math.abs(ex - entryX);
 
                 // 弯折触发 X（竖笔弯折点，设在水平行程 72% 处）
-                var bendTriggerP = d.bend ? 0.72 : 0;
+                var bendTriggerP = sd.bend ? 0.72 : 0;
                 var triggerX = 0;
-                if (d.bend) {
-                    if (d.entry === 'left') {
-                        triggerX = entryX + totalDX * bendTriggerP; // entryX < finalX，向右触发
+                if (sd.bend) {
+                    if (sd.entry === 'left') {
+                        triggerX = entryX + totalDX * bendTriggerP;
                     } else {
-                        triggerX = entryX - totalDX * bendTriggerP; // entryX > finalX，向左触发
+                        triggerX = entryX - totalDX * bendTriggerP;
                     }
                 }
 
                 // 最终笔画路径（仅笔画本身）
                 var finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
 
-                // 创建独立 SVG 元素（viewBox 覆盖全屏，路径坐标即屏幕坐标）
+                // 创建迷你 SVG 元素（1×1 + overflow:visible，路径坐标即屏幕坐标）
                 var svgNS = 'http://www.w3.org/2000/svg';
                 var svg = document.createElementNS(svgNS, 'svg');
-                svg.setAttribute('viewBox', '0 0 ' + screenW + ' ' + screenH);
-                svg.setAttribute('width', screenW);
-                svg.setAttribute('height', screenH);
+                svg.setAttribute('viewBox', '0 0 1 1');
+                svg.setAttribute('width', '1');
+                svg.setAttribute('height', '1');
                 svg.classList.add('stroke-svg');
-                svg.style.width = screenW + 'px';
-                svg.style.height = screenH + 'px';
+                svg.style.width = '1px';
+                svg.style.height = '1px';
                 svg.style.overflow = 'visible';
                 svg.style.opacity = '0';
-                // transform-origin 设为字母组中心（用于 breathe/glaze 缩放）
-                svg.style.transformOrigin = (startX + totalW/2).toFixed(0) + 'px ' + centerY.toFixed(0) + 'px';
-
-                // 统一白色滤镜
-                var fid = 'f' + i;
-                var filt = document.createElementNS(svgNS, 'filter');
-                filt.setAttribute('id', fid);
-                filt.setAttribute('x', '-20%'); filt.setAttribute('y', '-20%');
-                filt.setAttribute('width', '140%'); filt.setAttribute('height', '140%');
-                filt.innerHTML = '<feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="rgba(255,255,255,0.6)"/>' +
-                    '<feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.45)"/>' +
-                    '<feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(255,255,255,0.08)"/>';
-                svg.appendChild(filt);
+                svg.style.transformOrigin = notesCenterX.toFixed(0) + 'px ' + notesCenterY.toFixed(0) + 'px';
+                // CSS drop-shadow 替代 SVG filter（更可靠的跨浏览器支持）
+                svg.style.filter = 'drop-shadow(0 1px 2px rgba(255,255,255,0.6)) drop-shadow(0 3px 6px rgba(0,0,0,0.45)) drop-shadow(0 8px 16px rgba(255,255,255,0.08))';
 
                 // 创建路径元素
                 var path = document.createElementNS(svgNS, 'path');
@@ -1931,8 +1923,7 @@
                 path.setAttribute('stroke-linecap', 'round');
                 path.setAttribute('stroke-linejoin', 'round');
                 path.setAttribute('fill', 'none');
-                path.setAttribute('filter', 'url(#' + fid + ')');
-                // 初始路径：入口点（一个点）
+                // 初始路径：入口点零长度
                 path.setAttribute('d', 'M ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1) + ' L ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1));
                 svg.appendChild(path);
 
@@ -1952,15 +1943,15 @@
                     endY: ey,
                     triggerX: triggerX,
                     totalDX: totalDX,
-                    hasBend: d.bend,
-                    bendState: 'idle',     // 'idle' | 'active' | 'done'
+                    hasBend: sd.bend,
+                    bendState: 'idle',
                     bendStartTime: 0,
                     bendTriggerP: bendTriggerP,
                     frozenP: 0,
-                    entry: d.entry,
+                    entry: sd.entry,
                     finalD: finalD,
-                    curEndX: entryX,       // 当前视觉端点 X（每帧更新）
-                    curEndY: trackY,       // 当前视觉端点 Y
+                    curEndX: entryX,
+                    curEndY: trackY,
                     settled: false,
                     converged: false
                 });
@@ -1984,181 +1975,153 @@
             function frame(now) {
                 if (dismissed) return;
                 var elapsed = now - animStart;
+                var allDone = true;
 
-                // --- 收束阶段（2.7s - 2.8s）---
+                // --- 收束阶段触发 ---
                 if (elapsed >= MAIN_DUR && !converged) {
                     converged = true;
                     convergeStart = now;
-                    // 进入收束：所有未完成弯折的滑块立即标记弯折完成
-                    for (var i = 0; i < allStrokes.length; i++) {
-                        var s = allStrokes[i];
-                        if (s.hasBend && s.bendState === 'active') {
-                            s.bendState = 'done';
+                    for (var fi = 0; fi < allStrokes.length; fi++) {
+                        var fs2 = allStrokes[fi];
+                        if (fs2.hasBend && fs2.bendState === 'active') {
+                            fs2.bendState = 'done';
                         }
                     }
                 }
 
+                // --- 收束阶段（2.7s - 2.8s）---
                 if (converged) {
                     var convergeElapsed = now - convergeStart;
                     var convergeP = easeConverge(Math.min(1, convergeElapsed / CONVERGE_DUR));
 
-                    for (var i = 0; i < allStrokes.length; i++) {
-                        var s = allStrokes[i];
-                        if (s.converged) continue;
+                    for (var fi = 0; fi < allStrokes.length; fi++) {
+                        var fs2 = allStrokes[fi];
+                        if (fs2.converged) continue;
 
-                        // 使用追踪的当前端点（不用解析 path d）
-                        var curX = s.curEndX, curY = s.curEndY;
+                        var curX = fs2.curEndX, curY = fs2.curEndY;
+                        var tx = curX + (fs2.finalX - curX) * convergeP;
+                        var ty = curY + (fs2.finalY - curY) * convergeP;
 
-                        // 插值到最终位置
-                        var tx = curX + (s.finalX - curX) * convergeP;
-                        var ty = curY + (s.finalY - curY) * convergeP;
-
-                        // Scale 呼吸：1.0 → 1.01 → 1.0（半个收敛周期完成呼吸）
+                        // Scale 呼吸
                         var breathP = Math.min(1, convergeElapsed / (CONVERGE_DUR * 0.5));
                         var sc = 1 + 0.01 * Math.sin(breathP * Math.PI);
 
-                        // 应用 transform：偏移到插值位置 + scale
+                        // 偏移量
                         var offX = tx - curX, offY = ty - curY;
-                        s.el.style.transform = 'translate(' + offX.toFixed(2) + 'px,' + offY.toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')';
+                        fs2.el.style.transform = 'translate(' + offX.toFixed(2) + 'px,' + offY.toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')';
 
                         if (convergeP >= 1) {
-                            // 收束完成
-                            s.converged = true;
-                            // 裁剪路径为最终笔画
-                            s.path.setAttribute('d', s.finalD);
-                            // 清除 transform，路径已在屏幕坐标正确位置
-                            s.el.style.transform = '';
-                            s.el.style.opacity = '1';
-                            // 呼吸动画 CSS 变量：--bx=0，路径已是屏幕坐标，无需 translate
-                            s.el.style.setProperty('--bx', '0px');
-                            s.el.style.setProperty('--by', '0px');
-                            s.el.style.setProperty('--brz', '0deg');
+                            fs2.converged = true;
+                            fs2.path.setAttribute('d', fs2.finalD);
+                            fs2.el.style.transform = '';
+                            fs2.el.style.opacity = '1';
+                            // 呼吸动画：transform-origin 设在单词中心，--bx/--by=0 不偏移
+                            fs2.el.style.transformOrigin = notesCenterX.toFixed(0) + 'px ' + notesCenterY.toFixed(0) + 'px';
+                            fs2.el.style.setProperty('--bx', '0px');
+                            fs2.el.style.setProperty('--by', '0px');
+                            fs2.el.style.setProperty('--brz', '0deg');
                         }
                     }
 
-                    // 检查收束是否全部完成
                     var allConv = true;
-                    for (var i = 0; i < allStrokes.length; i++) {
-                        if (!allStrokes[i].converged) { allConv = false; break; }
+                    for (var fi = 0; fi < allStrokes.length; fi++) {
+                        if (!allStrokes[fi].converged) { allConv = false; break; }
                     }
                     if (allConv && !allSettled) {
                         allSettled = true;
                         onAllSettled();
                     }
-                    if (elapsed < TOTAL_DUR + 200) requestAnimationFrame(frame);
+                    if (!allSettled) requestAnimationFrame(frame);
                     return;
                 }
 
                 // --- 主阶段（0 - 2.7s）---
                 var globalP = easeHorizontal(Math.min(1, elapsed / MAIN_DUR));
 
-                for (var i = 0; i < allStrokes.length; i++) {
-                    var s = allStrokes[i];
-                    if (s.settled) continue;
+                for (var fi = 0; fi < allStrokes.length; fi++) {
+                    var fs2 = allStrokes[fi];
+                    if (fs2.settled) continue;
 
                     // 处理正在弯折的滑块
-                    if (s.hasBend && s.bendState === 'active') {
-                        var bendElapsed = now - s.bendStartTime;
+                    if (fs2.hasBend && fs2.bendState === 'active') {
+                        var bendElapsed = now - fs2.bendStartTime;
                         if (bendElapsed >= BEND_DUR) {
-                            // 弯折完成
-                            s.bendState = 'done';
-                            // 更新路径：入口 → 触发点（水平）→ 最终位置（垂直落下）
-                            var dDone = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                        ' L ' + s.finalX.toFixed(1) + ' ' + s.finalY.toFixed(1);
-                            s.path.setAttribute('d', dDone);
-                            s.curEndX = s.finalX;
-                            s.curEndY = s.finalY;
+                            fs2.bendState = 'done';
+                            var dDone = 'M ' + fs2.entryX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                        ' L ' + fs2.triggerX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                        ' L ' + fs2.finalX.toFixed(1) + ' ' + fs2.finalY.toFixed(1);
+                            fs2.path.setAttribute('d', dDone);
+                            fs2.curEndX = fs2.finalX;
+                            fs2.curEndY = fs2.finalY;
                         } else {
-                            // 弯折进行中：Y 从 trackY 弧线下落到 finalY
                             var bendP = easeBend(bendElapsed / BEND_DUR);
-                            var curY = s.trackY + (s.finalY - s.trackY) * bendP;
-                            var dBending = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                           ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                           ' L ' + s.triggerX.toFixed(1) + ' ' + curY.toFixed(1);
-                            s.path.setAttribute('d', dBending);
-                            s.curEndX = s.triggerX;
-                            s.curEndY = curY;
-                            s.el.style.opacity = Math.min(1, (elapsed - s.bendStartTime + 200) / 400);
+                            var curY = fs2.trackY + (fs2.finalY - fs2.trackY) * bendP;
+                            var dBending = 'M ' + fs2.entryX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                           ' L ' + fs2.triggerX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                           ' L ' + fs2.triggerX.toFixed(1) + ' ' + curY.toFixed(1);
+                            fs2.path.setAttribute('d', dBending);
+                            fs2.curEndX = fs2.triggerX;
+                            fs2.curEndY = curY;
+                            fs2.el.style.opacity = Math.min(1, (elapsed - fs2.bendStartTime + 200) / 400);
                         }
+                        allDone = false;
                         continue;
                     }
 
-                    // 计算当前 X（基于全局进度 P）
-                    // 如果该滑块已完成弯折，使用冻结的 P（保持偏移）
-                    var effectiveP;
-                    if (s.hasBend && s.bendState === 'done') {
-                        effectiveP = Math.min(1, s.frozenP + (globalP - s.frozenP) * 1); // 跟随全局速度但从冻结P出发
-                        // 实际上：让滑块继续使用全局P但以较慢速度追赶
-                        // 简化：使用 globalP，但 capped at finalX
-                        effectiveP = globalP;
-                    } else {
-                        effectiveP = globalP;
-                    }
-
-                    var curX = s.entryX + s.totalDX * effectiveP;
-                    // 确保不超出范围
-                    if (s.entry === 'left') curX = Math.min(curX, s.triggerX || s.finalX);
-                    else curX = Math.max(curX, s.triggerX || s.finalX);
+                    var effectiveP = globalP;
+                    var curX = fs2.entryX + fs2.totalDX * effectiveP;
+                    if (fs2.entry === 'left') curX = Math.min(curX, fs2.triggerX || fs2.finalX);
+                    else curX = Math.max(curX, fs2.triggerX || fs2.finalX);
 
                     // 检查弯折触发
-                    if (s.hasBend && s.bendState === 'idle') {
-                        var triggered = (s.entry === 'left' && curX >= s.triggerX) ||
-                                        (s.entry === 'right' && curX <= s.triggerX);
+                    if (fs2.hasBend && fs2.bendState === 'idle') {
+                        var triggered = (fs2.entry === 'left' && curX >= fs2.triggerX) ||
+                                        (fs2.entry === 'right' && curX <= fs2.triggerX);
                         if (triggered) {
-                            s.bendState = 'active';
-                            s.bendStartTime = now;
-                            s.frozenP = effectiveP;
-                            // 立即绘制到触发点的水平段
-                            var dTrig = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1);
-                            s.path.setAttribute('d', dTrig);
+                            fs2.bendState = 'active';
+                            fs2.bendStartTime = now;
+                            fs2.frozenP = effectiveP;
+                            var dTrig = 'M ' + fs2.entryX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                        ' L ' + fs2.triggerX.toFixed(1) + ' ' + fs2.trackY.toFixed(1);
+                            fs2.path.setAttribute('d', dTrig);
+                            fs2.curEndX = fs2.triggerX;
+                            fs2.curEndY = fs2.trackY;
+                            allDone = false;
                             continue;
                         }
                     }
 
-                    // 正常水平行进（无弯折或弯折已完成）
-                    if (!s.hasBend || s.bendState === 'done') {
-                        if (s.hasBend && s.bendState === 'done') {
-                            // 弯折已完成，继续水平行进：从 triggerX 到 finalX（在 finalY 高度）
+                    // 水平行进
+                    if (!fs2.hasBend || fs2.bendState === 'done') {
+                        if (fs2.hasBend && fs2.bendState === 'done') {
+                            var remP = Math.max(0, Math.min(1, (effectiveP - fs2.frozenP) / (1 - fs2.frozenP)));
                             var postBendX;
-                            var remP = Math.max(0, Math.min(1, (effectiveP - s.frozenP) / (1 - s.frozenP))); // 剩余行程进度
-                            if (s.entry === 'left') {
-                                postBendX = s.triggerX + (s.finalX - s.triggerX) * remP;
+                            if (fs2.entry === 'left') {
+                                postBendX = fs2.triggerX + (fs2.finalX - fs2.triggerX) * remP;
                             } else {
-                                postBendX = s.triggerX - (s.triggerX - s.finalX) * remP;
+                                postBendX = fs2.triggerX - (fs2.triggerX - fs2.finalX) * remP;
                             }
-                            var dPost = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                        ' L ' + s.triggerX.toFixed(1) + ' ' + s.finalY.toFixed(1) +
-                                        ' L ' + postBendX.toFixed(1) + ' ' + s.finalY.toFixed(1);
-                            s.path.setAttribute('d', dPost);
-                            s.curEndX = postBendX;
-                            s.curEndY = s.finalY;
+                            var dPost = 'M ' + fs2.entryX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                        ' L ' + fs2.triggerX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                        ' L ' + fs2.triggerX.toFixed(1) + ' ' + fs2.finalY.toFixed(1) +
+                                        ' L ' + postBendX.toFixed(1) + ' ' + fs2.finalY.toFixed(1);
+                            fs2.path.setAttribute('d', dPost);
+                            fs2.curEndX = postBendX;
+                            fs2.curEndY = fs2.finalY;
                         } else {
-                            // 无弯折滑块：持续更新水平位置
-                            var dHoriz = 'M ' + s.entryX.toFixed(1) + ' ' + s.trackY.toFixed(1) +
-                                         ' L ' + curX.toFixed(1) + ' ' + s.trackY.toFixed(1);
-                            s.path.setAttribute('d', dHoriz);
-                            s.curEndX = curX;
-                            s.curEndY = s.trackY;
+                            var dHoriz = 'M ' + fs2.entryX.toFixed(1) + ' ' + fs2.trackY.toFixed(1) +
+                                         ' L ' + curX.toFixed(1) + ' ' + fs2.trackY.toFixed(1);
+                            fs2.path.setAttribute('d', dHoriz);
+                            fs2.curEndX = curX;
+                            fs2.curEndY = fs2.trackY;
                         }
                     }
 
-                    // 透明度淡入
-                    s.el.style.opacity = Math.min(1, elapsed / 400);
+                    fs2.el.style.opacity = Math.min(1, elapsed / 400);
+                    if (!fs2.settled) allDone = false;
                 }
 
-                // 继续主循环
-                if (elapsed < MAIN_DUR + 200) requestAnimationFrame(frame);
-                else if (!allSettled) {
-                    // 超时保护：如果主阶段结束但未触发收束
-                    if (!converged) {
-                        converged = true;
-                        convergeStart = now;
-                    }
-                    requestAnimationFrame(frame);
-                }
+                if (!allSettled) requestAnimationFrame(frame);
             }
 
             function onAllSettled() {
