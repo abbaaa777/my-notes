@@ -1876,7 +1876,22 @@
             var allStrokes = [];
             var margin = Math.max(60, Math.round(screenW * 0.06)); // 屏幕外距离
             var bandTop = centerY - fs * 0.5; // 字母带顶部
-            var nStrokes = STROKE_DEFS.length; // 20
+            var nStrokes = STROKE_DEFS.length; // 22
+
+            // --- 创建共享 SVG（所有笔画共用一个全屏 SVG，避免 22 个 GPU 合成层）---
+            var svgNS = 'http://www.w3.org/2000/svg';
+            var mainSvg = document.createElementNS(svgNS, 'svg');
+            mainSvg.setAttribute('viewBox', '0 0 ' + screenW + ' ' + screenH);
+            mainSvg.setAttribute('width', screenW);
+            mainSvg.setAttribute('height', screenH);
+            mainSvg.classList.add('stroke-svg');
+            mainSvg.style.width = screenW + 'px';
+            mainSvg.style.height = screenH + 'px';
+            mainSvg.style.overflow = 'visible';
+            mainSvg.style.transformOrigin = notesCenterX.toFixed(0) + 'px ' + notesCenterY.toFixed(0) + 'px';
+            // CSS drop-shadow 集中在一个 SVG 上，避免每笔画一个 filter 的 GPU 过载
+            mainSvg.style.filter = 'drop-shadow(0 1px 2px rgba(255,255,255,0.6)) drop-shadow(0 3px 6px rgba(0,0,0,0.45)) drop-shadow(0 8px 16px rgba(255,255,255,0.08))';
+            overlay.appendChild(mainSvg);
 
             for (var si = 0; si < nStrokes; si++) {
                 var sd = STROKE_DEFS[si];
@@ -1931,22 +1946,12 @@
                     finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
                 }
 
-                // 创建 SVG 元素（viewBox 覆盖全屏，确保路径坐标完全落在可见区域内）
+                // 创建路径元素（所有笔画共享一个 SVG）
                 var svgNS = 'http://www.w3.org/2000/svg';
-                var svg = document.createElementNS(svgNS, 'svg');
-                svg.setAttribute('viewBox', '0 0 ' + screenW + ' ' + screenH);
-                svg.setAttribute('width', screenW);
-                svg.setAttribute('height', screenH);
-                svg.classList.add('stroke-svg');
-                svg.style.width = screenW + 'px';
-                svg.style.height = screenH + 'px';
-                svg.style.overflow = 'visible';
-                svg.style.opacity = '0.01'; // 极低初始透明度，防止渲染管线优化掉
-                svg.style.transformOrigin = notesCenterX.toFixed(0) + 'px ' + notesCenterY.toFixed(0) + 'px';
-                // CSS drop-shadow（比 SVG filter 更可靠）
-                svg.style.filter = 'drop-shadow(0 1px 2px rgba(255,255,255,0.6)) drop-shadow(0 3px 6px rgba(0,0,0,0.45)) drop-shadow(0 8px 16px rgba(255,255,255,0.08))';
+                var g = document.createElementNS(svgNS, 'g');
+                g.style.opacity = '0.01';
+                g.setAttribute('data-stroke', sd.id);
 
-                // 创建路径元素
                 var path = document.createElementNS(svgNS, 'path');
                 path.setAttribute('stroke', 'white');
                 path.setAttribute('stroke-width', strokeW);
@@ -1955,13 +1960,13 @@
                 path.setAttribute('fill', 'none');
                 // 初始路径：入口点零长度
                 path.setAttribute('d', 'M ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1) + ' L ' + entryX.toFixed(1) + ' ' + trackY.toFixed(1));
-                svg.appendChild(path);
+                g.appendChild(path);
 
-                overlay.appendChild(svg);
+                mainSvg.appendChild(g);
 
                 // 存入 allStrokes
                 allStrokes.push({
-                    el: svg,
+                    el: g,
                     path: path,
                     entryX: entryX,
                     trackY: trackY,
@@ -2170,18 +2175,18 @@
                                 ' L ' + midX.toFixed(1) + ' ' + midY.toFixed(1));
                         }
 
-                        // Scale 呼吸（所有笔画统一）
-                        fs2.el.style.transform = 'scale(' + breathScale.toFixed(4) + ')';
+                        // Scale 呼吸交给共享 SVG（避免 <g> 的 transform-origin:0 问题）
                     }
+                    // 统一 scale 呼吸在 SVG 层级（transformOrigin 指向单词中心）
+                    mainSvg.style.transform = 'scale(' + breathScale.toFixed(4) + ')';
 
                     if (convP < 1) {
                         requestAnimationFrame(frame);
                     } else {
-                        // 收束完成：清理 transform
+                        // 收束完成：清理 SVG transform，设置各笔画 opacity
+                        mainSvg.style.transform = '';
                         for (var fi = 0; fi < allStrokes.length; fi++) {
-                            var fs2 = allStrokes[fi];
-                            fs2.el.style.transform = '';
-                            fs2.el.style.opacity = '1';
+                            allStrokes[fi].el.style.opacity = '1';
                         }
                         allSettled = true;
                         onAllSettled();
@@ -2194,9 +2199,9 @@
                             var fs2 = allStrokes[fi];
                             fs2.path.setAttribute('d', fs2.finalD);
                             fs2.el.style.opacity = '1';
-                            fs2.el.style.transform = '';
                             fs2.settled = true;
                         }
+                        mainSvg.style.transform = '';
                         allSettled = true;
                         onAllSettled();
                     }
@@ -2204,9 +2209,9 @@
             }
 
             function onAllSettled() {
-                setTimeout(function() { allStrokes.forEach(function(s) { s.el.classList.add('glazed'); }); }, 200);
+                setTimeout(function() { mainSvg.classList.add('glazed'); }, 200);
                 setTimeout(function() {
-                    allStrokes.forEach(function(s) { s.el.classList.remove('glazed'); s.el.classList.add('breathe'); });
+                    mainSvg.classList.remove('glazed'); mainSvg.classList.add('breathe');
                     if (hint) hint.classList.add('visible');
                     overlay.style.pointerEvents = 'auto'; overlay.style.cursor = 'pointer';
                 }, 700);
@@ -2218,21 +2223,19 @@
                 overlay.style.pointerEvents = 'none'; overlay.style.cursor = 'default';
                 if (hint) hint.classList.remove('visible');
 
-                // 移除呼吸/扫光类
-                allStrokes.forEach(function(s) {
-                    s.el.classList.remove('breathe', 'glazed');
-                    s.el.style.removeProperty('--bx'); s.el.style.removeProperty('--by'); s.el.style.removeProperty('--brz');
-                });
+                // 移除呼吸/扫光类（共享 SVG）
+                mainSvg.classList.remove('breathe', 'glazed');
+                mainSvg.style.removeProperty('--bx'); mainSvg.style.removeProperty('--by'); mainSvg.style.removeProperty('--brz');
+                mainSvg.style.transform = ''; // 清除收束残留 transform
 
                 // 预计算每笔画的退出目标
                 var exitData = allStrokes.map(function(s) {
                     var distLeft = s.finalX;
                     var distRight = screenW - s.finalX;
+                    var targetExitX = distLeft < distRight ? -screenW * 0.35 : screenW * 1.35;
                     return {
                         el: s.el,
-                        startX: s.finalX,
-                        startY: s.finalY,
-                        exitX: distLeft < distRight ? -screenW * 0.35 : screenW * 1.35,
+                        deltaX: targetExitX - s.finalX,
                         delay: 0
                     };
                 });
@@ -2250,8 +2253,8 @@
                         var ed = exitData[ei];
                         var sp = Math.max(0, Math.min(1, (p - ed.delay) / (1 - ed.delay)));
                         if (sp <= 0) { allDone = false; continue; }
-                        var tx = ed.startX + (ed.exitX - ed.startX) * sp;
-                        ed.el.style.transform = 'translate(' + tx.toFixed(0) + 'px,' + ed.startY.toFixed(0) + 'px)';
+                        var tx = ed.deltaX * sp;
+                        ed.el.style.transform = 'translate(' + tx.toFixed(0) + 'px, 0px)';
                         ed.el.style.opacity = Math.max(0.05, 1 - sp).toFixed(2);
                         if (sp < 1) allDone = false;
                     }
