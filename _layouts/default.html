@@ -1839,34 +1839,37 @@
             var notesCenterY = centerY;
 
             // --- 笔画定义（分数坐标 0..1，相对于字母包围盒）---
+            // cx/cy: 可选二次贝塞尔控制点（分数坐标），有则为曲线笔画
             var STROKE_DEFS = [
-                // M (index 0)
+                // M (index 0) — 4 strokes
                 {li:0, id:'M-lt', sx:0.08, sy:0.05, ex:0.08, ey:0.95, entry:'left',  bend:true},
-                {li:0, id:'M-ld', sx:0.08, sy:0.05, ex:0.47, ey:0.55, entry:'left',  bend:false},
-                {li:0, id:'M-rd', sx:0.53, sy:0.55, ex:0.92, ey:0.05, entry:'right', bend:false},
+                {li:0, id:'M-ld', sx:0.08, sy:0.05, ex:0.50, ey:0.55, entry:'left',  bend:false},
+                {li:0, id:'M-rd', sx:0.50, sy:0.55, ex:0.92, ey:0.05, entry:'right', bend:false},
                 {li:0, id:'M-rt', sx:0.92, sy:0.05, ex:0.92, ey:0.95, entry:'right', bend:true},
-                // y (index 1)
+                // y (index 1) — 3 strokes
                 {li:1, id:'y-la', sx:0.08, sy:0.05, ex:0.45, ey:0.50, entry:'left',  bend:false},
                 {li:1, id:'y-ra', sx:0.55, sy:0.50, ex:0.92, ey:0.05, entry:'right', bend:false},
                 {li:1, id:'y-ds', sx:0.50, sy:0.50, ex:0.50, ey:1.08, entry:'left',  bend:true},
-                // N (index 2)
+                // N (index 2) — 3 strokes
                 {li:2, id:'N-lt', sx:0.08, sy:0.05, ex:0.08, ey:0.95, entry:'left',  bend:true},
                 {li:2, id:'N-di', sx:0.08, sy:0.05, ex:0.92, ey:0.95, entry:'left',  bend:false},
                 {li:2, id:'N-rt', sx:0.92, sy:0.05, ex:0.92, ey:0.95, entry:'right', bend:true},
-                // o (index 3)
-                {li:3, id:'o-la', sx:0.15, sy:0.50, ex:0.15, ey:0.90, entry:'left',  bend:true},
-                {li:3, id:'o-ra', sx:0.85, sy:0.50, ex:0.85, ey:0.90, entry:'right', bend:true},
-                // t (index 4)
+                // o (index 3) — 4 strokes（上下曲线+左右竖）
+                {li:3, id:'o-lt', sx:0.15, sy:0.50, ex:0.15, ey:0.90, entry:'left',  bend:true},
+                {li:3, id:'o-rt', sx:0.85, sy:0.50, ex:0.85, ey:0.90, entry:'right', bend:true},
+                {li:3, id:'o-tp', sx:0.15, sy:0.50, ex:0.85, ey:0.50, cx:0.50, cy:0.05, entry:'left',  bend:false},
+                {li:3, id:'o-bt', sx:0.15, sy:0.90, ex:0.85, ey:0.90, cx:0.50, cy:0.95, entry:'right', bend:false},
+                // t (index 4) — 2 strokes
                 {li:4, id:'t-st', sx:0.50, sy:0.15, ex:0.50, ey:0.95, entry:'left',  bend:true},
                 {li:4, id:'t-cr', sx:0.20, sy:0.30, ex:0.80, ey:0.30, entry:'right', bend:false},
-                // e (index 5)
+                // e (index 5) — 3 strokes（竖+上横+下弧曲线）
                 {li:5, id:'e-st', sx:0.10, sy:0.30, ex:0.10, ey:0.80, entry:'left',  bend:true},
                 {li:5, id:'e-tb', sx:0.10, sy:0.30, ex:0.78, ey:0.30, entry:'left',  bend:false},
-                {li:5, id:'e-bc', sx:0.10, sy:0.80, ex:0.72, ey:0.80, entry:'left',  bend:false},
-                // s (index 6)
-                {li:6, id:'s-tc', sx:0.78, sy:0.25, ex:0.22, ey:0.25, entry:'right', bend:false},
+                {li:5, id:'e-bc', sx:0.10, sy:0.80, ex:0.72, ey:0.80, cx:0.40, cy:0.92, entry:'left',  bend:false},
+                // s (index 6) — 3 strokes（上弧+中斜+下弧）
+                {li:6, id:'s-tc', sx:0.78, sy:0.25, ex:0.22, ey:0.25, cx:0.22, cy:0.10, entry:'right', bend:false},
                 {li:6, id:'s-md', sx:0.22, sy:0.25, ex:0.78, ey:0.75, entry:'right', bend:false},
-                {li:6, id:'s-bc', sx:0.78, sy:0.75, ex:0.22, ey:0.75, entry:'right', bend:false}
+                {li:6, id:'s-bc', sx:0.78, sy:0.75, ex:0.22, ey:0.75, cx:0.78, cy:0.88, entry:'right', bend:false}
             ];
 
             // --- 为每个笔画计算屏幕坐标和轨迹 ---
@@ -1885,6 +1888,10 @@
                 var sy = letterTopY + sd.sy * fs;
                 var ex = lp.x + sd.ex * lp.w;
                 var ey = letterTopY + sd.ey * fs;
+                // 曲线控制点（可选）
+                var hasCurve = (sd.cx !== undefined && sd.cy !== undefined);
+                var scx = hasCurve ? lp.x + sd.cx * lp.w : 0;
+                var scy = hasCurve ? letterTopY + sd.cy * fs : 0;
 
                 // 轨道 Y（均匀分布在字母带内）
                 var trackY = bandTop + (si / (nStrokes - 1)) * fs;
@@ -1911,8 +1918,15 @@
                     }
                 }
 
-                // 最终笔画路径（仅笔画本身）
-                var finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+                // 最终笔画路径（曲线用 Q，直线用 L）
+                var finalD;
+                if (hasCurve) {
+                    finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) +
+                             ' Q ' + scx.toFixed(1) + ' ' + scy.toFixed(1) +
+                             ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+                } else {
+                    finalD = 'M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' L ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+                }
 
                 // 创建 SVG 元素（viewBox 覆盖全屏，确保路径坐标完全落在可见区域内）
                 var svgNS = 'http://www.w3.org/2000/svg';
@@ -2030,7 +2044,11 @@
                 if (hint) hint.classList.remove('visible');
 
                 allStrokes.forEach(function(s, i) {
+                    // 先移除 CSS 动画类，强制重排以清除动画中的 transform
                     s.el.classList.remove('breathe', 'glazed');
+                    // 强制浏览器计算当前样式，确保动画已停止
+                    void s.el.offsetHeight;
+                    // 再设置 CSS transition + 新 transform
                     var distLeft = s.finalX;
                     var distRight = screenW - s.finalX;
                     var exitX = distLeft < distRight ? -screenW * 0.35 : screenW * 1.35;
